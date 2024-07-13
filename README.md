@@ -12,3 +12,4 @@ Cấu trúc bao gồm các thành phần sau:
 - <b>Infra</b> — Support the Domain layer by adapting the data coming from the external layer through models, repositories, and services.
 - <b>External</b> — Classes to wrap functionalities from third-party libraries, sensors, SO, storage, and any other external dependency of our app.
 
+# money_tracker
