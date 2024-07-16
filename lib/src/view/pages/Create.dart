@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:money_tracker/model/Styles/app_style.dart';
-import 'package:money_tracker/model/Styles/colors.dart';
-import 'package:money_tracker/src/view/widgets/button.dart';
+import 'package:money_tracker/src/model/styles/app_style.dart';
+import 'package:money_tracker/src/model/styles/colors.dart';
+import 'package:money_tracker/src/view/pages/Category.dart';
 import 'package:money_tracker/src/view/widgets/button/button_icon.dart';
 
 const List<String> danhMuc = ['Chi tiêu', 'Thu nhập'];
@@ -55,7 +55,7 @@ class _CreateScreenState extends State<CreateScreen> {
             children: [
               customButtomIcon(
                 call: () {},
-                colorIcon: white,
+                colorIcon:const Color(white),
                 icon: Icons.access_time_outlined,
               ),
               Padding(
@@ -70,10 +70,10 @@ class _CreateScreenState extends State<CreateScreen> {
                   ),
                   child: DropdownButton<String>(
                     value: dropdownValue,
-                    icon: Icon(Icons.arrow_drop_down),
+                    icon: const Icon(Icons.arrow_drop_down),
                     iconSize: 30,
                     elevation: 16,
-                    style: TextStyle(color: primary, fontSize: 18),
+                    style: const TextStyle(color:  Color(blue), fontSize: 18),
                     underline: Container(
                       height: 0,
                       color: Colors.transparent,
@@ -105,7 +105,7 @@ class _CreateScreenState extends State<CreateScreen> {
               ),
               customButtomIcon(
                 call: () {},
-                colorIcon: white,
+                colorIcon: const Color(white),
                 icon: Icons.check,
               ),
             ],
@@ -113,13 +113,13 @@ class _CreateScreenState extends State<CreateScreen> {
         ),
       ),
       body: Container(
-        color: grey,
+        color: const Color(grey),
         child: Column(
           children: [
             Container(
-              margin: EdgeInsets.symmetric(vertical: 10),
+              margin: const EdgeInsets.symmetric(vertical: 10),
               padding: const EdgeInsets.all(20.0),
-              color: white,
+              color: const Color(white),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
@@ -129,28 +129,27 @@ class _CreateScreenState extends State<CreateScreen> {
                     focusNode: inputNode,
                     textAlign: TextAlign.end,
                     obscureText: false,
-                    style: TextStyle(color: Colors.red, fontSize: 30),
+                    style: const TextStyle(color: Colors.red, fontSize: 30),
                     keyboardType: TextInputType.number,
                     inputFormatters: <TextInputFormatter>[
                       FilteringTextInputFormatter.digitsOnly,
                     ],
                     decoration: const InputDecoration(
-                        hintText: "0",
-                        enabledBorder: UnderlineInputBorder(
-                          borderSide:
-                              BorderSide(color: Colors.grey, width: 2.0),
-                        ),
-                        focusedBorder: UnderlineInputBorder(
-                          borderSide:
-                              BorderSide(color: Colors.green, width: 2.0),
-                        ),
-                        hintStyle: TextStyle(color: Colors.red, fontSize: 30)),
-                  )
+                      hintText: "0",
+                      enabledBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: Colors.grey, width: 2.0),
+                      ),
+                      focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: Colors.grey, width: 2.0),
+                      ),
+                      hintStyle: TextStyle(color: Colors.red, fontSize: 30),
+                    ),
+                  ),
                 ],
               ),
             ),
             Container(
-              color: white,
+              color: const Color(white),
               padding: const EdgeInsets.all(20.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -173,21 +172,45 @@ class _CreateScreenState extends State<CreateScreen> {
                       child: TextButton(
                     onPressed: () {},
                     style: TextButton.styleFrom(
-                      textStyle: TextStyle(color: primary),
+                      textStyle: const TextStyle(color: Color(primary)),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
-                    child: const Text(
-                      "Tất cả >",
-                      style: TextStyle(color: Colors.blue, fontSize: 18),
+                    child: TextButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const Category()),
+                        );
+                      },
+                      child: RichText(
+                        text: const TextSpan(
+                          children: [
+                            TextSpan(
+                              text: 'Tất cả ',
+                              style: TextStyle(
+                                color: Colors.blueAccent,
+                                fontSize: 15,
+                              ),
+                            ),
+                            WidgetSpan(
+                              child: Icon(
+                                Icons.chevron_right,
+                                color: Colors.blueAccent,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                   ))
                 ],
               ),
             ),
             Container(
-              color: white,
+              color: const Color(white),
               padding: const EdgeInsets.all(20.0),
               child: TextField(
                 controller: _dateController,
@@ -203,7 +226,7 @@ class _CreateScreenState extends State<CreateScreen> {
               ),
             ),
             Container(
-              color: white,
+              color: const Color(white),
               padding: const EdgeInsets.all(20.0),
               child: const TextField(
                 obscureText: false,
@@ -218,21 +241,22 @@ class _CreateScreenState extends State<CreateScreen> {
               width: getScreenWidth(context),
               margin: const EdgeInsets.symmetric(vertical: 20),
               padding: const EdgeInsets.symmetric(horizontal: 20.0),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(3)
-              ),
               child: ElevatedButton.icon(
-                
-                icon: Icon(Icons.save),
-                label: Text('Lưu', style: TextStyle(color: white, fontSize: 20),),
+                icon: const Icon(Icons.save),
+                label: const Text(
+                  'Lưu',
+                  style: TextStyle(color: Color(white), fontSize: 20),
+                ),
                 onPressed: () {
                   // Handle button press
                 },
                 style: ElevatedButton.styleFrom(
-                  iconColor: white, 
-                  backgroundColor: blue// Background color
+                  iconColor: const Color(white), backgroundColor: const Color(blue), // Background color
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(
+                        5), // Adjust as per your requirement
+                  ),
                 ),
-                
               ),
             ),
           ],

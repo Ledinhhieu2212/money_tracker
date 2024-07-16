@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:get/get.dart';
-import 'package:money_tracker/model/Styles/colors.dart';
-import 'package:money_tracker/model/Styles/app_style.dart';
+import 'package:money_tracker/src/model/styles/colors.dart';
+import 'package:money_tracker/src/model/styles/app_style.dart';
 
 class ButtonCustom extends StatelessWidget {
   final VoidCallback? onPressed;
@@ -22,10 +22,10 @@ class ButtonCustom extends StatelessWidget {
         width: getScreenWidth(context),
         child: FilledButton.tonal(
           onPressed: onPressed,
-          style: FilledButton.styleFrom(backgroundColor: blue),
+          style: FilledButton.styleFrom(backgroundColor:  Color(blue)),
           child: Text(
             title,
-            style: TextStyle(color: white),
+            style: TextStyle(color:  Color(white)),
           ),
         ),
       ),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:money_tracker/core/app_style.dart';
-import 'package:money_tracker/model/Styles/colors.dart';
+import 'package:money_tracker/src/model/styles/app_style.dart';
+import 'package:money_tracker/src/model/styles/colors.dart';
 
 class Loading extends StatefulWidget {
   const Loading({super.key});
@@ -14,7 +14,7 @@ class _LoadingState extends State<Loading> {
   Widget build(BuildContext context) {
     return Container(
       height: getScreenHeight(context),
-      color: white,
+      color:  Color(white),
       child: const Center(
         child: CircularProgressIndicator(),
       ),

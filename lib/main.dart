@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:money_tracker/model/Styles/colors.dart';
-import 'package:money_tracker/src/view/widgets/loading.dart';
+import 'package:money_tracker/src/model/styles/colors.dart';
 import 'package:money_tracker/src/view/widgets/splash.dart';
 
 void main() {
@@ -16,11 +15,10 @@ class App extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        appBarTheme: AppBarTheme(
-          color: blue,
-          // backgroundColor: grey,
-          titleTextStyle: TextStyle(color: white),
-          iconTheme: const IconThemeData(color: Colors.white),
+        appBarTheme: const AppBarTheme(
+          color:  Color(blue),
+          titleTextStyle: TextStyle(color:  Color(white)),
+          iconTheme: IconThemeData(color: Colors.white),
         ),
       ),
       home: const SplashScreen(),

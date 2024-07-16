@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:money_tracker/core/app_image.dart';
-import 'package:money_tracker/src/view/pages/Login.dart';
+import 'package:money_tracker/src/model/styles/images.dart';
+import 'package:money_tracker/src/view/pages/login.dart';
 import 'package:money_tracker/src/view/utils/routers.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -12,8 +12,7 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen> {
   @override
-  void initState() {
-    // TODO: implement initState
+  void initState() { 
     super.initState();
     navigate();
   }
@@ -22,7 +21,7 @@ class _SplashScreenState extends State<SplashScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: Image.asset(ImageBase.logo1),
+        child: Image.asset(imageBase().Logo),
       ),
     );
   }

@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:money_tracker/model/Styles/colors.dart';
-import 'package:money_tracker/src/view/pages/Create.dart';
-import 'package:money_tracker/src/view/pages/Home.dart';
+import 'package:money_tracker/src/model/styles/colors.dart';
+import 'package:money_tracker/src/view/pages/create.dart';
+import 'package:money_tracker/src/view/pages/home.dart';
+import 'package:money_tracker/src/view/pages/account.dart';
+import 'package:money_tracker/src/view/pages/report.dart';
+import 'package:money_tracker/src/view/pages/tool_page.dart';
 
 class NavigationMenu extends StatefulWidget {
   const NavigationMenu({super.key});
@@ -16,23 +19,10 @@ class _NavigationMenuState extends State<NavigationMenu> {
       TextStyle(fontSize: 20, fontWeight: FontWeight.bold);
   static const List<Widget> _widgetOptions = <Widget>[
     HomeScreen(),
-    Text(
-      'Index 1: Business',
-      style: optionStyle,
-    ),
+    AccountScreen(),
     CreateScreen(),
-    Text(
-      'Index 3: School',
-      style: optionStyle,
-    ),
-    Text(
-      'Index 4: School',
-      style: optionStyle,
-    ),
-    Text(
-      'Index 5: School',
-      style: optionStyle,
-    ),
+    ReportScreen(),
+    ToolPage(),
   ];
 
   void _onItemTapped(int index) {
@@ -49,7 +39,6 @@ class _NavigationMenuState extends State<NavigationMenu> {
       ),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
-
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
             label: 'Tổng quan',
@@ -73,9 +62,8 @@ class _NavigationMenuState extends State<NavigationMenu> {
         ],
         currentIndex: _selectedIndex,
         iconSize: 20,
-        selectedItemColor: blue,
-        unselectedIconTheme:
-            const IconThemeData(size: 26, color: Colors.grey),
+        selectedItemColor:  Color(blue),
+        unselectedIconTheme: const IconThemeData(size: 26, color: Colors.grey),
         onTap: _onItemTapped,
       ),
     );

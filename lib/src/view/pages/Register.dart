@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:money_tracker/model/Styles/images.dart';
-import 'package:money_tracker/src/view/pages/Login.dart';
+import 'package:money_tracker/src/model/styles/images.dart';
+import 'package:money_tracker/src/view/pages/login.dart';
 import 'package:money_tracker/src/view/widgets/button.dart';
-import 'package:money_tracker/src/view/widgets/navigation_menu.dart';
 import 'package:money_tracker/src/view/widgets/text_field.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -26,7 +25,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child:
-                SizedBox(height: 240, child: Center(child: imageBase().Logo)),
+                SizedBox(height: 240, child: Center(child: Image.asset(imageBase().Logo))),
           ),
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 20.0),
@@ -59,7 +58,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20.0),
             child: ButtonCustom(
-              onPressed: () {},
+              onPressed: () {
+                Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => LoginScreen()),
+              );
+              },
               title: "Sign up",
             ),
           ),
