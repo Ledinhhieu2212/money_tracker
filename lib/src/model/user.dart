@@ -1,35 +1,40 @@
 class User {
-  final String? id;
-  final String? username;
+  final int? ma_nguoi_dung;
+  final String? ten_nguoi_dung;
   final String? password;
   final String? email;
-  final String? phone;
-  final String? token;
-
+  final double? so_du;
+  final String? soDienThoai;
+// "ma_nguoi_dung": 10,
+//     "ten_nguoi_dung": "Phạm Tuấn Anh",
+//     "so_du": 0.00,
+//     "email": null,
+//     "password": "12345678",
+//     "soDienThoai": "0918565346"
   User(
-      {this.id,
-      this.username,
-      this.password,
+      {this.ma_nguoi_dung,
+      this.ten_nguoi_dung,
+      this.so_du,
       this.email,
-      this.phone,
-      this.token});
+      this.password,
+      this.soDienThoai});
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
-      id: json['id'] as String?,
-      username: json['username'] as String?,
+      ma_nguoi_dung: json['ma_nguoi_dung'] as int?,
+      ten_nguoi_dung: json['ten_nguoi_dung'] as String?,
       password: json['password'] as String?,
       email: json['email'] as String?,
-      phone: json['phone'] as String?,
-      token: json['token'] as String?,
+      so_du: json['so_du'] as double?,
+      soDienThoai: json['soDienThoai'] as String?,
     );
   }
   Map<String, dynamic> toJson() => {
-        'id': id,
-        "username": username,
+        'ma_nguoi_dung': ma_nguoi_dung,
+        "ten_nguoi_dung": ten_nguoi_dung,
+        "so_du": so_du,
+        "email": email,
         "password": password,
-        "phone": phone,
-        'email': email,
-        "token": token,
+        "soDienThoai": soDienThoai,
       };
 }

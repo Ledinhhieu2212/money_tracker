@@ -5,7 +5,7 @@ import 'package:money_tracker/src/model/styles/colors.dart';
 import 'package:money_tracker/src/model/styles/app_style.dart';
 
 class ButtonCustom extends StatelessWidget {
-  final VoidCallback? onPressed;
+  final VoidCallback onPressed;
   final String title;
   const ButtonCustom({
     super.key,
@@ -15,19 +15,18 @@ class ButtonCustom extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onPressed,
-      child: Container(
-        height: 48,
-        width: getScreenWidth(context),
-        child: FilledButton.tonal(
-          onPressed: onPressed,
-          style: FilledButton.styleFrom(backgroundColor:  Color(blue)),
-          child: Text(
-            title,
-            style: TextStyle(color:  Color(white)),
-          ),
+    return Container(
+      height: 48,
+      width: getScreenWidth(context),
+      child: ElevatedButton(
+        onPressed: onPressed,
+        style: ElevatedButton.styleFrom(backgroundColor: Color(blue)),
+        child: Text(
+          title,
+          style: TextStyle(color: Color(white)),
+          
         ),
+        
       ),
     );
   }
