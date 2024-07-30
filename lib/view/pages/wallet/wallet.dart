@@ -100,8 +100,8 @@ class _AccountScreenState extends State<AccountScreen> {
               _totalAmountDetails(),
               MaterialButton(
                 onPressed: () {},
-                color: Color(white),
-                padding: EdgeInsets.all(
+                color: const Color(white),
+                padding: const EdgeInsets.all(
                   10,
                 ),
                 child: Row(
@@ -112,11 +112,14 @@ class _AccountScreenState extends State<AccountScreen> {
                         width: 26,
                       ),
                     ),
-                    Row(
+                    const Row(
                       children: [
                         Column(
                           children: [
-                            Text("Ví tiền mặt"),
+                            Padding(
+                              padding: EdgeInsets.only(left: 10.0),
+                              child: Text("Ví tiền mặt"),
+                            ),
                           ],
                         )
                       ],
@@ -126,8 +129,8 @@ class _AccountScreenState extends State<AccountScreen> {
               ),
               MaterialButton(
                 onPressed: () {},
-                color: Color(white),
-                padding: EdgeInsets.all(
+                color: const Color(white),
+                padding: const EdgeInsets.all(
                   10,
                 ),
                 child: Row(

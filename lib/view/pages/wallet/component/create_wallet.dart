@@ -36,15 +36,15 @@ class _CreateWalletState extends State<CreateWallet> {
         ],
       ),
       body: Container(
-        color: Color(grey),
+        color: const Color(grey),
         child: Column(
           children: [
             Container(
-              padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
               color: Colors.white,
               child: Column(
                 children: [
-                  Text("Số dư ban đầu"),
+                  const Text("Số dư ban đầu"),
                   textFormFieldCreateMoney(
                       controller: controller,
                       color: const Color(primary))

@@ -31,8 +31,7 @@ class _CreateScreenState extends State<CreateScreen> {
 
   @override
   void initState() {
-    connectDatabase();
-
+    connectDatabase(); 
     super.initState();
   }
 

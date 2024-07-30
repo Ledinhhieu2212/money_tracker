@@ -131,7 +131,7 @@ class _HomeScreenState extends State<HomeScreen> {
     required BuildContext context,
   }) {
     return GestureDetector(
-      onTap: () => Get.to(const NotificationPage()),
+      onTap: () {},
       child: Container(
         margin: const EdgeInsets.all(10),
         padding: const EdgeInsets.all(10),
@@ -189,9 +189,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
       body: transactions.isEmpty
-          ? Container(
-            child: Center(child: Text("Chưa có thông tin giao dịch!")),
-          )
+          ? const Center(child: Text("Chưa có thông tin giao dịch!"))
           : ListView.builder(
               itemCount: transactions.length,
               itemBuilder: (context, index) {

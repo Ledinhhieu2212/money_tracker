@@ -145,7 +145,7 @@ class TransactionService {
     );
   }
 
-  Future<void> delete(String id) async {
+  Future<void> delete(int id) async {
     await db.delete("transactions", where: "id=?", whereArgs: [id]);
   }
 
