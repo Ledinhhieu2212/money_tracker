@@ -7,22 +7,22 @@ import 'package:money_tracker/widgets/config.dart';
 import 'package:money_tracker/view/pages/wallet/component/create_wallet.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class AccountScreen extends StatefulWidget {
-  final SharedPreferences preferences;
-  const AccountScreen({super.key, required this.preferences});
+class WalletScreen extends StatefulWidget {
+  const WalletScreen({super.key});
 
   @override
-  State<AccountScreen> createState() => _AccountScreenState();
+  State<WalletScreen> createState() => _WalletScreenState();
 }
 
-class _AccountScreenState extends State<AccountScreen> {
+class _WalletScreenState extends State<WalletScreen> {
   double price = 0;
   final styleText = const TextStyle(
     color: Colors.white,
     fontWeight: FontWeight.bold,
   );
-  void _loadingHome() {
-    price =  double.parse(widget.preferences.getString('so_du')!);
+  void _loadingHome() async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    price = double.parse(preferences.getString('so_du')!);
     setState(() {});
   }
 
@@ -33,7 +33,7 @@ class _AccountScreenState extends State<AccountScreen> {
       width: getScreenWidth(context),
       child: Center(
         child: RichText(
-          text:  TextSpan(
+          text: TextSpan(
               text: "Tổng tiền: $price",
               style: const TextStyle(
                   fontSize: 17,

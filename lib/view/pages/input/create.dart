@@ -4,14 +4,15 @@ import 'package:money_tracker/constants/app_colors.dart';
 import 'package:money_tracker/model/transaction.dart';
 import 'package:money_tracker/services/transaction_service.dart';
 import 'package:get/get.dart';
+import 'package:money_tracker/view/components/splash.dart';
+import 'package:money_tracker/widgets/config.dart';
 import 'package:money_tracker/widgets/text_field.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:toggle_switch/toggle_switch.dart';
 import 'package:uuid/uuid.dart';
 
 class CreateScreen extends StatefulWidget {
-  final SharedPreferences preferences;
-  const CreateScreen({super.key, required this.preferences});
+  const CreateScreen({super.key});
 
   @override
   State<CreateScreen> createState() => _CreateScreenState();
@@ -20,18 +21,22 @@ class CreateScreen extends StatefulWidget {
 class _CreateScreenState extends State<CreateScreen> {
   late TransactionService service;
   var uuid = Uuid();
+  String userID = '';
   final _formKey = GlobalKey<FormState>();
   TextEditingController _money = TextEditingController();
   TextEditingController _date = TextEditingController();
   TextEditingController _description = TextEditingController();
   String _type = '0';
   connectDatabase() async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    userID = preferences.getString('ma_nguoi_dung')!;
     service = TransactionService(await getDatabase());
+    setState(() {});
   }
 
   @override
   void initState() {
-    connectDatabase(); 
+    connectDatabase();
     super.initState();
   }
 
@@ -55,6 +60,10 @@ class _CreateScreenState extends State<CreateScreen> {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_sharp),
+          onPressed: () => GetOffPage(page: const SplashScreen()),
+        ),
         title: const Text(
           "Tạo giao dịch",
           style: TextStyle(fontSize: 22),
@@ -76,8 +85,7 @@ class _CreateScreenState extends State<CreateScreen> {
                   children: [
                     const Text("Số tiền"),
                     textFormFieldCreateMoney(
-                        controller: _money,
-                        color:   Colors.red  ),
+                        controller: _money, color: Colors.red),
                   ],
                 ),
               ),
@@ -140,8 +148,6 @@ class _CreateScreenState extends State<CreateScreen> {
                     if (_formKey.currentState!.validate()) {
                       // Process the data, for example, add the product to a list
                       // or send it to an API
-                      String userID =
-                          widget.preferences.getString('ma_nguoi_dung')!;
                       service.insert(Transaction(
                           uuid.v4().hashCode,
                           _money.text,

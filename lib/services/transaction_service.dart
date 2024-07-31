@@ -38,7 +38,13 @@ class TransactionService {
             'transaction_type': transaction_type as String,
           } in transaction)
         modelTransaction.Transaction(
-            id, money, id_user, dateTime, description, transaction_type),
+          id,
+          money,
+          id_user,
+          dateTime,
+          description,
+          transaction_type,
+        ),
     ];
   }
 
@@ -78,12 +84,11 @@ class TransactionService {
     ];
   }
 
-  Future<double> totalPriceInCome(
-      String UserId) async {
+  Future<double> totalPriceInCome(String UserId) async {
     final List<Map<String, Object?>> transaction = await db.query(
         "transactions",
         where: "id_user like ? AND transaction_type = '1'",
-        whereArgs: ["%$UserId%" ]);
+        whereArgs: ["%$UserId%"]);
     double totalMoney = 0.0;
 
     List<modelTransaction.Transaction> transactions = [

@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:flutter/material.dart';
 import 'package:money_tracker/constants/localization.dart';
 import 'package:money_tracker/constants/app_colors.dart';
 import 'package:money_tracker/view/components/splash.dart';
@@ -21,7 +21,7 @@ class App extends StatelessWidget {
       theme: ThemeData(
         appBarTheme: const AppBarTheme(
           color: Color(blue),
-          titleTextStyle: TextStyle(color: Color(white)),
+          titleTextStyle: TextStyle(color: Colors.white),
           iconTheme: IconThemeData(color: Colors.white),
         ),
       ),

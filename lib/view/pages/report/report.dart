@@ -1,13 +1,11 @@
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:flutter/material.dart';
 import 'package:money_tracker/constants/app_style.dart';
 import 'package:money_tracker/constants/app_colors.dart';
 import 'package:money_tracker/widgets/box/box_text_icon.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class ReportScreen extends StatelessWidget {
-  final SharedPreferences preferences;
-  const ReportScreen({super.key, required this.preferences});
+  const ReportScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +15,7 @@ class ReportScreen extends StatelessWidget {
         title: Center(
           child: Text(
             "report".tr,
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
         ),
       ),
@@ -37,7 +35,7 @@ class ReportScreen extends StatelessWidget {
               title: "financial_statement".tr,
             ),
             BoxTextIcon(
-              icon: Icon(
+              icon: const Icon(
                 Icons.ssid_chart,
                 color: Colors.green,
                 size: 40,
@@ -45,7 +43,7 @@ class ReportScreen extends StatelessWidget {
               title: "expense_income".tr,
             ),
             BoxTextIcon(
-              icon: Icon(
+              icon: const Icon(
                 Icons.monetization_on,
                 color: Colors.red,
                 size: 40,
@@ -53,7 +51,7 @@ class ReportScreen extends StatelessWidget {
               title: "expense_analysis".tr,
             ),
             BoxTextIcon(
-              icon: Icon(
+              icon: const Icon(
                 Icons.monetization_on,
                 color: Colors.green,
                 size: 40,
@@ -69,7 +67,7 @@ class ReportScreen extends StatelessWidget {
               title: "moneny_lent_borrowed".tr,
             ),
             BoxTextIcon(
-              icon: Icon(
+              icon: const Icon(
                 Icons.manage_accounts,
                 color: Colors.blue,
                 size: 40,
@@ -77,7 +75,7 @@ class ReportScreen extends StatelessWidget {
               title: "payee_payer".tr,
             ),
             BoxTextIcon(
-              icon: Icon(
+              icon: const Icon(
                 Icons.calendar_today,
                 color: Colors.greenAccent,
                 size: 40,
@@ -85,7 +83,7 @@ class ReportScreen extends StatelessWidget {
               title: "event".tr,
             ),
             BoxTextIcon(
-              icon: Icon(
+              icon: const Icon(
                 Icons.pie_chart,
                 color: Colors.purpleAccent,
                 size: 40,

@@ -1,12 +1,12 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
+import 'package:money_tracker/view/pages/navigation/navigation_menu.dart';
 import 'package:toggle_switch/toggle_switch.dart';
 import 'package:money_tracker/widgets/config.dart';
 import 'package:money_tracker/model/transaction.dart';
 import 'package:money_tracker/widgets/text_field.dart';
 import 'package:money_tracker/constants/app_style.dart';
 import 'package:money_tracker/constants/app_colors.dart';
-import 'package:money_tracker/view/components/splash.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:money_tracker/services/transaction_service.dart';
 
@@ -63,7 +63,7 @@ class _DetailTransactionState extends State<DetailTransaction> {
                       service.delete(transactionid);
                       ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(content: Text('Xóa thành công!')));
-                      GetToPage(page: () => const SplashScreen());
+                      GetToPage(page: () => const NavigationMenu()); 
                     },
                     child: const Text('Có')),
               ]);
@@ -186,7 +186,7 @@ class _DetailTransactionState extends State<DetailTransaction> {
                       )); 
                       ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(content: Text('Sửa thành công!')));
-                      GetToPage(page: () => const SplashScreen()); 
+                      GetToPage(page: () => const NavigationMenu()); 
                     }
                   },
                   style: ElevatedButton.styleFrom(
@@ -210,8 +210,7 @@ class _DetailTransactionState extends State<DetailTransaction> {
                     style: TextStyle(color: Color(white), fontSize: 20),
                   ),
                   onPressed: () {
-                    showConfirm(context,   widget.transactionid);
-                    
+                    showConfirm(context,   widget.transactionid); 
                   },
                   style: ElevatedButton.styleFrom(
                     iconColor: const Color(white),

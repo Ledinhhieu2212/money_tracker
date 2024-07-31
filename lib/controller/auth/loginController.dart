@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:money_tracker/services/api.dart';
 import 'package:money_tracker/widgets/config.dart';
-import 'package:money_tracker/widgets/navigation_menu.dart';
+import 'package:money_tracker/view/pages/navigation/navigation_menu.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginController extends GetxController {
@@ -93,10 +93,7 @@ class LoginController extends GetxController {
         await prefs.setString('ten_nguoi_dung', json['ten_nguoi_dung']);
         phoneController.clear();
         passwordController.clear();
-        GetOffPage(
-            page: NavigationMenu(
-          preferences: prefs,
-        ));
+        GetOffPage(page: NavigationMenu());
       } else {
         if (phoneController.text.isEmpty || passwordController.text.isEmpty) {
           throw "Không được để chống trường nhập!";
@@ -106,11 +103,11 @@ class LoginController extends GetxController {
         }
       }
     } on SocketException catch (error) {
-      getDialogMesssageError(error: '$error'); 
+      getDialogMesssageError(error: '$error');
     } on HttpException catch (error) {
-      getDialogMesssageError(error: '$error');  
+      getDialogMesssageError(error: '$error');
     } on FormatException catch (error) {
-      getDialogMesssageError(error: '$error');  
+      getDialogMesssageError(error: '$error');
     } catch (error) {
       getDialogMesssageError(error: error.toString());
     }

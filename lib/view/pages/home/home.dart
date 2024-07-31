@@ -10,8 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class HomeScreen extends StatefulWidget {
-  final SharedPreferences preferences;
-  const HomeScreen({super.key, required this.preferences});
+  const HomeScreen({super.key});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -25,8 +24,10 @@ class _HomeScreenState extends State<HomeScreen> {
   List<Transaction> transactions = [];
   late TransactionService service;
   getTransactions() async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
     service = TransactionService(await getDatabase());
-    String id = widget.preferences.getString('ma_nguoi_dung')!;
+    String id = preferences.getString('ma_nguoi_dung')!;
+    username =  preferences.getString('ten_nguoi_dung')!;
     var data = await service.searchOfUser(id);
     incomePrice = await service.totalPriceInCome(id);
     spendingPrice = await service.totalPriceSpending(id);
@@ -40,18 +41,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
   var _obscureText;
   @override
-  void initState() {
-    _loadingHome();
+  void initState() { 
     getTransactions();
     super.initState();
     _obscureText = false;
   }
-
-  void _loadingHome() {
-    username = widget.preferences.getString('ten_nguoi_dung')!;
-    setState(() {});
-  }
-
+ 
   Widget buildTextTotalPrice() {
     return Padding(
       padding: const EdgeInsets.only(bottom: 10.0),
