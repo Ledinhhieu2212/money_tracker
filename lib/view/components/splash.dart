@@ -4,7 +4,7 @@ import 'package:lottie/lottie.dart';
 import 'package:money_tracker/constants/images.dart';
 import 'package:money_tracker/view/pages/auth/login.dart';
 import 'package:money_tracker/widgets/config.dart';
-import 'package:money_tracker/view/pages/navigation/navigation_menu.dart';
+import 'package:money_tracker/view/pages/navigation/navigation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SplashScreen extends StatefulWidget {

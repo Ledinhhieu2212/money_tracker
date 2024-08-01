@@ -6,8 +6,9 @@ import 'package:money_tracker/view/pages/report/report.dart';
 import 'package:money_tracker/view/pages/tool/tools.dart';
 import 'package:money_tracker/view/pages/wallet/wallet.dart';
 
-class NavigationMenu extends StatefulWidget { 
-  const NavigationMenu({super.key });
+class NavigationMenu extends StatefulWidget {
+  final int routerNavigationMenu;
+  const NavigationMenu({super.key, this.routerNavigationMenu = 0});
 
   @override
   State<NavigationMenu> createState() => _NavigationMenuState();
@@ -24,11 +25,20 @@ class _NavigationMenuState extends State<NavigationMenu> {
   @override
   void initState() {
     super.initState();
+    selectedTab = widget.routerNavigationMenu;
+    currentScreen = items[selectedTab];
   }
 
+  static const items = [
+    HomeScreen(),
+    WalletScreen(),
+    ReportScreen(),
+    ToolPage()
+  ];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(grey),
       body: PageStorage(
         bucket: bucket,
         child: currentScreen,
@@ -39,7 +49,8 @@ class _NavigationMenuState extends State<NavigationMenu> {
         width: 70,
         padding: const EdgeInsets.all(5),
         decoration: BoxDecoration(
-            color: Colors.white, borderRadius: BorderRadius.circular(100)),
+          borderRadius: BorderRadius.circular(100),
+        ),
         child: FloatingActionButton(
           onPressed: () {
             setState(() {
@@ -47,18 +58,18 @@ class _NavigationMenuState extends State<NavigationMenu> {
               selectedTab = 5;
             });
           },
-          backgroundColor: selectedTab == 5 ? const Color(blue) : Colors.white,
+          backgroundColor: const Color(blue),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(100),
           ),
-          child: Icon(
-            Icons.add,
-            color: selectedTab == 5 ? Colors.white : const Color(blue),
-          ),
+          child: selectedTab == 5
+              ? const Icon(Icons.close, color: Colors.white)
+              : const Icon(Icons.add, color: Colors.white),
         ),
       ),
       bottomNavigationBar: BottomAppBar(
         shape: const CircularNotchedRectangle(),
+        color: Colors.white,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -112,7 +123,7 @@ class _NavigationMenuState extends State<NavigationMenu> {
                     });
                   },
                   child: Icon(
-                    Icons.home,
+                    Icons.bar_chart,
                     color: selectedTab == 2 ? const Color(blue) : Colors.grey,
                   ),
                 ),
@@ -127,7 +138,7 @@ class _NavigationMenuState extends State<NavigationMenu> {
                     });
                   },
                   child: Icon(
-                    Icons.wallet,
+                    Icons.dashboard,
                     color: selectedTab == 3 ? const Color(blue) : Colors.grey,
                   ),
                 ),

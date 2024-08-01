@@ -33,8 +33,10 @@ class Localization extends Translations{
       "link_register_account": "Register account",
       "link_login_account": "Login account", 
       'icon_currency': "\$",
+      'date' : 'Date',
     },
     'vi_VN': {
+      'date' : 'Ngày tạo',
       'hello': "Chào",
       "spending": "Chi tiêu",
       "income": "Thu nhập",

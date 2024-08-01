@@ -8,4 +8,10 @@ class imageBase {
    String food = "assets/image/food.png";
    String coffee = "assets/image/coffee.png";
    String breakfast = "assets/image/breakfast.png";
+   String success = "assets/image/success.svg";
+   String iconSuccess = "assets/image/successgreen.svg";
+   String iconFail = "assets/image/failred.svg";
+   String  fail = "assets/image/fail.svg";
+   String warning = "assets/image/warning.svg";
+   String iconWarning = "assets/image/warningOrange.svg";
 }

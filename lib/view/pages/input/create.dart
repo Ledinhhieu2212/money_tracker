@@ -1,15 +1,16 @@
+import 'package:get/get.dart';
+import 'package:uuid/uuid.dart';
 import 'package:flutter/material.dart';
+import 'package:toggle_switch/toggle_switch.dart';
+import 'package:money_tracker/widgets/config.dart';
+import 'package:money_tracker/model/transaction.dart';
+import 'package:money_tracker/widgets/text_field.dart';
 import 'package:money_tracker/constants/app_style.dart';
 import 'package:money_tracker/constants/app_colors.dart';
-import 'package:money_tracker/model/transaction.dart';
-import 'package:money_tracker/services/transaction_service.dart';
-import 'package:get/get.dart';
-import 'package:money_tracker/view/components/splash.dart';
-import 'package:money_tracker/widgets/config.dart';
-import 'package:money_tracker/widgets/text_field.dart';
+import 'package:money_tracker/widgets/flash_message.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:toggle_switch/toggle_switch.dart';
-import 'package:uuid/uuid.dart';
+import 'package:money_tracker/services/transaction_service.dart';
+import 'package:money_tracker/view/pages/navigation/navigation.dart';
 
 class CreateScreen extends StatefulWidget {
   const CreateScreen({super.key});
@@ -20,8 +21,8 @@ class CreateScreen extends StatefulWidget {
 
 class _CreateScreenState extends State<CreateScreen> {
   late TransactionService service;
-  var uuid = Uuid();
   String userID = '';
+  int id_transaction = 0;
   final _formKey = GlobalKey<FormState>();
   TextEditingController _money = TextEditingController();
   TextEditingController _date = TextEditingController();
@@ -31,7 +32,16 @@ class _CreateScreenState extends State<CreateScreen> {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     userID = preferences.getString('ma_nguoi_dung')!;
     service = TransactionService(await getDatabase());
-    setState(() {});
+    var data = await service.searchOfUser(userID);
+    setState(() {
+      id_transaction = data.length + 1;
+      String date = DateTime.now().toString().split(' ')[0];
+      List<String> parts = date.split('-');
+      String year = parts[0];
+      String month = parts[1];
+      String day = parts[2];
+      _date.text = "$day/$month/$year";
+    });
   }
 
   @override
@@ -43,16 +53,21 @@ class _CreateScreenState extends State<CreateScreen> {
   @override
   Widget build(BuildContext context) {
     Future<void> selectDate() async {
+      DateTime now = DateTime.now();
       DateTime? picked = await showDatePicker(
         context: context,
-        initialDate: DateTime.now(),
+        initialDate: now,
         firstDate: DateTime(2000),
         lastDate: DateTime(2100),
       );
-
       if (picked != null) {
         setState(() {
-          _date.text = picked.toString().split(" ")[0];
+          String date = picked.toString().split(' ')[0];
+          List<String> parts = date.split('-');
+          String year = parts[0];
+          String month = parts[1];
+          String day = parts[2];
+          _date.text = "$day/$month/$year";
         });
       }
     }
@@ -60,10 +75,6 @@ class _CreateScreenState extends State<CreateScreen> {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_sharp),
-          onPressed: () => GetOffPage(page: const SplashScreen()),
-        ),
         title: const Text(
           "Tạo giao dịch",
           style: TextStyle(fontSize: 22),
@@ -123,9 +134,9 @@ class _CreateScreenState extends State<CreateScreen> {
                 padding: const EdgeInsets.all(20.0),
                 child: TextField(
                   controller: _date,
-                  decoration: const InputDecoration(
-                    labelText: 'Date',
-                    prefixIcon: Icon(Icons.calendar_today),
+                  decoration: InputDecoration(
+                    labelText: 'date'.tr,
+                    prefixIcon: const Icon(Icons.calendar_today),
                   ),
                   readOnly: true,
                   onTap: () {
@@ -146,20 +157,25 @@ class _CreateScreenState extends State<CreateScreen> {
                   ),
                   onPressed: () {
                     if (_formKey.currentState!.validate()) {
-                      // Process the data, for example, add the product to a list
-                      // or send it to an API
-                      service.insert(Transaction(
-                          uuid.v4().hashCode,
-                          _money.text,
-                          userID,
-                          _date.text,
-                          _description.text,
-                          _type));
-                      ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Thêm thành công!')));
-                      _money.clear();
-                      _date.clear();
-                      _description.clear();
+                      if (_money.text.isEmpty ||
+                          _date.text.isEmpty ||
+                          _description.text.isEmpty) {
+                        buildErrorMessage(
+                            "Lỗi", "Không được để trống mục tạo!", context);
+                      } else {
+                        service.insert(Transaction(id_transaction, _money.text,
+                            userID, _date.text, _description.text, _type));
+
+                        buildSuccessMessage("Thành công!",
+                            "Thành công tạo giao dịch.", context);
+                        _money.clear();
+                        _date.clear();
+                        _description.clear();
+                        GetToPage();
+                      }
+                    } else {
+                      buildWarningMessage(
+                          "Lỗi!", "Không thể tạo mới giao dịch.", context);
                     }
                   },
                   style: ElevatedButton.styleFrom(
@@ -171,6 +187,9 @@ class _CreateScreenState extends State<CreateScreen> {
                   ),
                 ),
               ),
+              Container(
+                child: Row(),
+              )
             ],
           ),
         ),

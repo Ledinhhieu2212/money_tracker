@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
-import 'package:money_tracker/view/pages/navigation/navigation_menu.dart';
+import 'package:money_tracker/view/pages/navigation/navigation.dart';
+import 'package:money_tracker/widgets/flash_message.dart';
 import 'package:toggle_switch/toggle_switch.dart';
 import 'package:money_tracker/widgets/config.dart';
 import 'package:money_tracker/model/transaction.dart';
@@ -22,6 +23,7 @@ class _DetailTransactionState extends State<DetailTransaction> {
   int? _currentIndex;
   late SharedPreferences prefs;
   late TransactionService service;
+
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _date = TextEditingController();
   final TextEditingController _price = TextEditingController();
@@ -45,7 +47,7 @@ class _DetailTransactionState extends State<DetailTransaction> {
     super.initState();
   }
 
- void showConfirm(BuildContext context, int transactionid) {
+  void showConfirm(BuildContext context, int transactionid) {
     showDialog(
         context: context,
         builder: (context) {
@@ -61,14 +63,15 @@ class _DetailTransactionState extends State<DetailTransaction> {
                 TextButton(
                     onPressed: () {
                       service.delete(transactionid);
-                      ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Xóa thành công!')));
-                      GetToPage(page: () => const NavigationMenu()); 
+                      buildSuccessMessage(
+                          "Thành công!", "Xóa thành công", context);
+                      GetToPage(page: () => const NavigationMenu());
                     },
                     child: const Text('Có')),
               ]);
         });
   }
+
   @override
   Widget build(BuildContext context) {
     Future<void> selectDate() async {
@@ -81,7 +84,12 @@ class _DetailTransactionState extends State<DetailTransaction> {
 
       if (picked != null) {
         setState(() {
-          _date.text = picked.toString().split(" ")[0];
+          String date = picked.toString().split(' ')[0];
+          List<String> parts = date.split('-');
+          String year = parts[0];
+          String month = parts[1];
+          String day = parts[2];
+          _date.text = "$day/$month/$year";
         });
       }
     }
@@ -176,17 +184,27 @@ class _DetailTransactionState extends State<DetailTransaction> {
                   ),
                   onPressed: () {
                     if (_formKey.currentState!.validate()) {
-                      service.update(Transaction(
-                        widget.transactionid,
-                        _price.text,
-                        prefs.getString('ma_nguoi_dung')!,
-                        _date.text,
-                        _description.text,
-                        _currentIndex.toString(),
-                      )); 
-                      ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Sửa thành công!')));
-                      GetToPage(page: () => const NavigationMenu()); 
+                      if (_price.text.isEmpty ||
+                          _date.text.isEmpty ||
+                          _description.text.isEmpty) {
+                        buildErrorMessage(
+                            "Lỗi", "Không được để trống mục tạo!", context);
+                      } else {
+                        service.update(Transaction(
+                          widget.transactionid,
+                          _price.text,
+                          prefs.getString('ma_nguoi_dung')!,
+                          _date.text,
+                          _description.text,
+                          _currentIndex.toString(),
+                        ));
+                        buildSuccessMessage(
+                            "Thành công!", "Sửa thành công", context);
+                        GetToPage(page: () => const NavigationMenu());
+                      }
+                    } else {
+                      buildWarningMessage(
+                          "Lỗi!", "Không thể sửa giao dịch.", context);
                     }
                   },
                   style: ElevatedButton.styleFrom(
@@ -210,7 +228,7 @@ class _DetailTransactionState extends State<DetailTransaction> {
                     style: TextStyle(color: Color(white), fontSize: 20),
                   ),
                   onPressed: () {
-                    showConfirm(context,   widget.transactionid); 
+                    showConfirm(context, widget.transactionid);
                   },
                   style: ElevatedButton.styleFrom(
                     iconColor: const Color(white),
@@ -228,5 +246,3 @@ class _DetailTransactionState extends State<DetailTransaction> {
     );
   }
 }
-
-

@@ -6,7 +6,6 @@ import 'package:money_tracker/constants/app_colors.dart';
 Widget textFormFieldAuth(
     {required String label,
     required TextEditingController controller,
-    
     bool obscureTextBool = false}) {
   return Padding(
     padding: const EdgeInsets.symmetric(vertical: 15.0),
@@ -23,12 +22,13 @@ Widget textFormFieldAuth(
 
 Widget textFormFieldCreateMoney(
     {required TextEditingController controller,
-    Color color = const Color(black), }) {
+    Color color = const Color(black),
+    String error = ''}) {
   return Stack(
     children: [
       Padding(
         padding: const EdgeInsets.only(right: 20),
-        child: TextField(
+        child: TextFormField(
           controller: controller,
           textAlign: TextAlign.end,
           obscureText: false,
@@ -45,7 +45,8 @@ Widget textFormFieldCreateMoney(
             focusedBorder: const UnderlineInputBorder(
               borderSide: BorderSide(color: Colors.grey, width: 0.8),
             ),
-            hintStyle: TextStyle(color: color, fontSize: 30, fontWeight: FontWeight.bold),
+            hintStyle: TextStyle(
+                color: color, fontSize: 30, fontWeight: FontWeight.bold),
           ),
         ),
       ),
@@ -55,15 +56,12 @@ Widget textFormFieldCreateMoney(
         child: Text(
           "icon_currency".tr,
           style: TextStyle(
-            fontSize: 25,
-            decoration: TextDecoration.underline,
-            color: color,
-            fontWeight: FontWeight.bold
-          ),
+              fontSize: 25,
+              decoration: TextDecoration.underline,
+              color: color,
+              fontWeight: FontWeight.bold),
         ),
       )
     ],
   );
 }
-
-

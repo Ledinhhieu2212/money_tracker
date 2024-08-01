@@ -27,7 +27,7 @@ class TransactionService {
 
   Future<List<modelTransaction.Transaction>> getAll() async {
     final List<Map<String, Object?>> transaction =
-        await db.query("transactions");
+        await db.query("transactions", orderBy: 'id DESC');
     return [
       for (final {
             'id': id as int,
@@ -69,7 +69,8 @@ class TransactionService {
     final List<Map<String, Object?>> transaction = await db.query(
         "transactions",
         where: "id_user like ?",
-        whereArgs: ["%$UserId%"]);
+        whereArgs: ["%$UserId%"],
+        orderBy: 'id DESC');
     return [
       for (final {
             'id': id as int,

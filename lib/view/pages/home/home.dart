@@ -1,4 +1,4 @@
-import 'package:money_tracker/view/components/detail_transaction.dart';
+import 'package:money_tracker/view/pages/input/detail_transaction.dart';
 import 'package:money_tracker/services/transaction_service.dart';
 import 'package:money_tracker/view/components/notification.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -27,32 +27,30 @@ class _HomeScreenState extends State<HomeScreen> {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     service = TransactionService(await getDatabase());
     String id = preferences.getString('ma_nguoi_dung')!;
-    username =  preferences.getString('ten_nguoi_dung')!;
+    username = preferences.getString('ten_nguoi_dung')!;
     var data = await service.searchOfUser(id);
     incomePrice = await service.totalPriceInCome(id);
     spendingPrice = await service.totalPriceSpending(id);
     setState(() {
       transactions = data;
-      for (final t in transactions) {
-        price += double.parse(t.money);
-      }
+      price = incomePrice - spendingPrice;
     });
   }
 
   var _obscureText;
   @override
-  void initState() { 
+  void initState() {
     getTransactions();
     super.initState();
     _obscureText = false;
   }
- 
+
   Widget buildTextTotalPrice() {
     return Padding(
       padding: const EdgeInsets.only(bottom: 10.0),
       child: RichText(
         text: TextSpan(
-          text: _obscureText ? "$price" : "***000 ",
+          text: _obscureText ? "$price " : "***000 ",
           style: const TextStyle(
               fontWeight: FontWeight.bold, color: Color(primary), fontSize: 30),
           children: const <TextSpan>[
@@ -125,31 +123,27 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildContainterPrice({
     required BuildContext context,
   }) {
-    return GestureDetector(
-      onTap: () {},
-      child: Container(
-        margin: const EdgeInsets.all(10),
-        padding: const EdgeInsets.all(10),
-        decoration: BoxDecoration(
-          color: const Color(white), // Màu nền của Container
-          borderRadius:
-              BorderRadius.circular(12.0), // Bo tròn góc của Container
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                buildTextTotalPrice(),
-                buitlTextSpending(),
-                buitlTextComein(),
-              ],
-            ),
-            buildVisibilityButton()
-          ],
-        ),
+    return Container(
+      margin: const EdgeInsets.all(10),
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: const Color(white), // Màu nền của Container
+        borderRadius: BorderRadius.circular(12.0), // Bo tròn góc của Container
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              buildTextTotalPrice(),
+              buitlTextSpending(),
+              buitlTextComein(),
+            ],
+          ),
+          buildVisibilityButton()
+        ],
       ),
     );
   }
@@ -159,8 +153,8 @@ class _HomeScreenState extends State<HomeScreen> {
     BuildContext context,
   ) {
     return Scaffold(
+      backgroundColor: const Color(grey),
       appBar: AppBar(
-        // backgroundColor: linearGradient(),
         automaticallyImplyLeading: false,
         title: Text(
           '${'hello'.tr} $username!',
@@ -168,12 +162,8 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         actions: [
           IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.cached),
-          ),
-          IconButton(
             onPressed: () {
-              GetToPage(page: const NotificationPage());
+              GetToPage(page: () => NotificationPage());
             },
             icon: const Icon(Icons.notifications),
           )

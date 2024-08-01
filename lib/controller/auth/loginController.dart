@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:money_tracker/services/api.dart';
 import 'package:money_tracker/widgets/config.dart';
-import 'package:money_tracker/view/pages/navigation/navigation_menu.dart';
+import 'package:money_tracker/view/pages/navigation/navigation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginController extends GetxController {

@@ -59,7 +59,7 @@ class ReportScreen extends StatelessWidget {
               title: "income_analysis".tr,
             ),
             BoxTextIcon(
-              icon: Icon(
+              icon: const Icon(
                 Icons.checklist,
                 color: Colors.orange,
                 size: 40,
