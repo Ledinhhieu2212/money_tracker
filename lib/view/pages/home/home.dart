@@ -1,11 +1,9 @@
+import 'package:money_tracker/constants/images.dart';
+import 'package:money_tracker/controller/homeController.dart';
 import 'package:money_tracker/view/pages/input/detail_transaction.dart';
-import 'package:money_tracker/services/transaction_service.dart';
-import 'package:money_tracker/view/components/notification.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:money_tracker/view/widgets/notification.dart';
 import 'package:money_tracker/constants/app_colors.dart';
-import 'package:money_tracker/model/transaction.dart';
-import 'package:money_tracker/widgets/config.dart';
+import 'package:money_tracker/view/widgets/config.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -17,31 +15,12 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  String username = '';
-  double price = 0.00;
-  double incomePrice = 0.00;
-  double spendingPrice = 0.00;
-  List<Transaction> transactions = [];
-  late TransactionService service;
-  getTransactions() async {
-    SharedPreferences preferences = await SharedPreferences.getInstance();
-    service = TransactionService(await getDatabase());
-    String id = preferences.getString('ma_nguoi_dung')!;
-    username = preferences.getString('ten_nguoi_dung')!;
-    var data = await service.searchOfUser(id);
-    incomePrice = await service.totalPriceInCome(id);
-    spendingPrice = await service.totalPriceSpending(id);
-    setState(() {
-      transactions = data;
-      price = incomePrice - spendingPrice;
-    });
-  }
-
+  final HomeController h = Get.put(HomeController());
   var _obscureText;
   @override
   void initState() {
-    getTransactions();
     super.initState();
+    setState(() {});
     _obscureText = false;
   }
 
@@ -50,7 +29,7 @@ class _HomeScreenState extends State<HomeScreen> {
       padding: const EdgeInsets.only(bottom: 10.0),
       child: RichText(
         text: TextSpan(
-          text: _obscureText ? "$price " : "***000 ",
+          text: _obscureText ? "${h.price.value} " : "***000 ",
           style: const TextStyle(
               fontWeight: FontWeight.bold, color: Color(primary), fontSize: 30),
           children: const <TextSpan>[
@@ -72,7 +51,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return RichText(
       text: TextSpan(
           text:
-              "${'spending'.tr}: ${_obscureText ? '$spendingPrice ' : "***000 "}",
+              "${'spending'.tr}: ${_obscureText ?  '${h.spendingPrice.value} ' : "***000 "}",
           style: const TextStyle(color: Colors.red),
           children: const [
             TextSpan(
@@ -89,7 +68,8 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget buitlTextComein() {
     return RichText(
       text: TextSpan(
-        text: "${'income'.tr}: ${_obscureText ? '$incomePrice ' : "***000 "}",
+        text:
+            "${'income'.tr}: ${_obscureText ? '${h.incomePrice.value} ' : "***000 "}",
         style: const TextStyle(color: Colors.green),
         children: const [
           TextSpan(
@@ -108,14 +88,15 @@ class _HomeScreenState extends State<HomeScreen> {
     return Column(
       children: [
         IconButton(
-            padding: const EdgeInsets.all(8.0),
-            enableFeedback: false,
-            onPressed: () {
-              setState(() {
-                _obscureText = !_obscureText;
-              });
-            },
-            icon: Icon(_obscureText ? Icons.visibility : Icons.visibility_off)),
+          padding: const EdgeInsets.all(8.0),
+          enableFeedback: false,
+          onPressed: () {
+            setState(() {
+              _obscureText = !_obscureText;
+            });
+          },
+          icon: Icon(_obscureText ? Icons.visibility : Icons.visibility_off),
+        ),
       ],
     );
   }
@@ -127,12 +108,12 @@ class _HomeScreenState extends State<HomeScreen> {
       margin: const EdgeInsets.all(10),
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
-        color: const Color(white), // Màu nền của Container
-        borderRadius: BorderRadius.circular(12.0), // Bo tròn góc của Container
+        color: const Color(white),
+        borderRadius: BorderRadius.circular(12.0),
       ),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -142,7 +123,7 @@ class _HomeScreenState extends State<HomeScreen> {
               buitlTextComein(),
             ],
           ),
-          buildVisibilityButton()
+          buildVisibilityButton(),
         ],
       ),
     );
@@ -156,10 +137,15 @@ class _HomeScreenState extends State<HomeScreen> {
       backgroundColor: const Color(grey),
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: Text(
-          '${'hello'.tr} $username!',
-          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-        ),
+        title: Obx(() {
+          return Text(
+            '${'hello'.tr} ${h.username.value}!',
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          );
+        }),
         actions: [
           IconButton(
             onPressed: () {
@@ -169,67 +155,222 @@ class _HomeScreenState extends State<HomeScreen> {
           )
         ],
         bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(110.0),
+          preferredSize: Size.fromHeight(110.0),
           child: _buildContainterPrice(context: context),
         ),
       ),
-      body: transactions.isEmpty
-          ? const Center(child: Text("Chưa có thông tin giao dịch!"))
-          : ListView.builder(
-              itemCount: transactions.length,
-              itemBuilder: (context, index) {
-                return GestureDetector(
-                  onTap: () => GetToPage(
-                    page: DetailTransaction(
-                        transactionid: transactions[index].id),
-                  ),
-                  child: Card(
-                      margin: const EdgeInsets.symmetric(
-                          vertical: 5, horizontal: 10),
-                      color: Colors.white,
-                      child: Container(
-                        padding: const EdgeInsets.all(20.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Row(
-                              children: [
-                                CircleAvatar(
-                                  backgroundColor:
-                                      transactions[index].transaction_type ==
-                                              '0'
-                                          ? Colors.red
-                                          : Colors.green,
-                                  child: const FaIcon(
-                                    FontAwesomeIcons.dollarSign,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.only(left: 8.0),
-                                  child: Text(
-                                    transactions[index].description,
-                                    style: const TextStyle(fontSize: 17),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Text(
-                              '${transactions[index].transaction_type == '0' ? '- ' : '+ '}${transactions[index].money}đ',
-                              style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                  color: transactions[index].transaction_type ==
-                                          '0'
-                                      ? Colors.red
-                                      : Colors.green),
-                            )
-                          ],
+      body: Obx(
+        () {
+          if (h.wallets.isEmpty) {
+            return Center(child: Text('Không có ví'));
+          } else {
+            return RefreshIndicator(
+              onRefresh: h.refreshWallets, // Gọi phương thức làm mới ví
+              child: Column(
+                children: [
+                  Container(
+                    height: 40,
+                    color: Colors.white,
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                    child: const Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Icon(
+                          Icons.filter_alt_outlined,
+                          color: Colors.grey,
+                          size: 30,
                         ),
-                      )),
-                );
-              },
-            ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: h.wallets.length,
+                      itemBuilder: (context, index) {
+                        var wallet = h.wallets[index];
+                        var transactions = h.getTransactionsOfWallet(
+                          idWallet: h.wallets[index].id_wallet,
+                          t: h.transactions,
+                        );
+
+                        bool isExpanded = h.expandedIndexes.contains(index);
+                        return Column(
+                          children: [
+                            Container(
+                              height: 60,
+                              margin:
+                                  const EdgeInsets.symmetric(horizontal: 10),
+                              child: ElevatedButton.icon(
+                                style: ElevatedButton.styleFrom(
+                                  shape: ContinuousRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 20,
+                                    vertical: 5,
+                                  ),
+                                  backgroundColor: Colors.white,
+                                ),
+                                icon: CircleAvatar(
+                                  child: Image.asset(imageBase()
+                                      .getIconWallets()[wallet.icon]),
+                                ),
+                                label: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Padding(
+                                      padding:
+                                          const EdgeInsets.only(left: 10.0),
+                                      child: Text(
+                                        wallet.description,
+                                        style: const TextStyle(
+                                          color: Color(black),
+                                        ),
+                                      ),
+                                    ),
+                                    AnimatedRotation(
+                                      turns: isExpanded ? -0.25 : 0.25,
+                                      duration:
+                                          const Duration(milliseconds: 500),
+                                      child: const Icon(
+                                        Icons.arrow_back_ios,
+                                        size: 12,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    h.toggleExpanded(index);
+                                  });
+                                },
+                              ),
+                            ),
+                            if (isExpanded)
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 10, vertical: 5),
+                                child: transactions.isEmpty
+                                    ? Container(
+                                        width: double.infinity,
+                                        color: Colors.white,
+                                        padding:
+                                            EdgeInsets.symmetric(vertical: 5),
+                                        child: Center(
+                                            child: Text(
+                                                'Không có giao dịch trong ví')))
+                                    : ListView.builder(
+                                        shrinkWrap: true,
+                                        physics:
+                                            const NeverScrollableScrollPhysics(),
+                                        itemCount: transactions.length,
+                                        itemBuilder:
+                                            (context, transactionIndex) {
+                                          var transaction =
+                                              transactions[transactionIndex];
+
+                                          bool isType = h.getTypeTransaction(
+                                              type:
+                                                  transaction.transaction_type);
+                                          return MaterialButton(
+                                            onPressed: () {
+                                              GetToPage(
+                                                page: () => DetailTransaction(
+                                                    transactionid:
+                                                        transaction.id),
+                                              );
+                                            },
+                                            child: Container(
+                                              margin: EdgeInsets.only(top: 5),
+                                              decoration: BoxDecoration(
+                                                color: Colors.white,
+                                                borderRadius:
+                                                    BorderRadius.circular(10),
+                                              ),
+                                              width: double.infinity,
+                                              padding: EdgeInsets.symmetric(
+                                                  horizontal: 10, vertical: 10),
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: [
+                                                  Row(
+                                                    children: [
+                                                      isType
+                                                          ? const CircleAvatar(
+                                                              backgroundColor:
+                                                                  Colors.green,
+                                                              child: Icon(
+                                                                Icons
+                                                                    .attach_money,
+                                                                color: Colors
+                                                                    .white,
+                                                              ))
+                                                          : const CircleAvatar(
+                                                              backgroundColor:
+                                                                  Colors.red,
+                                                              child: Icon(
+                                                                Icons
+                                                                    .attach_money,
+                                                                color: Colors
+                                                                    .white,
+                                                              )),
+                                                      Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .only(
+                                                                  left: 15.0),
+                                                          child: Text(
+                                                            transaction
+                                                                .description,
+                                                            style: TextStyle(
+                                                              fontSize: 20,
+                                                            ),
+                                                          )),
+                                                    ],
+                                                  ),
+                                                  isType
+                                                      ? Text(
+                                                          '+${transaction.money}đ',
+                                                          style: const TextStyle(
+                                                              color:
+                                                                  Colors.green,
+                                                              fontSize: 25,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold),
+                                                        )
+                                                      : Text(
+                                                          '-${transaction.money}đ',
+                                                          style: const TextStyle(
+                                                              color: Colors.red,
+                                                              fontSize: 25,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold),
+                                                        )
+                                                ],
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                      ),
+                              ),
+                          ],
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }
+        },
+      ),
     );
   }
 }

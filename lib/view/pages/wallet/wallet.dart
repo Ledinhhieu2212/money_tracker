@@ -2,12 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:money_tracker/constants/app_style.dart';
 import 'package:money_tracker/constants/app_colors.dart';
 import 'package:money_tracker/constants/images.dart';
+import 'package:money_tracker/model/user.dart';
 import 'package:money_tracker/model/wallet.dart';
+import 'package:money_tracker/services/share_preference.dart';
 import 'package:money_tracker/services/wallet_service.dart';
 import 'package:money_tracker/view/pages/wallet/widgets/edit_delete_wallet.dart';
-import 'package:money_tracker/widgets/config.dart';
+import 'package:money_tracker/view/widgets/config.dart';
 import 'package:money_tracker/view/pages/wallet/widgets/create_wallet.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class WalletScreen extends StatefulWidget {
   const WalletScreen({super.key});
@@ -20,18 +21,16 @@ class _WalletScreenState extends State<WalletScreen> {
   int money = 0;
   double price = 0.0;
   String name = '';
-  List<Wallet> wallet = [];
   late WalletService service;
+  List<Wallet> wallet = [];
   final styleText = const TextStyle(
     color: Colors.white,
     fontWeight: FontWeight.bold,
   );
   _loadingHome() async {
-    SharedPreferences preferences = await SharedPreferences.getInstance();
-    service = WalletService(await getDatabase());
-    price = double.parse(preferences.getString('so_du')!);
-    String id = preferences.getString('ma_nguoi_dung')!;
-    var data = await service.searchWallets(int.parse(id));
+    int id = await UserPreference().getUserID();
+    service = WalletService(await getDatabaseWallet());
+    List<Wallet> data = await service.searchWallets(id);
     setState(() {
       wallet = data;
       for (final t in wallet) {
@@ -82,7 +81,9 @@ class _WalletScreenState extends State<WalletScreen> {
                 return GestureDetector(
                   onTap: () => {
                     GetToPage(
-                      page: () => EditDeleteWallet(idWallet: wallet[index].id_wallet,),
+                      page: () => EditDeleteWallet(
+                        idWallet: wallet[index].id_wallet,
+                      ),
                     ),
                   },
                   child: Card(
@@ -93,9 +94,10 @@ class _WalletScreenState extends State<WalletScreen> {
                       child: Row(
                         children: [
                           CircleAvatar(
+                            backgroundColor: Colors.transparent,
                             child: Image.asset(
-                              imageBase().wallet,
-                              width: 26,
+                              imageBase().getIconWallets()[wallet[index].icon],
+                              width: 50,
                             ),
                           ),
                           Row(
@@ -112,7 +114,8 @@ class _WalletScreenState extends State<WalletScreen> {
                                           fontWeight: FontWeight.w600),
                                     ),
                                     Text(
-                                        "Tiền trong ví: ${wallet[index].money_price} đ"),
+                                        "Tiền đầu lập: ${wallet[index].money_price} đ"),
+                                    Text("Tổng: ${wallet[index].money_price}")
                                   ],
                                 ),
                               )

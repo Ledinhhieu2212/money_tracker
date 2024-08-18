@@ -1,22 +1,21 @@
- 
- 
 class Transaction {
   int id;
-  String money;
-  String id_user;
+  int money;
+  int id_user;
+  int id_wallet;
   String dateTime;
   String description;
-  String transaction_type;
+  int transaction_type;
 
-  Transaction(
-      this.id,
-      this.money,
-      this.id_user,
-      this.dateTime,
-      this.description,
-      this.transaction_type);
-
-
+  Transaction({
+    required this.id,
+    required this.money,
+    required this.id_wallet,
+    required this.id_user,
+    required this.dateTime,
+    required this.description,
+    required this.transaction_type,
+  });
 
   Map<String, Object?> toMap() {
     return {
@@ -24,6 +23,7 @@ class Transaction {
       'money': money,
       'id_user': id_user,
       'dateTime': dateTime,
+      'id_wallet': id_wallet,
       'description': description,
       'transaction_type': transaction_type,
     };

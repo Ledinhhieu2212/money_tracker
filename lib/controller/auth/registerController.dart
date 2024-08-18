@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+import 'package:http/http.dart' as http; 
 import 'package:money_tracker/services/api.dart';
-import 'package:money_tracker/widgets/config.dart';
+import 'package:money_tracker/view/widgets/config.dart';
 import 'package:money_tracker/view/pages/auth/login.dart';
 
 class RegisterController extends GetxController {

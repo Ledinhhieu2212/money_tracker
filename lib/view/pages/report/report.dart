@@ -2,7 +2,7 @@ import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:money_tracker/constants/app_style.dart';
 import 'package:money_tracker/constants/app_colors.dart';
-import 'package:money_tracker/widgets/box/box_text_icon.dart';
+import 'package:money_tracker/view/widgets/box/box_text_icon.dart';
 
 class ReportScreen extends StatelessWidget {
   const ReportScreen({super.key});

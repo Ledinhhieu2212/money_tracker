@@ -8,7 +8,7 @@ Future<Database> getDatabase() async {
       openDatabase(join(await getDatabasesPath(), 'bkap_database.db'),
           onCreate: (db, version) {
     return db.execute(
-        'create table IF NOT EXISTS transactions(id INTEGER PRIMARY KEY, id_user TEXT, money TEXT, dateTime TEXT, description TEXT, transaction_type TEXT)');
+        'create table IF NOT EXISTS transactions(id INTEGER PRIMARY KEY, id_user INTEGER,id_wallet INTEGER, money INTEGER, dateTime TEXT, description TEXT, transaction_type INTEGER)');
   }, version: 1);
   return database;
 }
@@ -31,123 +31,164 @@ class TransactionService {
     return [
       for (final {
             'id': id as int,
-            'money': money as String,
-            'id_user': id_user as String,
+            'money': money as int,
+            'id_user': id_user as int,
+            'id_wallet': id_wallet as int,
             'dateTime': dateTime as String,
             'description': description as String,
-            'transaction_type': transaction_type as String,
+            'transaction_type': transaction_type as int,
           } in transaction)
         modelTransaction.Transaction(
-          id,
-          money,
-          id_user,
-          dateTime,
-          description,
-          transaction_type,
+          id: id,
+          money: money,
+          id_user: id_user,
+          dateTime: dateTime,
+          id_wallet: id_wallet,
+          description: description,
+          transaction_type: transaction_type,
         ),
     ];
   }
 
-  Future<List<modelTransaction.Transaction>> search(int id) async {
+  Future<List<modelTransaction.Transaction>> search(
+      {required int transactionID}) async {
     final List<Map<String, Object?>> transaction = await db
-        .query("transactions", where: "id like ?", whereArgs: ["%$id%"]);
+        .query("transactions", where: "id=?", whereArgs: [transactionID]);
     return [
       for (final {
             'id': id as int,
-            'money': money as String,
-            'id_user': id_user as String,
+            'money': money as int,
+            'id_user': id_user as int,
+            'id_wallet': id_wallet as int,
             'dateTime': dateTime as String,
             'description': description as String,
-            'transaction_type': transaction_type as String,
+            'transaction_type': transaction_type as int,
           } in transaction)
         modelTransaction.Transaction(
-            id, money, id_user, dateTime, description, transaction_type),
+          id: id,
+          money: money,
+          id_user: id_user,
+          dateTime: dateTime,
+          id_wallet: id_wallet,
+          description: description,
+          transaction_type: transaction_type,
+        ),
     ];
   }
 
-  Future<List<modelTransaction.Transaction>> searchOfUser(String UserId) async {
+  Future<List<modelTransaction.Transaction>> searchOfUser(
+      {required int userId}) async {
     final List<Map<String, Object?>> transaction = await db.query(
         "transactions",
-        where: "id_user like ?",
-        whereArgs: ["%$UserId%"],
+        where: "id_user=?",
+        whereArgs: [userId],
         orderBy: 'id DESC');
     return [
       for (final {
             'id': id as int,
-            'money': money as String,
-            'id_user': id_user as String,
+            'money': money as int,
+            'id_user': id_user as int,
+            'id_wallet': id_wallet as int,
             'dateTime': dateTime as String,
             'description': description as String,
-            'transaction_type': transaction_type as String,
+            'transaction_type': transaction_type as int,
           } in transaction)
         modelTransaction.Transaction(
-            id, money, id_user, dateTime, description, transaction_type),
+          id: id,
+          money: money,
+          id_user: id_user,
+          dateTime: dateTime,
+          id_wallet: id_wallet,
+          description: description,
+          transaction_type: transaction_type,
+        ),
     ];
   }
 
-  Future<double> totalPriceInCome(String UserId) async {
+  Future<int> totalPriceType(
+      {required int userId, required int typePrice}) async {
     final List<Map<String, Object?>> transaction = await db.query(
         "transactions",
-        where: "id_user like ? AND transaction_type = '1'",
-        whereArgs: ["%$UserId%"]);
-    double totalMoney = 0.0;
+        where: "id_user=? AND transaction_type=?",
+        whereArgs: [userId, typePrice]);
+    int totalMoney = 0;
 
     List<modelTransaction.Transaction> transactions = [
       for (final {
             'id': id as int,
-            'money': money as String,
-            'id_user': id_user as String,
+            'money': money as int,
+            'id_user': id_user as int,
+            'id_wallet': id_wallet as int,
             'dateTime': dateTime as String,
             'description': description as String,
-            'transaction_type': transaction_type as String,
+            'transaction_type': transaction_type as int,
           } in transaction)
         modelTransaction.Transaction(
-            id, money, id_user, dateTime, description, transaction_type),
+          id: id,
+          money: money,
+          id_user: id_user,
+          dateTime: dateTime,
+          id_wallet: id_wallet,
+          description: description,
+          transaction_type: transaction_type,
+        ),
     ];
 
     for (final t in transactions) {
-      totalMoney += double.tryParse(t.money) ?? 0.0;
+      totalMoney += t.money;
     }
-
-    return totalMoney;
+    return totalMoney ?? 0;
   }
 
-  Future<double> totalPriceSpending(String UserId) async {
+  Future<int> totalPriceWalletType(
+      {required int userId,
+      required int typePrice,
+      required int walletID}) async {
     final List<Map<String, Object?>> transaction = await db.query(
         "transactions",
-        where: "id_user like ? AND transaction_type = '0'",
-        whereArgs: ["%$UserId%"]);
-    double totalMoney = 0.0;
+        where: "id_user=? AND transaction_type=? AND id_wallet=?",
+        whereArgs: [userId, typePrice, walletID]);
+    int totalMoney = 0;
 
     List<modelTransaction.Transaction> transactions = [
       for (final {
             'id': id as int,
-            'money': money as String,
-            'id_user': id_user as String,
+            'money': money as int,
+            'id_user': id_user as int,
+            'id_wallet': id_wallet as int,
             'dateTime': dateTime as String,
             'description': description as String,
-            'transaction_type': transaction_type as String,
+            'transaction_type': transaction_type as int,
           } in transaction)
         modelTransaction.Transaction(
-            id, money, id_user, dateTime, description, transaction_type),
+          id: id,
+          money: money,
+          id_user: id_user,
+          dateTime: dateTime,
+          id_wallet: id_wallet,
+          description: description,
+          transaction_type: transaction_type,
+        ),
     ];
 
     for (final t in transactions) {
-      totalMoney += double.tryParse(t.money) ?? 0.0;
+      totalMoney += t.money;
     }
-    return totalMoney;
+    return totalMoney ?? 0;
   }
 
   Future<modelTransaction.Transaction> getById(int id) async {
     final List<Map<String, Object?>> transaction =
         await db.query("transactions", where: 'id=?', whereArgs: [id]);
     return modelTransaction.Transaction(
-      int.parse(transaction.first['id'].toString()),
-      transaction.first['money'].toString(),
-      transaction.first['id_user'].toString(),
-      transaction.first['dateTime'].toString(),
-      transaction.first['description'].toString(),
-      transaction.first['transaction_type'].toString(),
+      id: int.parse(transaction.first['id'].toString()),
+      dateTime: transaction.first['dateTime'].toString(),
+      money: int.parse(transaction.first['money'].toString()),
+      description: transaction.first['description'].toString(),
+      id_user: int.parse(transaction.first['id_user'].toString()),
+      id_wallet: int.parse(transaction.first['id_wallet'].toString()),
+      transaction_type:
+          int.parse(transaction.first['transaction_type'].toString()),
     );
   }
 

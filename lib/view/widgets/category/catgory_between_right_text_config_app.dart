@@ -6,8 +6,12 @@ class CatgoryBetweenConfigApp extends StatelessWidget {
   VoidCallback? onTap;
   String? title;
   String? titleConfig;
-  CatgoryBetweenConfigApp({super.key, required this.onTap, required this.title, required this.titleConfig});
-
+  CatgoryBetweenConfigApp(
+      {super.key,
+      required this.onTap,
+      required this.title,
+      required this.titleConfig});
+  
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -20,7 +24,7 @@ class CatgoryBetweenConfigApp extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-             Text("$title"),
+            Text("$title"),
             RichText(
               text: TextSpan(
                 text: '$titleConfig ',

@@ -2,8 +2,10 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:money_tracker/constants/images.dart';
+import 'package:money_tracker/model/user.dart';
+import 'package:money_tracker/services/share_preference.dart';
 import 'package:money_tracker/view/pages/auth/login.dart';
-import 'package:money_tracker/widgets/config.dart';
+import 'package:money_tracker/view/widgets/config.dart';
 import 'package:money_tracker/view/pages/navigation/navigation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -38,12 +40,16 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   void navigate() {
-    Future.delayed(const Duration(seconds: 5), () async {
-      WidgetsFlutterBinding.ensureInitialized();
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      var id = prefs.getString('ten_nguoi_dung');
-      GetOffAllPage(
-          page: id == null ?  () => LoginScreen() :() =>  NavigationMenu( ));
-    });
+    Future.delayed(
+      const Duration(seconds: 5),
+      () async {
+        WidgetsFlutterBinding.ensureInitialized();
+        String? token = await UserPreference().getToken();
+        GetOffAllPage(
+            page: token == null
+                ? () => const LoginScreen()
+                : () => const NavigationMenu());
+      },
+    );
   }
 }

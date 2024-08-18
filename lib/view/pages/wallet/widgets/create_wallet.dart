@@ -3,14 +3,17 @@ import 'package:get/get.dart';
 import 'package:money_tracker/constants/app_colors.dart';
 import 'package:money_tracker/constants/app_style.dart';
 import 'package:money_tracker/constants/images.dart';
+import 'package:money_tracker/model/transaction.dart';
 import 'package:money_tracker/model/wallet.dart';
+import 'package:money_tracker/services/share_preference.dart';
+import 'package:money_tracker/services/transaction_service.dart';
 import 'package:money_tracker/services/wallet_service.dart';
-import 'package:money_tracker/view/pages/navigation/navigation.dart'; 
-import 'package:money_tracker/widgets/config.dart';
-import 'package:money_tracker/widgets/flash_message.dart';
-import 'package:money_tracker/widgets/text_field.dart';
+import 'package:money_tracker/view/pages/navigation/navigation.dart';
+import 'package:money_tracker/view/widgets/Icon_selection_dialog.dart';
+import 'package:money_tracker/view/widgets/config.dart';
+import 'package:money_tracker/view/widgets/flash_message.dart';
+import 'package:money_tracker/view/widgets/text_field.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:uuid/uuid.dart';
 
 class CreateWallet extends StatefulWidget {
   const CreateWallet({super.key});
@@ -19,22 +22,23 @@ class CreateWallet extends StatefulWidget {
   State<CreateWallet> createState() => _CreateWalletState();
 }
 
-class _CreateWalletState extends State<CreateWallet> { 
-  String userID = '';
+class _CreateWalletState extends State<CreateWallet> {
+  int? userID;
   int id = 1;
-  late WalletService service; 
+  int incomePrice = 0, spendingPrice = 0;
+  late WalletService service;
   List<Wallet> wallet = [];
+
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _wallet = TextEditingController();
   final TextEditingController _money = TextEditingController();
   connectDatabase() async {
-    SharedPreferences preferences = await SharedPreferences.getInstance();
-    userID = preferences.getString('ma_nguoi_dung')!;
-    service = WalletService(await getDatabase());
-    var data = await service.searchWallets(int.parse(userID));
+    userID = await UserPreference().getUserID();
+    service = WalletService(await getDatabaseWallet());
+    var data = await service.searchWallets(userID!);
     setState(() {
-       wallet = data;
-       id = wallet.length + 1;
+      id = data.length + 1;
+      wallet = data;
     });
   }
 
@@ -42,6 +46,23 @@ class _CreateWalletState extends State<CreateWallet> {
   void initState() {
     connectDatabase();
     super.initState();
+  }
+
+  int selectedIcon = 0;
+  void _showIconSelectionDialog() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return IconSelectionDialog(
+          icons: imageBase().getIconWallets(),
+          onIconSelected: (icon) {
+            setState(() {
+              selectedIcon = icon;
+            });
+          },
+        );
+      },
+    );
   }
 
   @override
@@ -86,31 +107,13 @@ class _CreateWalletState extends State<CreateWallet> {
                   children: [
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 15),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Flexible(
-                            flex: 1,
-                            child: CircleAvatar(
-                              backgroundColor: Colors.lightBlue[900],
-                              child: Image.asset(
-                                imageBase().food,
-                                width: 20,
-                              ),
-                            ),
-                          ),
-                          Flexible(
-                            flex: 7,
-                            child: TextField(
-                              controller: _wallet,
-                              decoration: const InputDecoration(
-                                labelText: "Tên ví",
-                                // prefixIcon:
-                              ),
-                            ),
-                          )
-                        ],
+                      child: TextField(
+                        controller: _wallet,
+                        decoration: const InputDecoration(
+                          labelText: "Tên ví",
+                          prefixIcon: Icon(Icons.article),
+                          // prefixIcon:
+                        ),
                       ),
                     ),
                     const SizedBox(
@@ -119,12 +122,15 @@ class _CreateWalletState extends State<CreateWallet> {
                     MaterialButton(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 15, vertical: 10),
-                      onPressed: () {},
+                      onPressed: () {
+                        _showIconSelectionDialog();
+                      },
                       child: Row(
                         children: [
                           CircleAvatar(
-                            backgroundColor: Colors.redAccent,
-                            child: Image.asset(imageBase().wallet),
+                            backgroundColor: Colors.transparent,
+                            child: Image.asset(
+                                imageBase().getIconWallets()[selectedIcon]),
                           ),
                           const Padding(
                             padding: EdgeInsets.only(left: 18.0),
@@ -155,7 +161,7 @@ class _CreateWalletState extends State<CreateWallet> {
                       // Process the data, for example, add the product to a list
                       // or send it to an API
 
-                      if (_wallet.text.isEmpty) { 
+                      if (_wallet.text.isEmpty) {
                         buildErrorMessage(
                             "Lỗi", "Không được để trống mục tạo!", context);
                       } else {
@@ -164,22 +170,26 @@ class _CreateWalletState extends State<CreateWallet> {
                         }
                         service.insert(
                           Wallet(
-                            id,
-                            int.parse(userID),
-                            '123',
-                            int.parse(_money.text),
-                            _wallet.text,
+                            total: int.parse(_money.text),
+                            id_wallet: id,
+                            id_user: userID!,
+                            icon: selectedIcon,
+                            money_price: int.parse(_money.text),
+                            description: _wallet.text,
                           ),
                         );
-                        buildSuccessMessage("Thành công!",
-                            "Thành công tạo ví.", context); 
+                        buildSuccessMessage(
+                            "Thành công!", "Thành công tạo ví.", context);
                         _money.clear();
                         _wallet.clear();
-                        GetToPage(page: () =>  const NavigationMenu(routerNavigationMenu: 1,));
+                        GetOffAllPage(
+                            page: () => const NavigationMenu(
+                                  routerNavigationMenu: 1,
+                                ));
                       }
-                    } else {  
-                      buildWarningMessage("Lỗi!",
-                            "Không thể tạo mới ví!", context);
+                    } else {
+                      buildWarningMessage(
+                          "Lỗi!", "Không thể tạo mới ví!", context);
                     }
                   },
                   style: ElevatedButton.styleFrom(

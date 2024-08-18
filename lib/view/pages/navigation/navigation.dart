@@ -8,7 +8,12 @@ import 'package:money_tracker/view/pages/wallet/wallet.dart';
 
 class NavigationMenu extends StatefulWidget {
   final int routerNavigationMenu;
-  const NavigationMenu({super.key, this.routerNavigationMenu = 0});
+  final int idUser;
+  const NavigationMenu({
+    super.key,
+    this.routerNavigationMenu = 0,
+    this.idUser = 0,
+  });
 
   @override
   State<NavigationMenu> createState() => _NavigationMenuState();

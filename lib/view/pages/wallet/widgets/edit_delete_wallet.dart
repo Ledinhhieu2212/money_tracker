@@ -1,12 +1,17 @@
+import 'package:get/get.dart';
+import 'package:money_tracker/model/transaction.dart';
+import 'package:money_tracker/services/share_preference.dart';
+import 'package:money_tracker/services/transaction_service.dart';
+import 'package:money_tracker/view/widgets/Icon_selection_dialog.dart';
 import 'package:uuid/uuid.dart';
 import 'package:flutter/material.dart';
 import 'package:money_tracker/model/wallet.dart';
-import 'package:money_tracker/widgets/config.dart';
+import 'package:money_tracker/view/widgets/config.dart';
 import 'package:money_tracker/constants/images.dart';
-import 'package:money_tracker/widgets/text_field.dart';
+import 'package:money_tracker/view/widgets/text_field.dart';
 import 'package:money_tracker/constants/app_style.dart';
 import 'package:money_tracker/constants/app_colors.dart';
-import 'package:money_tracker/widgets/flash_message.dart';
+import 'package:money_tracker/view/widgets/flash_message.dart';
 import 'package:money_tracker/services/wallet_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:money_tracker/view/pages/navigation/navigation.dart';
@@ -20,20 +25,30 @@ class EditDeleteWallet extends StatefulWidget {
 }
 
 class _EditDeleteWalletState extends State<EditDeleteWallet> {
-  var uuid = Uuid();
-  String userID = '';
+  int? userID;
   late WalletService service;
+  int selectedIcon = 0;
+  List<Transaction> transactions = [];
+  late TransactionService transactionService;
+  int incomePrice = 0, spendingPrice = 0;
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _wallet = TextEditingController();
   final TextEditingController _money = TextEditingController();
   connectDatabase() async {
-    SharedPreferences preferences = await SharedPreferences.getInstance();
-    userID = preferences.getString('ma_nguoi_dung')!;
-    service = WalletService(await getDatabase());
+    service = WalletService(await getDatabaseWallet());
+    transactionService = TransactionService(await getDatabase());
     Wallet p = await service.getById(widget.idWallet);
+    int income = await transactionService.totalPriceWalletType(
+        userId: p.id_user, typePrice: 1, walletID: p.id_wallet);
+    int spending = await transactionService.totalPriceWalletType(
+        userId: p.id_user, typePrice: 0, walletID: p.id_wallet);
     setState(() {
+      userID = p.id_user;
+      incomePrice = income;
+      spendingPrice = spending;
       _money.text = p.money_price.toString();
       _wallet.text = p.description;
+      selectedIcon = p.icon;
     });
   }
 
@@ -41,6 +56,22 @@ class _EditDeleteWalletState extends State<EditDeleteWallet> {
   void initState() {
     connectDatabase();
     super.initState();
+  }
+
+  void _showIconSelectionDialog() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return IconSelectionDialog(
+          icons: imageBase().getIconWallets(),
+          onIconSelected: (icon) {
+            setState(() {
+              selectedIcon = icon;
+            });
+          },
+        );
+      },
+    );
   }
 
   void showConfirm(BuildContext context, int transactionid) {
@@ -61,7 +92,7 @@ class _EditDeleteWalletState extends State<EditDeleteWallet> {
                       service.delete(transactionid);
                       buildSuccessMessage(
                           "Thành công!", "Xóa thành công", context);
-                      GetToPage(
+                      GetOffAllPage(
                         page: () => const NavigationMenu(
                           routerNavigationMenu: 1,
                         ),
@@ -114,31 +145,13 @@ class _EditDeleteWalletState extends State<EditDeleteWallet> {
                   children: [
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 15),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Flexible(
-                            flex: 1,
-                            child: CircleAvatar(
-                              backgroundColor: Colors.lightBlue[900],
-                              child: Image.asset(
-                                imageBase().food,
-                                width: 20,
-                              ),
-                            ),
-                          ),
-                          Flexible(
-                            flex: 7,
-                            child: TextField(
-                              controller: _wallet,
-                              decoration: const InputDecoration(
-                                labelText: "Tên ví",
-                                // prefixIcon:
-                              ),
-                            ),
-                          )
-                        ],
+                      child: TextField(
+                        controller: _wallet,
+                        decoration: const InputDecoration(
+                          labelText: "Tên ví",
+                          prefixIcon: Icon(Icons.article),
+                          // prefixIcon:
+                        ),
                       ),
                     ),
                     const SizedBox(
@@ -147,12 +160,15 @@ class _EditDeleteWalletState extends State<EditDeleteWallet> {
                     MaterialButton(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 15, vertical: 10),
-                      onPressed: () {},
+                      onPressed: () {
+                        _showIconSelectionDialog();
+                      },
                       child: Row(
                         children: [
                           CircleAvatar(
-                            backgroundColor: Colors.redAccent,
-                            child: Image.asset(imageBase().wallet),
+                            backgroundColor: Colors.transparent,
+                            child: Image.asset(
+                                imageBase().getIconWallets()[selectedIcon]),
                           ),
                           const Padding(
                             padding: EdgeInsets.only(left: 18.0),
@@ -180,16 +196,21 @@ class _EditDeleteWalletState extends State<EditDeleteWallet> {
                   ),
                   onPressed: () {
                     if (_formKey.currentState!.validate()) {
-                      service.update(Wallet(
-                        widget.idWallet,
-                        int.parse(userID),
-                        'abc',
-                        int.parse(_money.text),
-                        _wallet.text,
-                      ));
+                      service.update(
+                        Wallet(
+                          icon: selectedIcon,
+                          description: _wallet.text,
+                          id_user: userID ?? 0,
+                          id_wallet: widget.idWallet,
+                          total: int.parse(_money.text) +
+                              incomePrice -
+                              spendingPrice,
+                          money_price: int.parse(_money.text),
+                        ),
+                      );
                       buildSuccessMessage(
                           "Thành công!", "Sửa thành công", context);
-                      GetToPage(
+                      GetOffAllPage(
                         page: () => const NavigationMenu(
                           routerNavigationMenu: 1,
                         ),

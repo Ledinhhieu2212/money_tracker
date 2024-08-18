@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:money_tracker/controller/auth/registerController.dart';
 import 'package:money_tracker/constants/images.dart';
 import 'package:money_tracker/view/pages/auth/login.dart';
-import 'package:money_tracker/widgets/button.dart';
-import 'package:money_tracker/widgets/config.dart';
-import 'package:money_tracker/widgets/text_field.dart';
+import 'package:money_tracker/view/widgets/button.dart';
+import 'package:money_tracker/view/widgets/config.dart';
+import 'package:money_tracker/view/widgets/text_field.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
 import 'package:money_tracker/constants/app_style.dart';
@@ -22,34 +22,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        backgroundColor: Colors.white,
-        flexibleSpace: Padding(
-          padding: const EdgeInsets.only(right: 8.0, top: 15),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              GestureDetector(
-                onTap: () {},
-                child: SizedBox(
-                  width: 50,
-                  height: 50,
-                  child: Image.asset(imageBase().usa),
-                ),
-              ),
-              GestureDetector(
-                onTap: () {},
-                child: SizedBox(
-                  width: 50,
-                  height: 50,
-                  child: Image.asset(imageBase().vietname),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
       body: Form(
           child: Column(
         children: [
@@ -94,7 +66,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           ),
           TextButton(
             onPressed: () => GetToPage(page: const LoginScreen()),
-            child:  Text("link_login_account".tr),
+            child: Text("link_login_account".tr),
           ),
         ],
       )),

@@ -6,8 +6,8 @@ import 'package:money_tracker/constants/app_colors.dart';
 import 'package:money_tracker/controller/controller.dart';
 import 'package:money_tracker/constants/app_style.dart';
 import 'package:money_tracker/constants/images.dart';
-import 'package:money_tracker/widgets/category/catgory_between_right_text_config_app.dart';
-import 'package:money_tracker/view/components/splash.dart';
+import 'package:money_tracker/view/widgets/category/catgory_between_right_text_config_app.dart';
+import 'package:money_tracker/view/pages/splash/splash.dart';
 
 class SettingScreen extends StatelessWidget {
   const SettingScreen({super.key});

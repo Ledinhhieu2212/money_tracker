@@ -1,24 +1,27 @@
 class Wallet {
-  int id_wallet;
+  int icon;
+  int total;
   int id_user;
+  int id_wallet;
   int money_price;
   String description;
-  String icon;
   // final String? currency;
 
-  Wallet(
-    this.id_wallet,
-    this.id_user,
-    this.icon,
-    this.money_price,
-    this.description,
-  );
+  Wallet({
+    required this.icon,
+    required this.total,
+    required this.id_user,
+    required this.id_wallet,
+    required this.money_price,
+    required this.description,
+  });
 
   Map<String, Object?> toMap() {
     return {
-      'id_wallet': id_wallet,
-      'id_user': id_user,
       'icon': icon,
+      'total': total,
+      'id_user': id_user,
+      'id_wallet': id_wallet,
       'money_price': money_price,
       'description': description,
     };

@@ -1,25 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:money_tracker/constants/app_colors.dart';
-import 'package:money_tracker/view/components/notification.dart';
-import 'package:money_tracker/view/components/setting.dart';
+import 'package:money_tracker/model/user.dart';
+import 'package:money_tracker/services/share_preference.dart';
+import 'package:money_tracker/view/widgets/notification.dart';
+import 'package:money_tracker/view/widgets/setting.dart';
 import 'package:money_tracker/view/pages/auth/login.dart';
-import 'package:money_tracker/widgets/button/button_tool_setting_no_right_icon.dart';
-import 'package:money_tracker/widgets/button/button_tool_setting_right_icon.dart';
-import 'package:money_tracker/widgets/config.dart';
+import 'package:money_tracker/view/widgets/button/button_tool_setting_no_right_icon.dart';
+import 'package:money_tracker/view/widgets/button/button_tool_setting_right_icon.dart';
+import 'package:money_tracker/view/widgets/config.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:get/get.dart';
 
 class ToolPage extends StatelessWidget {
   const ToolPage({super.key});
 
-  void deleteLogin() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.clear();
+  void resetToken() async {
+    UserPreference().removeUser();
   }
 
   logOut() {
-    deleteLogin();
-    GetOffAllPage(page: const LoginScreen());
+    resetToken();
+    GetOffAllPage(page: () => const LoginScreen());
   }
 
   @override
@@ -46,7 +47,10 @@ class ToolPage extends StatelessWidget {
               Row(children: [
                 IconButton(
                   onPressed: () => GetToPage(page: NotificationPage()),
-                  icon: const Icon(Icons.notifications, color: Colors.white,),
+                  icon: const Icon(
+                    Icons.notifications,
+                    color: Colors.white,
+                  ),
                 )
               ])
             ],

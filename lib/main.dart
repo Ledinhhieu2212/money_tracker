@@ -2,7 +2,7 @@ import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:money_tracker/constants/localization.dart';
 import 'package:money_tracker/constants/app_colors.dart';
-import 'package:money_tracker/view/components/splash.dart';
+import 'package:money_tracker/view/pages/splash/splash.dart';
 
 void main() {
   runApp(const App());

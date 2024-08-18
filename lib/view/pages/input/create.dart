@@ -1,16 +1,19 @@
 import 'package:get/get.dart';
-import 'package:uuid/uuid.dart';
 import 'package:flutter/material.dart';
+import 'package:money_tracker/model/wallet.dart';
+import 'package:money_tracker/services/share_preference.dart';
+import 'package:money_tracker/view/pages/navigation/navigation.dart';
+import 'package:money_tracker/view/widgets/config.dart';
 import 'package:toggle_switch/toggle_switch.dart';
-import 'package:money_tracker/widgets/config.dart';
+import 'package:money_tracker/constants/images.dart';
 import 'package:money_tracker/model/transaction.dart';
-import 'package:money_tracker/widgets/text_field.dart';
 import 'package:money_tracker/constants/app_style.dart';
 import 'package:money_tracker/constants/app_colors.dart';
-import 'package:money_tracker/widgets/flash_message.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:money_tracker/view/widgets/text_field.dart';
+import 'package:money_tracker/services/wallet_service.dart';
+import 'package:money_tracker/view/widgets/list_wallet.dart';
+import 'package:money_tracker/view/widgets/flash_message.dart';
 import 'package:money_tracker/services/transaction_service.dart';
-import 'package:money_tracker/view/pages/navigation/navigation.dart';
 
 class CreateScreen extends StatefulWidget {
   const CreateScreen({super.key});
@@ -21,33 +24,57 @@ class CreateScreen extends StatefulWidget {
 
 class _CreateScreenState extends State<CreateScreen> {
   late TransactionService service;
-  String userID = '';
+  int? userID;
   int id_transaction = 0;
   final _formKey = GlobalKey<FormState>();
+
+  List<Wallet> wallets = [];
+  Wallet? wallet;
+  late WalletService walletService;
   TextEditingController _money = TextEditingController();
   TextEditingController _date = TextEditingController();
   TextEditingController _description = TextEditingController();
-  String _type = '0';
+  int _type = 0;
   connectDatabase() async {
-    SharedPreferences preferences = await SharedPreferences.getInstance();
-    userID = preferences.getString('ma_nguoi_dung')!;
+    userID = await UserPreference().getUserID();
     service = TransactionService(await getDatabase());
-    var data = await service.searchOfUser(userID);
+    walletService = WalletService(await getDatabaseWallet());
+    var data = await service.searchOfUser(userId: userID!);
+    var dataWallet = await walletService.searchWallets(userID!);
     setState(() {
+      wallets = dataWallet;
       id_transaction = data.length + 1;
       String date = DateTime.now().toString().split(' ')[0];
       List<String> parts = date.split('-');
+      String day = parts[2];
       String year = parts[0];
       String month = parts[1];
-      String day = parts[2];
       _date.text = "$day/$month/$year";
     });
   }
 
   @override
   void initState() {
-    connectDatabase();
     super.initState();
+    connectDatabase();
+  }
+
+  int selectedIcon = 0;
+  void _showIconSelectionDialog() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return ListWallet(
+          wallets: wallets,
+          service: walletService,
+          onIconSelected: (value) {
+            setState(() {
+              wallet = value;
+            });
+          },
+        );
+      },
+    );
   }
 
   @override
@@ -57,8 +84,8 @@ class _CreateScreenState extends State<CreateScreen> {
       DateTime? picked = await showDatePicker(
         context: context,
         initialDate: now,
-        firstDate: DateTime(2000),
         lastDate: DateTime(2100),
+        firstDate: DateTime(2000),
       );
       if (picked != null) {
         setState(() {
@@ -101,21 +128,21 @@ class _CreateScreenState extends State<CreateScreen> {
                 ),
               ),
               ToggleSwitch(
-                minHeight: 50,
-                minWidth: 200,
                 fontSize: 20,
-                cornerRadius: 10,
-                activeBgColor: const [Color(blue), Color(primary)],
-                activeFgColor: const Color(white),
-                inactiveBgColor: Colors.black26,
-                inactiveFgColor: Colors.white,
+                minWidth: 200,
+                minHeight: 50,
                 totalSwitches: 2,
+                cornerRadius: 10,
+                inactiveFgColor: Colors.white,
+                inactiveBgColor: Colors.black26,
+                activeFgColor: const Color(white),
+                activeBgColor: const [Color(blue), Color(primary)],
                 labels: const [
                   'Chi tiêu',
                   'Thu nhập',
                 ],
                 onToggle: (index) {
-                  _type = index.toString();
+                  _type = index!;
                 },
               ),
               Container(
@@ -144,6 +171,29 @@ class _CreateScreenState extends State<CreateScreen> {
                   },
                 ),
               ),
+              MaterialButton(
+                color: const Color(white),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 25,
+                  vertical: 10,
+                ),
+                onPressed: () {
+                  _showIconSelectionDialog();
+                },
+                child: Row(
+                  children: [
+                    CircleAvatar(
+                      backgroundColor: Colors.redAccent,
+                      child: Image.asset(
+                          imageBase().getIconWallets()[wallet?.icon ?? 0]),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 18.0),
+                      child: Text(wallet?.description ?? "Chọn biểu tượng"),
+                    )
+                  ],
+                ),
+              ),
               Container(
                 height: 50,
                 width: getScreenWidth(context),
@@ -153,29 +203,55 @@ class _CreateScreenState extends State<CreateScreen> {
                   icon: const Icon(Icons.save),
                   label: Text(
                     'save'.tr,
-                    style: const TextStyle(color: Color(white), fontSize: 20),
+                    style: const TextStyle(
+                      fontSize: 20,
+                      color: Color(white),
+                    ),
                   ),
                   onPressed: () {
                     if (_formKey.currentState!.validate()) {
                       if (_money.text.isEmpty ||
                           _date.text.isEmpty ||
-                          _description.text.isEmpty) {
+                          _description.text.isEmpty ||
+                          wallet == null) {
                         buildErrorMessage(
-                            "Lỗi", "Không được để trống mục tạo!", context);
+                          "Lỗi",
+                          "Không được để trống mục tạo!",
+                          context,
+                        );
                       } else {
-                        service.insert(Transaction(id_transaction, _money.text,
-                            userID, _date.text, _description.text, _type));
-
-                        buildSuccessMessage("Thành công!",
-                            "Thành công tạo giao dịch.", context);
+                        int total = _type == 1
+                            ? (wallet?.total ?? 0) + int.parse(_money.text)
+                            : (wallet?.total ?? 0) - int.parse(_money.text);
+                        service.insert(
+                          Transaction(
+                            id_user: userID!,
+                            id: id_transaction,
+                            dateTime: _date.text,
+                            transaction_type: _type,
+                            id_wallet: wallet!.id_wallet,
+                            money: int.parse(_money.text),
+                            description: _description.text,
+                          ),
+                        );
+                        walletService.updateTotal(
+                            walletID: wallet!.id_wallet, price: total);
+                        buildSuccessMessage(
+                          "Thành công!",
+                          "Thành công tạo giao dịch.",
+                          context,
+                        );
                         _money.clear();
                         _date.clear();
                         _description.clear();
-                        GetToPage();
+                        GetOffAllPage(page: () => const NavigationMenu());
                       }
                     } else {
                       buildWarningMessage(
-                          "Lỗi!", "Không thể tạo mới giao dịch.", context);
+                        "Lỗi!",
+                        "Không thể tạo mới giao dịch.",
+                        context,
+                      );
                     }
                   },
                   style: ElevatedButton.styleFrom(
@@ -187,9 +263,6 @@ class _CreateScreenState extends State<CreateScreen> {
                   ),
                 ),
               ),
-              Container(
-                child: Row(),
-              )
             ],
           ),
         ),

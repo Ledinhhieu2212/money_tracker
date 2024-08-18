@@ -3,14 +3,20 @@ import 'dart:convert';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:money_tracker/model/user.dart';
 import 'package:money_tracker/services/api.dart';
-import 'package:money_tracker/widgets/config.dart';
+import 'package:money_tracker/services/share_preference.dart';
+import 'package:money_tracker/services/user_service.dart';
 import 'package:money_tracker/view/pages/navigation/navigation.dart';
+import 'package:money_tracker/view/widgets/config.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
+import 'package:crypto/crypto.dart';
 
 class LoginController extends GetxController {
   TextEditingController phoneController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+  UserPreference userPreference = UserPreference();
   bool isLoading = false;
 
   String data = '';
@@ -69,7 +75,7 @@ class LoginController extends GetxController {
   }
 
   Future<void> loginWithPhone() async {
-    isLoading = true;
+    _updateIsLoading(true);
     try {
       var url = Uri.parse(
           ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.loginPhone);
@@ -83,17 +89,32 @@ class LoginController extends GetxController {
           'Password': passwordController.text.trim(),
         }),
       );
-
+      await Future.delayed(Duration(seconds: 3));
       if (response.statusCode == 200) {
         final json = jsonDecode(response.body);
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        await prefs.setString(
-            'ma_nguoi_dung', json['ma_nguoi_dung'].toString());
-        await prefs.setString('so_du', json['so_du'].toString());
-        await prefs.setString('ten_nguoi_dung', json['ten_nguoi_dung']);
+        User user = User(
+          id: json['ma_nguoi_dung'],
+          username: json['ten_nguoi_dung'],
+          phone: json['soDienThoai'],
+          email: json['email'] ?? '',
+          password: json['password'],
+          token: utf8
+              .encode(json['ma_nguoi_dung'].toString() +
+                  json['ten_nguoi_dung'] +
+                  json['password'])
+              .toString(),
+        );
+        UserService userService = UserService(await getDataUser());
+        if (await userService.idExists(user.id)) {
+          print('Đã có tài khoản trong máy');
+        } else {
+          print('Chưa có tài khoản trong máy');
+          userService.insert(user);
+          userPreference.saveUser(user);
+        }
         phoneController.clear();
         passwordController.clear();
-        GetOffPage(page: NavigationMenu());
+        GetOffPage(page: () => const NavigationMenu());
       } else {
         if (phoneController.text.isEmpty || passwordController.text.isEmpty) {
           throw "Không được để chống trường nhập!";
@@ -110,6 +131,8 @@ class LoginController extends GetxController {
       getDialogMesssageError(error: '$error');
     } catch (error) {
       getDialogMesssageError(error: error.toString());
+    } finally {
+      _updateIsLoading(false);
     }
   }
 }
