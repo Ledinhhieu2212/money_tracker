@@ -51,7 +51,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return RichText(
       text: TextSpan(
           text:
-              "${'spending'.tr}: ${_obscureText ?  '${h.spendingPrice.value} ' : "***000 "}",
+              "${'spending'.tr}: ${_obscureText ? '${h.spendingPrice.value} ' : "***000 "}",
           style: const TextStyle(color: Colors.red),
           children: const [
             TextSpan(
@@ -168,22 +168,6 @@ class _HomeScreenState extends State<HomeScreen> {
               onRefresh: h.refreshWallets, // Gọi phương thức làm mới ví
               child: Column(
                 children: [
-                  Container(
-                    height: 40,
-                    color: Colors.white,
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                    child: const Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Icon(
-                          Icons.filter_alt_outlined,
-                          color: Colors.grey,
-                          size: 30,
-                        ),
-                      ],
-                    ),
-                  ),
                   const SizedBox(height: 10),
                   Expanded(
                     child: ListView.builder(
@@ -191,8 +175,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       itemBuilder: (context, index) {
                         var wallet = h.wallets[index];
                         var transactions = h.getTransactionsOfWallet(
-                          idWallet: h.wallets[index].id_wallet,
-                          t: h.transactions,
+                          transactions: h.transactions,
+                          idWallet: h.wallets[index].id_wallet!,
                         );
 
                         bool isExpanded = h.expandedIndexes.contains(index);
@@ -273,14 +257,15 @@ class _HomeScreenState extends State<HomeScreen> {
                                               transactions[transactionIndex];
 
                                           bool isType = h.getTypeTransaction(
-                                              type:
-                                                  transaction.transaction_type);
+                                              transaction.transaction_type);
                                           return MaterialButton(
                                             onPressed: () {
                                               GetToPage(
                                                 page: () => DetailTransaction(
-                                                    transactionid:
-                                                        transaction.id),
+                                                  transactionid:
+                                                      transaction.id!,
+                                                  wallet: wallet,
+                                                ),
                                               );
                                             },
                                             child: Container(

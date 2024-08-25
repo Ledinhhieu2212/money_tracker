@@ -4,7 +4,12 @@ import 'package:money_tracker/constants/app_style.dart';
 class BoxTextIcon extends StatelessWidget {
   final Icon icon;
   final String title;
-  const BoxTextIcon({super.key, required this.title, required this.icon});
+  final VoidCallback onPress;
+  const BoxTextIcon(
+      {super.key,
+      required this.title,
+      required this.icon,
+      required this.onPress});
 
   @override
   Widget build(BuildContext context) {
@@ -16,18 +21,21 @@ class BoxTextIcon extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.all(Radius.circular(10.0)),
       ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Center(
-            child: Padding(
-              padding: const EdgeInsets.all(8),
-              child: icon,
+      child: MaterialButton(
+        onPressed: onPress,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.all(8),
+                child: icon,
+              ),
             ),
-          ),
-          Center(child: Text(title)),
-        ],
+            Center(child: Text(title)),
+          ],
+        ),
       ),
     );
   }

@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:money_tracker/constants/app_style.dart';
 import 'package:money_tracker/constants/app_colors.dart';
-import 'package:money_tracker/constants/images.dart';
-import 'package:money_tracker/model/user.dart';
+import 'package:money_tracker/constants/images.dart'; 
 import 'package:money_tracker/model/wallet.dart';
 import 'package:money_tracker/services/share_preference.dart';
 import 'package:money_tracker/services/wallet_service.dart';
@@ -82,7 +81,7 @@ class _WalletScreenState extends State<WalletScreen> {
                   onTap: () => {
                     GetToPage(
                       page: () => EditDeleteWallet(
-                        idWallet: wallet[index].id_wallet,
+                        idWallet: wallet[index]!.id_wallet!,
                       ),
                     ),
                   },
@@ -108,17 +107,17 @@ class _WalletScreenState extends State<WalletScreen> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      wallet[index].description,
+                                       wallet[index].description,
                                       style: const TextStyle(
                                           fontSize: 16,
                                           fontWeight: FontWeight.w600),
                                     ),
                                     Text(
-                                        "Tiền đầu lập: ${wallet[index].money_price} đ"),
-                                    Text("Tổng: ${wallet[index].money_price}")
+                                        "Trước: ${wallet[index].money_price} đ"),
+                                    Text("Sau: ${wallet[index].total} đ"),
                                   ],
                                 ),
-                              )
+                              ),
                             ],
                           )
                         ],

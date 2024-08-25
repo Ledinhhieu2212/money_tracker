@@ -5,7 +5,6 @@ import 'package:money_tracker/model/wallet.dart';
 import 'package:money_tracker/services/share_preference.dart';
 import 'package:money_tracker/services/transaction_service.dart';
 import 'package:money_tracker/services/wallet_service.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeController extends GetxController {
   var price = 0.obs;
@@ -30,6 +29,7 @@ class HomeController extends GetxController {
   User user = await userPreference.getUser();
     idUser.value =  user.id;
     username.value =  user.username;
+
   }
 
   Future<void> getTransactions() async {
@@ -46,9 +46,7 @@ class HomeController extends GetxController {
     await getIDUser();
     walletService = WalletService(await getDatabaseWallet());
     wallets.value = await walletService.searchWallets(idUser.value);
-    for (final t in wallets) {
-      price.value += t.total;
-    }
+   calculateTotalPrice();
   }
 
   Future<void> getUser() async {
@@ -60,15 +58,16 @@ class HomeController extends GetxController {
     }
   }
 
-
-  List<Transaction> getTransactionsOfWallet({
-    required int idWallet,
-    required List<Transaction> t,
-  }) {
-    List<Transaction> tr =
-        t.where((element) => element.id_wallet == idWallet).toList();
-    return tr;
+  void calculateTotalPrice() {
+    price.value = wallets.fold(0, (sum, wallet) => sum + wallet.total);
   }
+  List<Transaction> getTransactionsOfWallet({
+    required String idWallet,
+    required List<Transaction> transactions,
+  }) {
+    return transactions.where((t) => t.id_wallet == idWallet).toList();
+  }
+
 
   void initSate() async {
     await getWallets();
@@ -83,10 +82,8 @@ class HomeController extends GetxController {
     }
   }
 
-  bool getTypeTransaction({required int type}) {
-    return type == 1 ? true : false;
-  }
-
+  
+  bool getTypeTransaction(int type) => type == 1;
   // Phương thức để làm mới dữ liệu ví
   Future<void> refreshWallets() async {
     await getWallets();

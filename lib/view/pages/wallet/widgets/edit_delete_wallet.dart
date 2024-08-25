@@ -1,9 +1,5 @@
-import 'package:get/get.dart';
-import 'package:money_tracker/model/transaction.dart';
-import 'package:money_tracker/services/share_preference.dart';
 import 'package:money_tracker/services/transaction_service.dart';
 import 'package:money_tracker/view/widgets/Icon_selection_dialog.dart';
-import 'package:uuid/uuid.dart';
 import 'package:flutter/material.dart';
 import 'package:money_tracker/model/wallet.dart';
 import 'package:money_tracker/view/widgets/config.dart';
@@ -13,11 +9,10 @@ import 'package:money_tracker/constants/app_style.dart';
 import 'package:money_tracker/constants/app_colors.dart';
 import 'package:money_tracker/view/widgets/flash_message.dart';
 import 'package:money_tracker/services/wallet_service.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:money_tracker/view/pages/navigation/navigation.dart';
 
 class EditDeleteWallet extends StatefulWidget {
-  final int idWallet;
+  final String idWallet;
   const EditDeleteWallet({super.key, required this.idWallet});
 
   @override
@@ -25,10 +20,9 @@ class EditDeleteWallet extends StatefulWidget {
 }
 
 class _EditDeleteWalletState extends State<EditDeleteWallet> {
-  int? userID;
   late WalletService service;
+  late Wallet wallet;
   int selectedIcon = 0;
-  List<Transaction> transactions = [];
   late TransactionService transactionService;
   int incomePrice = 0, spendingPrice = 0;
   final _formKey = GlobalKey<FormState>();
@@ -39,11 +33,12 @@ class _EditDeleteWalletState extends State<EditDeleteWallet> {
     transactionService = TransactionService(await getDatabase());
     Wallet p = await service.getById(widget.idWallet);
     int income = await transactionService.totalPriceWalletType(
-        userId: p.id_user, typePrice: 1, walletID: p.id_wallet);
+        userId: p.id_user, typePrice: 1, walletID: p.id_wallet!);
     int spending = await transactionService.totalPriceWalletType(
-        userId: p.id_user, typePrice: 0, walletID: p.id_wallet);
+        userId: p.id_user, typePrice: 0, walletID: p.id_wallet!);
+
     setState(() {
-      userID = p.id_user;
+      wallet = p;
       incomePrice = income;
       spendingPrice = spending;
       _money.text = p.money_price.toString();
@@ -74,7 +69,12 @@ class _EditDeleteWalletState extends State<EditDeleteWallet> {
     );
   }
 
-  void showConfirm(BuildContext context, int transactionid) {
+  void showDeleteWalletDialog({
+    required BuildContext context,
+    required String id_wallet,
+    required WalletService ws,
+    required TransactionService ts,
+  }) {
     showDialog(
         context: context,
         builder: (context) {
@@ -89,7 +89,8 @@ class _EditDeleteWalletState extends State<EditDeleteWallet> {
                     child: const Text('Không')),
                 TextButton(
                     onPressed: () {
-                      service.delete(transactionid);
+                      ws.delete(id_wallet);
+                      ts.deleteAllTransactions(id_wallet);
                       buildSuccessMessage(
                           "Thành công!", "Xóa thành công", context);
                       GetOffAllPage(
@@ -196,16 +197,19 @@ class _EditDeleteWalletState extends State<EditDeleteWallet> {
                   ),
                   onPressed: () {
                     if (_formKey.currentState!.validate()) {
+                      DateTime now = DateTime.now();
                       service.update(
                         Wallet(
+                          id_wallet: wallet.id_wallet,
                           icon: selectedIcon,
                           description: _wallet.text,
-                          id_user: userID ?? 0,
-                          id_wallet: widget.idWallet,
+                          id_user: wallet.id_user,
                           total: int.parse(_money.text) +
                               incomePrice -
                               spendingPrice,
                           money_price: int.parse(_money.text),
+                          create_up: wallet.create_up,
+                          upload_up: now.toString(),
                         ),
                       );
                       buildSuccessMessage(
@@ -238,7 +242,12 @@ class _EditDeleteWalletState extends State<EditDeleteWallet> {
                     style: TextStyle(color: Color(white), fontSize: 20),
                   ),
                   onPressed: () {
-                    showConfirm(context, widget.idWallet);
+                    showDeleteWalletDialog(
+                      context: context,
+                      id_wallet: widget.idWallet,
+                      ts: transactionService,
+                      ws: service,
+                    );
                   },
                   style: ElevatedButton.styleFrom(
                     iconColor: const Color(white),

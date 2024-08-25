@@ -23,8 +23,7 @@ class CreateWallet extends StatefulWidget {
 }
 
 class _CreateWalletState extends State<CreateWallet> {
-  int? userID;
-  int id = 1;
+  int? userID; 
   int incomePrice = 0, spendingPrice = 0;
   late WalletService service;
   List<Wallet> wallet = [];
@@ -36,8 +35,7 @@ class _CreateWalletState extends State<CreateWallet> {
     userID = await UserPreference().getUserID();
     service = WalletService(await getDatabaseWallet());
     var data = await service.searchWallets(userID!);
-    setState(() {
-      id = data.length + 1;
+    setState(() { 
       wallet = data;
     });
   }
@@ -168,14 +166,17 @@ class _CreateWalletState extends State<CreateWallet> {
                         if (_money.text.isEmpty) {
                           _money.text = '0';
                         }
+                        
+                        DateTime now = DateTime.now();
                         service.insert(
                           Wallet(
-                            total: int.parse(_money.text),
-                            id_wallet: id,
+                            total: int.parse(_money.text), 
                             id_user: userID!,
                             icon: selectedIcon,
                             money_price: int.parse(_money.text),
                             description: _wallet.text,
+                            create_up: now.toString(),
+                            upload_up: now.toString(),
                           ),
                         );
                         buildSuccessMessage(

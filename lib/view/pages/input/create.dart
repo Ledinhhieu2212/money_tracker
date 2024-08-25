@@ -24,8 +24,7 @@ class CreateScreen extends StatefulWidget {
 
 class _CreateScreenState extends State<CreateScreen> {
   late TransactionService service;
-  int? userID;
-  int id_transaction = 0;
+  int? userID; 
   final _formKey = GlobalKey<FormState>();
 
   List<Wallet> wallets = [];
@@ -39,11 +38,9 @@ class _CreateScreenState extends State<CreateScreen> {
     userID = await UserPreference().getUserID();
     service = TransactionService(await getDatabase());
     walletService = WalletService(await getDatabaseWallet());
-    var data = await service.searchOfUser(userId: userID!);
     var dataWallet = await walletService.searchWallets(userID!);
     setState(() {
-      wallets = dataWallet;
-      id_transaction = data.length + 1;
+      wallets = dataWallet; 
       String date = DateTime.now().toString().split(' ')[0];
       List<String> parts = date.split('-');
       String day = parts[2];
@@ -223,19 +220,21 @@ class _CreateScreenState extends State<CreateScreen> {
                         int total = _type == 1
                             ? (wallet?.total ?? 0) + int.parse(_money.text)
                             : (wallet?.total ?? 0) - int.parse(_money.text);
+                        DateTime now = DateTime.now();
                         service.insert(
                           Transaction(
                             id_user: userID!,
-                            id: id_transaction,
                             dateTime: _date.text,
                             transaction_type: _type,
-                            id_wallet: wallet!.id_wallet,
+                            id_wallet: wallet!.id_wallet!,
                             money: int.parse(_money.text),
                             description: _description.text,
+                            create_up: now.toString(),
+                            upload_up: now.toString(),
                           ),
                         );
                         walletService.updateTotal(
-                            walletID: wallet!.id_wallet, price: total);
+                            walletID: wallet!.id_wallet!, price: total);
                         buildSuccessMessage(
                           "Thành công!",
                           "Thành công tạo giao dịch.",

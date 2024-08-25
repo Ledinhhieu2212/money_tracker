@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:money_tracker/constants/images.dart';
 import 'package:money_tracker/model/wallet.dart';
 import 'package:money_tracker/services/wallet_service.dart';
-import 'package:money_tracker/view/pages/navigation/navigation.dart'; 
+import 'package:money_tracker/view/pages/navigation/navigation.dart';
 import 'package:money_tracker/view/widgets/flash_message.dart';
 import 'package:money_tracker/view/widgets/list_wallet.dart';
 import 'package:toggle_switch/toggle_switch.dart';
@@ -15,21 +15,21 @@ import 'package:money_tracker/constants/app_colors.dart';
 import 'package:money_tracker/services/transaction_service.dart';
 
 class DetailTransaction extends StatefulWidget {
-  final int transactionid;
-  const DetailTransaction({super.key, required this.transactionid});
+  final String transactionid;
+  final Wallet wallet;
+  const DetailTransaction(
+      {super.key, required this.transactionid, required this.wallet});
 
   @override
   State<DetailTransaction> createState() => _DetailTransactionState();
 }
 
 class _DetailTransactionState extends State<DetailTransaction> {
-  int? _currentIndex;
-  int? userID;
+  int _currentIndex = 0;
   late TransactionService service;
   late Transaction transaction;
+  late Wallet newWallet = widget.wallet;
   List<Wallet> wallets = [];
-  late Wallet oldWallet;
-  Wallet? wallet;
   late WalletService walletService;
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _date = TextEditingController();
@@ -39,14 +39,12 @@ class _DetailTransactionState extends State<DetailTransaction> {
     service = TransactionService(await getDatabase());
     walletService = WalletService(await getDatabaseWallet());
     Transaction p = await service.getById(widget.transactionid);
-    List<Wallet> dataWallets = await walletService.searchWallets(p.id_user);
-    Wallet dataWallet = await walletService.getById(p.id_wallet);
+    var data = await walletService.searchWallets(widget.wallet.id_user);
     setState(
       () {
+        wallets = data;
         transaction = p;
-        userID = p.id_user;
-        oldWallet = wallet = dataWallet;
-        wallets = dataWallets;
+        newWallet = widget.wallet;
         _date.text = p.dateTime;
         _price.text = p.money.toString();
         _description.text = p.description;
@@ -64,7 +62,7 @@ class _DetailTransactionState extends State<DetailTransaction> {
           service: walletService,
           onIconSelected: (value) {
             setState(() {
-              wallet = value;
+              newWallet = value;
             });
           },
         );
@@ -78,7 +76,8 @@ class _DetailTransactionState extends State<DetailTransaction> {
     super.initState();
   }
 
-  void showConfirm(BuildContext context, int transactionid) {
+  void showConfirm(
+      BuildContext context, String transactionid, Wallet walletOld) {
     showDialog(
       context: context,
       builder: (context) {
@@ -95,11 +94,11 @@ class _DetailTransactionState extends State<DetailTransaction> {
             TextButton(
               onPressed: () {
                 int total = transaction.transaction_type == 1
-                    ? oldWallet.total - transaction.money
-                    : oldWallet.total + transaction.money;
+                    ? walletOld.total - transaction.money
+                    : walletOld.total + transaction.money;
                 service.delete(transactionid);
                 walletService.updateTotal(
-                    walletID: oldWallet.id_wallet, price: total);
+                    walletID: walletOld.id_wallet!, price: total);
                 buildSuccessMessage(
                   "Thành công!",
                   "Xóa thành công",
@@ -114,6 +113,61 @@ class _DetailTransactionState extends State<DetailTransaction> {
           ],
         );
       },
+    );
+  }
+
+  void updateWallet(
+      {required Wallet oldWallet, required Wallet newWallet}) async {
+    if (oldWallet.id_wallet == newWallet.id_wallet) {
+      int income = 0;
+      int expense = 0;
+      income = await service.totalPriceWalletType(
+          userId: oldWallet.id_user,
+          typePrice: 1,
+          walletID: oldWallet.id_wallet!);
+
+      expense = await service.totalPriceWalletType(
+          userId: oldWallet.id_user,
+          typePrice: 1,
+          walletID: oldWallet.id_wallet!);
+      int total = int.parse(_price.text) + income - expense;
+      walletService.updateTotal(walletID: oldWallet.id_wallet!, price: total);
+    }
+
+  if (oldWallet.id_wallet != newWallet.id_wallet) {
+      int total = _currentIndex == 1
+          ? newWallet.total + transaction.money
+          : newWallet.total - transaction.money;
+      walletService.updateTotal(walletID: newWallet.id_wallet!, price: total);
+
+      int totaldelete = transaction.transaction_type == 1
+          ? oldWallet.total - transaction.money
+          : oldWallet.total + transaction.money;
+      walletService.updateTotal(
+          walletID: oldWallet.id_wallet!, price: totaldelete);
+    }
+  }
+
+  bool isAnyFieldEmpty() {
+    return _price.text.isEmpty ||
+        _date.text.isEmpty ||
+        _description.text.isEmpty;
+  }
+
+  void updateTransaction() {
+    DateTime now = DateTime.now();
+    service.update(
+      Transaction(
+        id: transaction.id,
+        id_user: transaction.id_user,
+        dateTime: _date.text,
+        id_wallet: newWallet.id_wallet!,
+        money: int.parse(_price.text),
+        description: _description.text,
+        transaction_type: _currentIndex,
+        create_up: transaction.create_up,
+        upload_up: now.toString(),
+      ),
     );
   }
 
@@ -190,7 +244,7 @@ class _DetailTransactionState extends State<DetailTransaction> {
                   'Thu nhập',
                 ],
                 onToggle: (index) {
-                  _currentIndex = index;
+                  _currentIndex = index!;
                 },
               ),
               const SizedBox(
@@ -235,24 +289,19 @@ class _DetailTransactionState extends State<DetailTransaction> {
                       onPressed: () {
                         _showIconSelectionDialog();
                       },
-                      child: Container(
+                      child: SizedBox(
                         height: 70,
                         child: Row(
                           children: [
                             CircleAvatar(
                               backgroundColor: Colors.redAccent,
                               child: Image.asset(
-                                wallet == null
-                                    ? imageBase().wallet
-                                    : imageBase()
-                                        .getIconWallets()[wallet!.icon],
+                                imageBase().getIconWallets()[newWallet.icon],
                               ),
                             ),
                             Padding(
-                              padding: EdgeInsets.only(left: 18.0),
-                              child: Text(wallet == null
-                                  ? "Biểu tượng"
-                                  : wallet!.description),
+                              padding: const EdgeInsets.only(left: 18.0),
+                              child: Text(newWallet.description),
                             )
                           ],
                         ),
@@ -276,70 +325,18 @@ class _DetailTransactionState extends State<DetailTransaction> {
                     ),
                   ),
                   onPressed: () {
-                    bool isAnyFieldEmpty() {
-                      return _price.text.isEmpty ||
-                          _date.text.isEmpty ||
-                          _description.text.isEmpty;
-                    }
-
-                    void updateTransaction() {
-                      service.update(
-                        Transaction(
-                          id_user: userID!,
-                          dateTime: _date.text,
-                          id: widget.transactionid,
-                          id_wallet: wallet!.id_wallet,
-                          money: int.parse(_price.text),
-                          description: _description.text,
-                          transaction_type: _currentIndex!,
-                        ),
-                      );
-                    }
-
                     if (_formKey.currentState!.validate()) {
                       if (isAnyFieldEmpty()) {
                         buildErrorMessage(
                             "Lỗi", "Không được để trống mục tạo!", context);
                       }
-                      updateWallet() async {
-                        if (oldWallet.id_wallet == wallet!.id_wallet) {
-                          int income = 0;
-                          int expense = 0;
-                          income = await service.totalPriceWalletType(
-                              userId: oldWallet.id_user,
-                              typePrice: 1,
-                              walletID: oldWallet.id_wallet);
-
-                          expense = await service.totalPriceWalletType(
-                              userId: oldWallet.id_user,
-                              typePrice: 1,
-                              walletID: oldWallet.id_wallet);
-                          int total = int.parse(_price.text) + income - expense;
-                          walletService.updateTotal(
-                              walletID: oldWallet.id_wallet, price: total);
-                        }
-
-                        if (oldWallet.id_wallet != wallet!.id_wallet) {
-                          // Cập nhật ví mới về giao dịch chuyển và lấy loại chuyển theo ngay trên thông tin cập nhật;
-                          int total = _currentIndex == 1
-                              ? wallet!.total + transaction.money
-                              : wallet!.total - transaction.money;
-                          walletService.updateTotal(
-                              walletID: wallet!.id_wallet, price: total);
-
-                          // Cập nhật lại ví cũ khi chuyển giao dịch
-                          int totaldelete = transaction.transaction_type == 1
-                              ? oldWallet.total - transaction.money
-                              : oldWallet.total + transaction.money;
-                          walletService.updateTotal(
-                              walletID: oldWallet.id_wallet,
-                              price: totaldelete);
-                        }
-                      }
 
                       if (!isAnyFieldEmpty()) {
                         updateTransaction();
-                        updateWallet();
+                        updateWallet(
+                          newWallet: newWallet,
+                          oldWallet: widget.wallet,
+                        );
                         buildSuccessMessage(
                             "Thành công!", "Sửa thành công", context);
                         GetOffAllPage(page: () => const NavigationMenu());
@@ -373,7 +370,7 @@ class _DetailTransactionState extends State<DetailTransaction> {
                     ),
                   ),
                   onPressed: () {
-                    showConfirm(context, widget.transactionid);
+                    showConfirm(context, widget.transactionid, widget.wallet);
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.red,

@@ -2,7 +2,12 @@ import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:money_tracker/constants/app_style.dart';
 import 'package:money_tracker/constants/app_colors.dart';
+import 'package:money_tracker/view/pages/report/widgets/expense_analysis.dart';
+import 'package:money_tracker/view/pages/report/widgets/expense_income.dart';
+import 'package:money_tracker/view/pages/report/widgets/financial_analysis.dart';
+import 'package:money_tracker/view/pages/report/widgets/income_analysis.dart';
 import 'package:money_tracker/view/widgets/box/box_text_icon.dart';
+import 'package:money_tracker/view/widgets/config.dart';
 
 class ReportScreen extends StatelessWidget {
   const ReportScreen({super.key});
@@ -27,22 +32,9 @@ class ReportScreen extends StatelessWidget {
           alignment: WrapAlignment.spaceAround,
           children: <Widget>[
             BoxTextIcon(
-              icon: const Icon(
-                Icons.show_chart,
-                color: Colors.blue,
-                size: 40,
-              ),
-              title: "financial_statement".tr,
-            ),
-            BoxTextIcon(
-              icon: const Icon(
-                Icons.ssid_chart,
-                color: Colors.green,
-                size: 40,
-              ),
-              title: "expense_income".tr,
-            ),
-            BoxTextIcon(
+              onPress: () {
+                GetToPage(page: () => ExpenseAnalysis());
+              },
               icon: const Icon(
                 Icons.monetization_on,
                 color: Colors.red,
@@ -51,6 +43,9 @@ class ReportScreen extends StatelessWidget {
               title: "expense_analysis".tr,
             ),
             BoxTextIcon(
+              onPress: () {
+                GetToPage(page: () => IncomeAnalysis());
+              },
               icon: const Icon(
                 Icons.monetization_on,
                 color: Colors.green,
@@ -59,30 +54,20 @@ class ReportScreen extends StatelessWidget {
               title: "income_analysis".tr,
             ),
             BoxTextIcon(
+              onPress: () {
+                GetToPage(page: () => ExpenseIncome());
+              },
               icon: const Icon(
-                Icons.checklist,
-                color: Colors.orange,
+                Icons.ssid_chart,
+                color: Colors.green,
                 size: 40,
               ),
-              title: "moneny_lent_borrowed".tr,
+              title: "expense_income".tr,
             ),
             BoxTextIcon(
-              icon: const Icon(
-                Icons.manage_accounts,
-                color: Colors.blue,
-                size: 40,
-              ),
-              title: "payee_payer".tr,
-            ),
-            BoxTextIcon(
-              icon: const Icon(
-                Icons.calendar_today,
-                color: Colors.greenAccent,
-                size: 40,
-              ),
-              title: "event".tr,
-            ),
-            BoxTextIcon(
+              onPress: () {
+                GetToPage(page: () => FinancialAnalysis());
+              },
               icon: const Icon(
                 Icons.pie_chart,
                 color: Colors.purpleAccent,

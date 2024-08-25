@@ -105,10 +105,7 @@ class LoginController extends GetxController {
               .toString(),
         );
         UserService userService = UserService(await getDataUser());
-        if (await userService.idExists(user.id)) {
-          print('Đã có tài khoản trong máy');
-        } else {
-          print('Chưa có tài khoản trong máy');
+        if (await userService.idExists(user.id) == false) {
           userService.insert(user);
           userPreference.saveUser(user);
         }
