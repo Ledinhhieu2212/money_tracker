@@ -1,10 +1,14 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:money_tracker/constants/app_colors.dart';
+import 'package:money_tracker/constants/images.dart';
 import 'package:money_tracker/model/transaction.dart';
 import 'package:money_tracker/services/share_preference.dart';
 import 'package:money_tracker/services/transaction_service.dart';
+import 'package:money_tracker/services/wallet_service.dart';
 import 'package:money_tracker/view/widgets/charts/line_chart.dart';
 
 class ExpenseAnalysis extends StatefulWidget {
@@ -39,9 +43,10 @@ class _WeekScreenState extends State<WeekScreen> {
   DateTime? _startDate;
   DateTime? _endDate;
   String dattime = '';
-  late Transaction transaction;
+  Transaction? transaction;
   List<Transaction> transactions = [];
   late TransactionService service;
+  late WalletService wallertService;
   @override
   void initState() {
     super.initState();
@@ -52,10 +57,12 @@ class _WeekScreenState extends State<WeekScreen> {
   void _connectdatabase() async {
     int userId = await UserPreference().getUserID();
     service = TransactionService(await getDatabase());
+    wallertService =  WalletService(await getDatabaseWallet());
     var data = await service.searchOfUser(userId: userId);
     setState(() {
       transactions =
           data.where((element) => element.transaction_type == 0).toList();
+      transaction = transactions.first;
     });
   }
 
@@ -159,23 +166,36 @@ class _WeekScreenState extends State<WeekScreen> {
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: Column(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(10),
-                    child: const Row(
+              child: transaction == null
+                  ? const Padding(
+                      padding: EdgeInsets.only(top: 50.0),
+                      child: Text(
+                        "Chưa có giao dịch chi tiêu trong tuần này!",
+                        textAlign: TextAlign.center,
+                      ),
+                    )
+                  : Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Column(
-                          children: [
-                            // Text("Ngày: $dattime"),
-                            Text("Thông tin giao dịch: "),
-                          ],
-                        )
+                        const Padding(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 10),
+                          child: Text(
+                            "Thông tin giao dịch: ",
+                            textAlign: TextAlign.left,
+                          ),
+                        ),
+                        Card(
+                          child: Row(
+                            children: [
+                              Flexible(
+                                child:  Image.asset(imageBase().getIconWallets()[]),
+                              ),
+                            ],
+                          ),
+                        ),
                       ],
                     ),
-                  )
-                ],
-              ),
             ),
           )
         ],

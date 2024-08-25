@@ -13,11 +13,11 @@ Widget textFormFieldAuth(
     decoration: InputDecoration(
       border: const OutlineInputBorder(),
       labelText: label,
-      labelStyle: TextStyle(
+      labelStyle: const TextStyle(
         fontWeight: FontWeight.w500,
         color: Colors.grey,
       ),
-      focusedBorder: OutlineInputBorder(
+      focusedBorder: const OutlineInputBorder(
         borderSide: BorderSide(
           color: Color(blue), // Màu của đường viền khi được nhấn vào
           width: 2.0,
