@@ -295,13 +295,12 @@ class _DetailTransactionState extends State<DetailTransaction> {
                           children: [
                             CircleAvatar(
                               backgroundColor: Colors.redAccent,
-                              child: Image.asset(
-                                imageBase().getIconWallets()[newWallet.icon],
+                              child: Image.asset(newWallet.icon,
                               ),
                             ),
                             Padding(
                               padding: const EdgeInsets.only(left: 18.0),
-                              child: Text(newWallet.description),
+                              child: Text(newWallet.name),
                             )
                           ],
                         ),

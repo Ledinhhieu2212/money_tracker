@@ -177,16 +177,20 @@ class _CreateScreenState extends State<CreateScreen> {
                 onPressed: () {
                   _showIconSelectionDialog();
                 },
-                child: Row(
+                child: wallet == null ?  
+                Container(
+                  height: 40,
+                  width: double.infinity,
+                  child: Text("Chọn loại ví"),
+                )
+                : Row(
                   children: [
-                    CircleAvatar(
-                      backgroundColor: Colors.redAccent,
-                      child: Image.asset(
-                          imageBase().getIconWallets()[wallet?.icon ?? 0]),
+                    CircleAvatar( 
+                      child: Image.asset( wallet!.icon  ),
                     ),
                     Padding(
                       padding: const EdgeInsets.only(left: 18.0),
-                      child: Text(wallet?.description ?? "Chọn biểu tượng"),
+                      child: Text(wallet!.name),
                     )
                   ],
                 ),
@@ -208,8 +212,7 @@ class _CreateScreenState extends State<CreateScreen> {
                   onPressed: () {
                     if (_formKey.currentState!.validate()) {
                       if (_money.text.isEmpty ||
-                          _date.text.isEmpty ||
-                          _description.text.isEmpty ||
+                          _date.text.isEmpty || 
                           wallet == null) {
                         buildErrorMessage(
                           "Lỗi",
@@ -218,8 +221,8 @@ class _CreateScreenState extends State<CreateScreen> {
                         );
                       } else {
                         int total = _type == 1
-                            ? (wallet?.total ?? 0) + int.parse(_money.text)
-                            : (wallet?.total ?? 0) - int.parse(_money.text);
+                            ? (wallet!.total ?? 0) + int.parse(_money.text)
+                            : (wallet!.total ?? 0) - int.parse(_money.text);
                         DateTime now = DateTime.now();
                         service.insert(
                           Transaction(

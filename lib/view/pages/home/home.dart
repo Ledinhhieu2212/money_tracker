@@ -198,8 +198,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   backgroundColor: Colors.white,
                                 ),
                                 icon: CircleAvatar(
-                                  child: Image.asset(imageBase()
-                                      .getIconWallets()[wallet.icon]),
+                                  child: Image.asset( wallet.icon),
                                 ),
                                 label: Row(
                                   mainAxisAlignment:

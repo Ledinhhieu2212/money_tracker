@@ -3,8 +3,9 @@ import 'package:uuid/uuid.dart';
 class Wallet {
   String? id_wallet;
   int id_user;
-  int icon;
   int total;
+  String icon;
+  String name;
   int money_price;
   String description;
   String create_up;
@@ -13,6 +14,7 @@ class Wallet {
   Wallet({
     this.id_wallet,
     required this.icon,
+    required this.name,
     required this.total,
     required this.id_user,
     required this.money_price,
@@ -26,6 +28,7 @@ class Wallet {
     return {
       'icon': icon,
       'total': total,
+      'name': name,
       'id_user': id_user,
       'id_wallet': uuid.v4(),
       'money_price': money_price,
@@ -39,6 +42,7 @@ class Wallet {
     return {
       'icon': icon,
       'total': total,
+      'name': name,
       'id_user': id_user,
       'id_wallet': id_wallet,
       'money_price': money_price,

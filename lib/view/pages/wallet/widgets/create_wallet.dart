@@ -12,6 +12,7 @@ import 'package:money_tracker/view/pages/navigation/navigation.dart';
 import 'package:money_tracker/view/widgets/Icon_selection_dialog.dart';
 import 'package:money_tracker/view/widgets/config.dart';
 import 'package:money_tracker/view/widgets/flash_message.dart';
+import 'package:money_tracker/view/widgets/select_wallets.dart';
 import 'package:money_tracker/view/widgets/text_field.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -23,10 +24,9 @@ class CreateWallet extends StatefulWidget {
 }
 
 class _CreateWalletState extends State<CreateWallet> {
-  int? userID; 
+  int? userID;
   int incomePrice = 0, spendingPrice = 0;
   late WalletService service;
-  List<Wallet> wallet = [];
 
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _wallet = TextEditingController();
@@ -34,10 +34,7 @@ class _CreateWalletState extends State<CreateWallet> {
   connectDatabase() async {
     userID = await UserPreference().getUserID();
     service = WalletService(await getDatabaseWallet());
-    var data = await service.searchWallets(userID!);
-    setState(() { 
-      wallet = data;
-    });
+    setState(() {});
   }
 
   @override
@@ -46,21 +43,11 @@ class _CreateWalletState extends State<CreateWallet> {
     super.initState();
   }
 
-  int selectedIcon = 0;
-  void _showIconSelectionDialog() {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return IconSelectionDialog(
-          icons: imageBase().getIconWallets(),
-          onIconSelected: (icon) {
-            setState(() {
-              selectedIcon = icon;
-            });
-          },
-        );
-      },
-    );
+  Map<String?, String?> iconWallet = {"icon": null, "name": null};
+  bool checkIconWallet(Map<String?, String?> icon_wallet) {
+    bool hasNullKey = icon_wallet.keys.any((key) => key == null);
+    bool hasNullValue = icon_wallet.values.any((value) => value == null);
+    return (hasNullKey || hasNullValue) ? true : false;
   }
 
   @override
@@ -103,38 +90,57 @@ class _CreateWalletState extends State<CreateWallet> {
                 color: Colors.white,
                 child: Column(
                   children: [
+                    MaterialButton(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 15, vertical: 10),
+                      onPressed: () {
+                        GetToPage(
+                          page: () => SelectWallets(
+                            onPress: (value) {
+                              setState(() {
+                                iconWallet["icon"] = value["icon"];
+                                iconWallet["name"] = value["name"];
+                              });
+                            },
+                          ),
+                        );
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(10),
+                        width: double.infinity,
+                        decoration: const BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(
+                              width: 1.5,
+                              color: Colors.grey,
+                            ),
+                          ),
+                        ),
+                        child: checkIconWallet(iconWallet)
+                            ? const Text("Chọn loại ví")
+                            : Row(
+                                children: [
+                                  CircleAvatar(
+                                    backgroundColor: Colors.transparent,
+                                    child: Image.asset(iconWallet["icon"]!),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(left: 18.0),
+                                    child: Text(iconWallet["name"]!),
+                                  )
+                                ],
+                              ),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 15),
                       child: TextField(
                         controller: _wallet,
                         decoration: const InputDecoration(
-                          labelText: "Tên ví",
+                          labelText: "Mô tả",
                           prefixIcon: Icon(Icons.article),
-                          // prefixIcon:
                         ),
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    MaterialButton(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 15, vertical: 10),
-                      onPressed: () {
-                        _showIconSelectionDialog();
-                      },
-                      child: Row(
-                        children: [
-                          CircleAvatar(
-                            backgroundColor: Colors.transparent,
-                            child: Image.asset(
-                                imageBase().getIconWallets()[selectedIcon]),
-                          ),
-                          const Padding(
-                            padding: EdgeInsets.only(left: 18.0),
-                            child: Text("Biểu tượng"),
-                          )
-                        ],
                       ),
                     ),
                   ],
@@ -156,23 +162,27 @@ class _CreateWalletState extends State<CreateWallet> {
                   ),
                   onPressed: () {
                     if (_formKey.currentState!.validate()) {
-                      // Process the data, for example, add the product to a list
-                      // or send it to an API
-
-                      if (_wallet.text.isEmpty) {
+                      if (checkIconWallet(iconWallet)) {
                         buildErrorMessage(
-                            "Lỗi", "Không được để trống mục tạo!", context);
-                      } else {
+                            "Lỗi",
+                            "Bạn phải chọn loại ví trước khi tạo mới!",
+                            context);
+                      }
+
+                      if (!checkIconWallet(iconWallet)) {
                         if (_money.text.isEmpty) {
                           _money.text = '0';
                         }
-                        
+                        if (_wallet.text.isEmpty) {
+                          _wallet.text = '';
+                        }
                         DateTime now = DateTime.now();
                         service.insert(
                           Wallet(
-                            total: int.parse(_money.text), 
+                            name: iconWallet['name']!,
+                            total: int.parse(_money.text),
                             id_user: userID!,
-                            icon: selectedIcon,
+                            icon: iconWallet["icon"]!,
                             money_price: int.parse(_money.text),
                             description: _wallet.text,
                             create_up: now.toString(),

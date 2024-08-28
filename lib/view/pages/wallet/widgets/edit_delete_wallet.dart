@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:money_tracker/model/wallet.dart';
 import 'package:money_tracker/view/widgets/config.dart';
 import 'package:money_tracker/constants/images.dart';
+import 'package:money_tracker/view/widgets/select_wallets.dart';
 import 'package:money_tracker/view/widgets/text_field.dart';
 import 'package:money_tracker/constants/app_style.dart';
 import 'package:money_tracker/constants/app_colors.dart';
@@ -21,8 +22,8 @@ class EditDeleteWallet extends StatefulWidget {
 
 class _EditDeleteWalletState extends State<EditDeleteWallet> {
   late WalletService service;
-  late Wallet wallet;
-  int selectedIcon = 0;
+   Wallet? wallet;
+  String selectedIcon = "";
   late TransactionService transactionService;
   int incomePrice = 0, spendingPrice = 0;
   final _formKey = GlobalKey<FormState>();
@@ -51,22 +52,6 @@ class _EditDeleteWalletState extends State<EditDeleteWallet> {
   void initState() {
     connectDatabase();
     super.initState();
-  }
-
-  void _showIconSelectionDialog() {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return IconSelectionDialog(
-          icons: imageBase().getIconWallets(),
-          onIconSelected: (icon) {
-            setState(() {
-              selectedIcon = icon;
-            });
-          },
-        );
-      },
-    );
   }
 
   void showDeleteWalletDialog({
@@ -161,19 +146,30 @@ class _EditDeleteWalletState extends State<EditDeleteWallet> {
                     MaterialButton(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 15, vertical: 10),
-                      onPressed: () {
-                        _showIconSelectionDialog();
+                      onPressed: () { 
+                        GetToPage(
+                          page: () => SelectWallets(
+                            onPress: (value) {
+                              setState(() {
+                                wallet!.icon = value["icon"];
+                                wallet!.name= value["name"]; 
+                              });
+                            },
+                          ),
+                        );
                       },
-                      child: Row(
+                      child: 
+                      wallet == null 
+                      ? CircularProgressIndicator()
+                      : Row(
                         children: [
                           CircleAvatar(
                             backgroundColor: Colors.transparent,
-                            child: Image.asset(
-                                imageBase().getIconWallets()[selectedIcon]),
+                            child: Image.asset(wallet!.icon),
                           ),
-                          const Padding(
-                            padding: EdgeInsets.only(left: 18.0),
-                            child: Text("Biểu tượng"),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 18.0),
+                            child: Text(wallet!.name),
                           )
                         ],
                       ),
@@ -200,15 +196,16 @@ class _EditDeleteWalletState extends State<EditDeleteWallet> {
                       DateTime now = DateTime.now();
                       service.update(
                         Wallet(
-                          id_wallet: wallet.id_wallet,
-                          icon: selectedIcon,
+                          name: wallet!.name,
+                          id_wallet: wallet!.id_wallet,
+                          icon: wallet!.icon,
                           description: _wallet.text,
-                          id_user: wallet.id_user,
+                          id_user: wallet!.id_user,
                           total: int.parse(_money.text) +
                               incomePrice -
                               spendingPrice,
                           money_price: int.parse(_money.text),
-                          create_up: wallet.create_up,
+                          create_up: wallet!.create_up,
                           upload_up: now.toString(),
                         ),
                       );

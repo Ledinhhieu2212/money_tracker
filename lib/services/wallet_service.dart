@@ -8,7 +8,7 @@ Future<Database> getDatabaseWallet() async {
       openDatabase(join(await getDatabasesPath(), 'wallet_database.db'),
           onCreate: (db, version) {
     return db.execute(
-        'create table IF NOT EXISTS wallets(id_wallet TEXT PRIMARY KEY, id_user INTEGER, icon INTEGER, money_price INTEGER, total INTEGER, description TEXT, create_up TEXT, upload_up TEXT)');
+        'create table IF NOT EXISTS wallets(id_wallet TEXT PRIMARY KEY, id_user INTEGER, icon TEXT, name TEXT, money_price INTEGER, total INTEGER, description TEXT, create_up TEXT, upload_up TEXT)');
   }, version: 1);
   return database;
 }
@@ -43,9 +43,10 @@ class WalletService {
     return [
       for (final {
             'id_wallet': id_wallet as String,
-            'icon': icon as int,
+            'icon': icon as String,
             'total': total as int,
             'id_user': id_user as int,
+            'name': name as String,
             'money_price': money_price as int,
             'description': description as String,
             "create_up": create_up as String,
@@ -54,6 +55,7 @@ class WalletService {
         Wallet(
           id_wallet: id_wallet,
           icon: icon,
+          name: name,
           total: total,
           id_user: id_user,
           money_price: money_price,
@@ -74,9 +76,10 @@ class WalletService {
     return [
       for (final {
             'id_wallet': id_wallet as String,
-            'icon': icon as int,
+            'icon': icon as String,
             'total': total as int,
             'id_user': id_user as int,
+            'name': name as String,
             'money_price': money_price as int,
             'description': description as String,
             "create_up": create_up as String,
@@ -85,6 +88,7 @@ class WalletService {
         Wallet(
           id_wallet: id_wallet,
           icon: icon,
+          name: name,
           total: total,
           id_user: id_user,
           money_price: money_price,
@@ -98,8 +102,9 @@ class WalletService {
   Future<Wallet> getById(String id) async {
     final List<Map<String, Object?>> wallet =
         await db.query("wallets", where: 'id_wallet=?', whereArgs: [id]);
-    return Wallet(
-      icon: int.parse(wallet.first['icon'].toString()),
+    return Wallet( 
+      icon: wallet.first['icon'].toString(),
+      name: wallet.first['name'].toString(),
       total: int.parse(wallet.first['total'].toString()),
       description: wallet.first['description'].toString(),
       id_user: int.parse(wallet.first['id_user'].toString()),

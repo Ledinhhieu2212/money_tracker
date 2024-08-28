@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:money_tracker/constants/app_style.dart';
 import 'package:money_tracker/constants/app_colors.dart';
-import 'package:money_tracker/constants/images.dart'; 
+import 'package:money_tracker/constants/images.dart';
 import 'package:money_tracker/model/wallet.dart';
 import 'package:money_tracker/services/share_preference.dart';
 import 'package:money_tracker/services/wallet_service.dart';
@@ -33,7 +33,7 @@ class _WalletScreenState extends State<WalletScreen> {
     setState(() {
       wallet = data;
       for (final t in wallet) {
-        price += double.parse(t.money_price.toString());
+        price += double.parse(t.total.toString());
       }
     });
   }
@@ -95,7 +95,7 @@ class _WalletScreenState extends State<WalletScreen> {
                           CircleAvatar(
                             backgroundColor: Colors.transparent,
                             child: Image.asset(
-                              imageBase().getIconWallets()[wallet[index].icon],
+                              wallet[index].icon,
                               width: 50,
                             ),
                           ),
@@ -107,7 +107,7 @@ class _WalletScreenState extends State<WalletScreen> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                       wallet[index].description,
+                                      wallet[index].name,
                                       style: const TextStyle(
                                           fontSize: 16,
                                           fontWeight: FontWeight.w600),

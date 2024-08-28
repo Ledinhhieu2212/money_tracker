@@ -36,15 +36,14 @@ class ListWallet extends StatelessWidget {
                   child: Row(
                     children: [
                       CircleAvatar(
-                        child: Image.asset(
-                          imageBase().getIconWallets()[wallets[index].icon],
+                        child: Image.asset(wallets[index].icon,
                           width: 26,
                         ),
                       ),
                       Padding(
                         padding: const EdgeInsets.only(left: 15.0),
                         child: Text(
-                          wallets[index].description,
+                          wallets[index].name,
                           style: const TextStyle(fontSize: 16),
                         ),
                       ),

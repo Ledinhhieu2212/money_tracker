@@ -97,6 +97,8 @@ class _WeekScreenState extends State<WeekScreen> {
 
   @override
   Widget build(BuildContext context) {
+    Map<String, String> img = imageBase().getIconWallets()[0];
+
     return Container(
       width: double.infinity,
       height: double.infinity,
@@ -188,9 +190,6 @@ class _WeekScreenState extends State<WeekScreen> {
                         Card(
                           child: Row(
                             children: [
-                              Flexible(
-                                child:  Image.asset(imageBase().getIconWallets()[]),
-                              ),
                             ],
                           ),
                         ),
