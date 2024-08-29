@@ -1,13 +1,11 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
-import 'package:money_tracker/constants/images.dart';
-import 'package:money_tracker/model/user.dart';
+import 'package:money_tracker/constants/config.dart';
+import 'package:money_tracker/constants/images.dart'; 
 import 'package:money_tracker/services/share_preference.dart';
-import 'package:money_tracker/view/pages/auth/login.dart';
-import 'package:money_tracker/view/widgets/config.dart';
-import 'package:money_tracker/view/pages/navigation/navigation.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:money_tracker/view/pages/auth/login.dart'; 
+import 'package:money_tracker/view/pages/navigation/navigation.dart'; 
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -45,7 +43,7 @@ class _SplashScreenState extends State<SplashScreen> {
       () async {
         WidgetsFlutterBinding.ensureInitialized();
         String? token = await UserPreference().getToken();
-        GetOffAllPage(
+        getOffAllPage(
             page: token == null
                 ? () => const LoginScreen()
                 : () => const NavigationMenu());

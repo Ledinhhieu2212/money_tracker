@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:money_tracker/constants/app_colors.dart';
-import 'package:money_tracker/model/user.dart';
+import 'package:money_tracker/constants/config.dart'; 
 import 'package:money_tracker/services/share_preference.dart';
 import 'package:money_tracker/view/widgets/notification.dart';
 import 'package:money_tracker/view/widgets/setting.dart';
 import 'package:money_tracker/view/pages/auth/login.dart';
 import 'package:money_tracker/view/widgets/button/button_tool_setting_no_right_icon.dart';
-import 'package:money_tracker/view/widgets/button/button_tool_setting_right_icon.dart';
-import 'package:money_tracker/view/widgets/config.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:money_tracker/view/widgets/button/button_tool_setting_right_icon.dart'; 
 import 'package:get/get.dart';
 
 class ToolPage extends StatelessWidget {
@@ -20,7 +18,7 @@ class ToolPage extends StatelessWidget {
 
   logOut() {
     resetToken();
-    GetOffAllPage(page: () => const LoginScreen());
+    getOffAllPage(page: () => const LoginScreen());
   }
 
   @override
@@ -46,7 +44,7 @@ class ToolPage extends StatelessWidget {
               ),
               Row(children: [
                 IconButton(
-                  onPressed: () => GetToPage(page: NotificationPage()),
+                  onPressed: () => getToPage(page: NotificationPage()),
                   icon: const Icon(
                     Icons.notifications,
                     color: Colors.white,
@@ -66,7 +64,7 @@ class ToolPage extends StatelessWidget {
                   Icons.settings,
                   color: Color(white),
                 ),
-                onPressed: () => GetToPage(page: SettingScreen()),
+                onPressed: () => getToPage(page: SettingScreen()),
                 title: "setting".tr,
                 backgroundIcon: Colors.purpleAccent),
             ButtonToolSettingNoRightIcon(

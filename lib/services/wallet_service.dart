@@ -8,7 +8,7 @@ Future<Database> getDatabaseWallet() async {
       openDatabase(join(await getDatabasesPath(), 'wallet_database.db'),
           onCreate: (db, version) {
     return db.execute(
-        'create table IF NOT EXISTS wallets(id_wallet TEXT PRIMARY KEY, id_user INTEGER, icon TEXT, name TEXT, money_price INTEGER, total INTEGER, description TEXT, create_up TEXT, upload_up TEXT)');
+        'create table IF NOT EXISTS wallets(id_wallet TEXT PRIMARY KEY, id_user INTEGER, icon TEXT, name TEXT, total INTEGER, description TEXT, create_up TEXT, upload_up TEXT)');
   }, version: 1);
   return database;
 }
@@ -46,8 +46,7 @@ class WalletService {
             'icon': icon as String,
             'total': total as int,
             'id_user': id_user as int,
-            'name': name as String,
-            'money_price': money_price as int,
+            'name': name as String, 
             'description': description as String,
             "create_up": create_up as String,
             "upload_up": upload_up as String,
@@ -57,8 +56,7 @@ class WalletService {
           icon: icon,
           name: name,
           total: total,
-          id_user: id_user,
-          money_price: money_price,
+          id_user: id_user, 
           description: description,
           create_up: create_up,
           upload_up: upload_up,
@@ -79,8 +77,7 @@ class WalletService {
             'icon': icon as String,
             'total': total as int,
             'id_user': id_user as int,
-            'name': name as String,
-            'money_price': money_price as int,
+            'name': name as String, 
             'description': description as String,
             "create_up": create_up as String,
             "upload_up": upload_up as String,
@@ -90,8 +87,7 @@ class WalletService {
           icon: icon,
           name: name,
           total: total,
-          id_user: id_user,
-          money_price: money_price,
+          id_user: id_user, 
           description: description,
           create_up: create_up,
           upload_up: upload_up,
@@ -108,8 +104,7 @@ class WalletService {
       total: int.parse(wallet.first['total'].toString()),
       description: wallet.first['description'].toString(),
       id_user: int.parse(wallet.first['id_user'].toString()),
-      id_wallet: wallet.first['id_wallet'].toString(),
-      money_price: int.parse(wallet.first['money_price'].toString()),
+      id_wallet: wallet.first['id_wallet'].toString(), 
       create_up: wallet.first['create_up'].toString(),
       upload_up: wallet.first['upload_up'].toString(),
     );

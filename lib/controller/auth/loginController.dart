@@ -3,15 +3,12 @@ import 'dart:convert';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:money_tracker/constants/config.dart';
 import 'package:money_tracker/model/user.dart';
 import 'package:money_tracker/services/api.dart';
 import 'package:money_tracker/services/share_preference.dart';
 import 'package:money_tracker/services/user_service.dart';
-import 'package:money_tracker/view/pages/navigation/navigation.dart';
-import 'package:money_tracker/view/widgets/config.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'dart:convert';
-import 'package:crypto/crypto.dart';
+import 'package:money_tracker/view/pages/navigation/navigation.dart';  
 
 class LoginController extends GetxController {
   TextEditingController phoneController = TextEditingController();
@@ -111,7 +108,7 @@ class LoginController extends GetxController {
         }
         phoneController.clear();
         passwordController.clear();
-        GetOffPage(page: () => const NavigationMenu());
+        getOffPage(page: () => const NavigationMenu());
       } else {
         if (phoneController.text.isEmpty || passwordController.text.isEmpty) {
           throw "Không được để chống trường nhập!";

@@ -157,45 +157,14 @@ class TransactionService {
     return totalMoney ?? 0;
   }
 
-  Future<int> totalPriceWalletType(
-      {required int userId,
-      required int typePrice,
-      required String walletID}) async {
-    final List<Map<String, Object?>> transaction = await db.query(
-        "transactions",
-        where: "id_user=? AND transaction_type=? AND id_wallet=?",
-        whereArgs: [userId, typePrice, walletID]);
-    int totalMoney = 0;
+  int totalWalletType(
+      {required int type,
+      required List<modelTransaction.Transaction> tracsactions}) {
+    int total = tracsactions
+        .where((transaction) => transaction.transaction_type == type)
+        .fold(0, (sum, transaction) => sum + transaction.money);
 
-    List<modelTransaction.Transaction> transactions = [
-      for (final {
-            'id': id as String,
-            'money': money as int,
-            'id_user': id_user as int,
-            'id_wallet': id_wallet as String,
-            'dateTime': dateTime as String,
-            'description': description as String,
-            'transaction_type': transaction_type as int,
-            "create_up": create_up as String,
-            "upload_up": upload_up as String
-          } in transaction)
-        modelTransaction.Transaction(
-          id: id,
-          money: money,
-          id_user: id_user,
-          dateTime: dateTime,
-          id_wallet: id_wallet,
-          description: description,
-          transaction_type: transaction_type,
-          create_up: create_up,
-          upload_up: upload_up,
-        ),
-    ];
-
-    for (final t in transactions) {
-      totalMoney += t.money;
-    }
-    return totalMoney ?? 0;
+    return total;
   }
 
   Future<modelTransaction.Transaction> getById(String id) async {
@@ -220,6 +189,7 @@ class TransactionService {
   }
 
   Future<void> deleteAllTransactions(String id_wallet) async {
-    await db.delete("transactions", where: "id_wallet=?", whereArgs: [id_wallet]);
+    await db
+        .delete("transactions", where: "id_wallet=?", whereArgs: [id_wallet]);
   }
 }

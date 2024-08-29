@@ -16,16 +16,16 @@ class SelectWallets extends StatelessWidget {
           "Chọn loại ví",
           style: TextStyle(fontSize: 20),
         ),
-        actions: [
-          TextButton(
-            child: const Icon(
-              Icons.add_circle_outlined,
-              color: Color(white),
-              size: 30,
-            ),
-            onPressed: () {},
-          ),
-        ],
+        // actions: [
+        //   TextButton(
+        //     child: const Icon(
+        //       Icons.add_circle_outlined,
+        //       color: Color(white),
+        //       size: 30,
+        //     ),
+        //     onPressed: () {},
+        //   ),
+        // ],
       ),
       body: Container(
         padding: const EdgeInsets.all(10),

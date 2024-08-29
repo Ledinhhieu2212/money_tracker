@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:money_tracker/constants/app_style.dart';
 import 'package:money_tracker/constants/app_colors.dart';
-import 'package:money_tracker/constants/images.dart';
+import 'package:money_tracker/constants/config.dart'; 
 import 'package:money_tracker/model/wallet.dart';
 import 'package:money_tracker/services/share_preference.dart';
 import 'package:money_tracker/services/wallet_service.dart';
-import 'package:money_tracker/view/pages/wallet/widgets/edit_delete_wallet.dart';
-import 'package:money_tracker/view/widgets/config.dart';
+import 'package:money_tracker/view/pages/wallet/widgets/edit_delete_wallet.dart'; 
 import 'package:money_tracker/view/pages/wallet/widgets/create_wallet.dart';
 
 class WalletScreen extends StatefulWidget {
@@ -52,7 +51,7 @@ class _WalletScreenState extends State<WalletScreen> {
       child: Center(
         child: RichText(
           text: TextSpan(
-              text: "Tổng tiền: $price ",
+              text: "Tổng tiền: ${formatMoney(price)} ",
               style: const TextStyle(
                   fontSize: 17,
                   color: Colors.black,
@@ -77,11 +76,16 @@ class _WalletScreenState extends State<WalletScreen> {
             child: ListView.builder(
               itemCount: wallet.length,
               itemBuilder: (context, index) {
+                TextStyle style_text = TextStyle(
+                  color: wallet[index].total >= 0 ? Colors.green : Colors.red,
+                  fontSize: 25,
+                  fontWeight: FontWeight.bold,
+                );
                 return GestureDetector(
                   onTap: () => {
-                    GetToPage(
+                    getToPage(
                       page: () => EditDeleteWallet(
-                        idWallet: wallet[index]!.id_wallet!,
+                        idWallet: wallet[index].id_wallet!,
                       ),
                     ),
                   },
@@ -99,27 +103,23 @@ class _WalletScreenState extends State<WalletScreen> {
                               width: 50,
                             ),
                           ),
-                          Row(
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.only(left: 20.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      wallet[index].name,
-                                      style: const TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w600),
-                                    ),
-                                    Text(
-                                        "Trước: ${wallet[index].money_price} đ"),
-                                    Text("Sau: ${wallet[index].total} đ"),
-                                  ],
+                          Padding(
+                            padding: const EdgeInsets.only(left: 20.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  wallet[index].name,
+                                  style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600),
                                 ),
-                              ),
-                            ],
-                          )
+                                Text(
+                                    "${formatMoney(wallet[index].total.toDouble())} đ",
+                                    style: style_text),
+                              ],
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -150,7 +150,7 @@ class _WalletScreenState extends State<WalletScreen> {
                 size: 30,
               ),
               onPressed: () {
-                GetToPage(page: () => const CreateWallet());
+                getToPage(page: () => const CreateWallet());
               },
             ),
           ],

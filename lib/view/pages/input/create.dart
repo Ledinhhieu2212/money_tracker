@@ -1,11 +1,10 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
+import 'package:money_tracker/constants/config.dart';
 import 'package:money_tracker/model/wallet.dart';
 import 'package:money_tracker/services/share_preference.dart';
-import 'package:money_tracker/view/pages/navigation/navigation.dart';
-import 'package:money_tracker/view/widgets/config.dart';
-import 'package:toggle_switch/toggle_switch.dart';
-import 'package:money_tracker/constants/images.dart';
+import 'package:money_tracker/view/pages/navigation/navigation.dart'; 
+import 'package:toggle_switch/toggle_switch.dart'; 
 import 'package:money_tracker/model/transaction.dart';
 import 'package:money_tracker/constants/app_style.dart';
 import 'package:money_tracker/constants/app_colors.dart';
@@ -24,7 +23,7 @@ class CreateScreen extends StatefulWidget {
 
 class _CreateScreenState extends State<CreateScreen> {
   late TransactionService service;
-  int? userID; 
+  int? userID;
   final _formKey = GlobalKey<FormState>();
 
   List<Wallet> wallets = [];
@@ -40,13 +39,13 @@ class _CreateScreenState extends State<CreateScreen> {
     walletService = WalletService(await getDatabaseWallet());
     var dataWallet = await walletService.searchWallets(userID!);
     setState(() {
-      wallets = dataWallet; 
+      wallets = dataWallet;
       String date = DateTime.now().toString().split(' ')[0];
       List<String> parts = date.split('-');
       String day = parts[2];
       String year = parts[0];
       String month = parts[1];
-      _date.text = "$day/$month/$year";
+      _date.text = "$day/$month/$year"; 
     });
   }
 
@@ -74,28 +73,59 @@ class _CreateScreenState extends State<CreateScreen> {
     );
   }
 
+  bool isByte(int byte) => byte != 0;
+
+  Future<void> selectDate() async {
+    DateTime now = DateTime.now();
+    DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: now,
+      lastDate: DateTime(2100),
+      firstDate: DateTime(2000),
+    );
+    if (picked != null) {
+      setState(() {
+        String date = picked.toString().split(' ')[0];
+        List<String> parts = date.split('-');
+        String year = parts[0];
+        String month = parts[1];
+        String day = parts[2];
+        _date.text = "$day/$month/$year";
+      });
+    }
+  }
+
+  void createTransaction() {
+    DateTime now = DateTime.now();
+    service.insert(
+      Transaction(
+        id_user: userID!,
+        dateTime: _date.text,
+        transaction_type: _type,
+        id_wallet: wallet!.id_wallet!,
+        money: int.parse(_money.text.replaceAll('.', '')),
+        description: _description.text,
+        create_up:  removeTimeDate(now).toString(),
+        upload_up: removeTimeDate(now).toString(),
+      ),
+    );
+  }
+
+  void updateWalletMoneyTotal() {
+    int total = _type == 1
+        ? wallet!.total + int.parse(_money.text.replaceAll('.', ''))
+        : wallet!.total - int.parse(_money.text.replaceAll('.', ''));
+    walletService.updateTotal(
+      walletID: wallet!.id_wallet!,
+      price: total,
+    );
+  }
+
+  bool isEmptyTextfield() =>
+      _money.text.isEmpty || _date.text.isEmpty || wallet == null;
+
   @override
   Widget build(BuildContext context) {
-    Future<void> selectDate() async {
-      DateTime now = DateTime.now();
-      DateTime? picked = await showDatePicker(
-        context: context,
-        initialDate: now,
-        lastDate: DateTime(2100),
-        firstDate: DateTime(2000),
-      );
-      if (picked != null) {
-        setState(() {
-          String date = picked.toString().split(' ')[0];
-          List<String> parts = date.split('-');
-          String year = parts[0];
-          String month = parts[1];
-          String day = parts[2];
-          _date.text = "$day/$month/$year";
-        });
-      }
-    }
-
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -120,7 +150,7 @@ class _CreateScreenState extends State<CreateScreen> {
                   children: [
                     const Text("Số tiền"),
                     textFormFieldCreateMoney(
-                        controller: _money, color: Colors.red),
+                        controller: _money, color:  isByte(_type) ? Colors.green : Colors.red),
                   ],
                 ),
               ),
@@ -130,6 +160,7 @@ class _CreateScreenState extends State<CreateScreen> {
                 minHeight: 50,
                 totalSwitches: 2,
                 cornerRadius: 10,
+                initialLabelIndex: _type,
                 inactiveFgColor: Colors.white,
                 inactiveBgColor: Colors.black26,
                 activeFgColor: const Color(white),
@@ -138,8 +169,10 @@ class _CreateScreenState extends State<CreateScreen> {
                   'Chi tiêu',
                   'Thu nhập',
                 ],
-                onToggle: (index) {
-                  _type = index!;
+                onToggle: (index) { 
+                  setState(() { 
+                    _type = index!;
+                  });
                 },
               ),
               Container(
@@ -177,23 +210,23 @@ class _CreateScreenState extends State<CreateScreen> {
                 onPressed: () {
                   _showIconSelectionDialog();
                 },
-                child: wallet == null ?  
-                Container(
-                  height: 40,
-                  width: double.infinity,
-                  child: Text("Chọn loại ví"),
-                )
-                : Row(
-                  children: [
-                    CircleAvatar( 
-                      child: Image.asset( wallet!.icon  ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 18.0),
-                      child: Text(wallet!.name),
-                    )
-                  ],
-                ),
+                child: wallet == null
+                    ? const SizedBox(
+                        height: 40,
+                        width: double.infinity,
+                        child: Text("Chọn loại ví"),
+                      )
+                    : Row(
+                        children: [
+                          CircleAvatar(
+                            child: Image.asset(wallet!.icon),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 18.0),
+                            child: Text(wallet!.name),
+                          )
+                        ],
+                      ),
               ),
               Container(
                 height: 50,
@@ -211,33 +244,15 @@ class _CreateScreenState extends State<CreateScreen> {
                   ),
                   onPressed: () {
                     if (_formKey.currentState!.validate()) {
-                      if (_money.text.isEmpty ||
-                          _date.text.isEmpty || 
-                          wallet == null) {
+                      if (isEmptyTextfield()) {
                         buildErrorMessage(
                           "Lỗi",
                           "Không được để trống mục tạo!",
                           context,
                         );
                       } else {
-                        int total = _type == 1
-                            ? (wallet!.total ?? 0) + int.parse(_money.text)
-                            : (wallet!.total ?? 0) - int.parse(_money.text);
-                        DateTime now = DateTime.now();
-                        service.insert(
-                          Transaction(
-                            id_user: userID!,
-                            dateTime: _date.text,
-                            transaction_type: _type,
-                            id_wallet: wallet!.id_wallet!,
-                            money: int.parse(_money.text),
-                            description: _description.text,
-                            create_up: now.toString(),
-                            upload_up: now.toString(),
-                          ),
-                        );
-                        walletService.updateTotal(
-                            walletID: wallet!.id_wallet!, price: total);
+                        createTransaction();
+                        updateWalletMoneyTotal();
                         buildSuccessMessage(
                           "Thành công!",
                           "Thành công tạo giao dịch.",
@@ -246,7 +261,7 @@ class _CreateScreenState extends State<CreateScreen> {
                         _money.clear();
                         _date.clear();
                         _description.clear();
-                        GetOffAllPage(page: () => const NavigationMenu());
+                        getOffAllPage(page: () => const NavigationMenu());
                       }
                     } else {
                       buildWarningMessage(

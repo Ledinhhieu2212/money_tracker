@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:money_tracker/constants/config.dart';
 import 'package:money_tracker/controller/auth/registerController.dart';
 import 'package:money_tracker/constants/images.dart';
 import 'package:money_tracker/view/pages/auth/login.dart';
-import 'package:money_tracker/view/widgets/button.dart';
-import 'package:money_tracker/view/widgets/config.dart';
+import 'package:money_tracker/view/widgets/button.dart'; 
 import 'package:money_tracker/view/widgets/text_field.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
@@ -65,7 +65,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             ),
           ),
           TextButton(
-            onPressed: () => GetToPage(page: const LoginScreen()),
+            onPressed: () => getToPage(page: const LoginScreen()),
             child: Text("link_login_account".tr),
           ),
         ],

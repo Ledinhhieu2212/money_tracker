@@ -5,8 +5,7 @@ class Wallet {
   int id_user;
   int total;
   String icon;
-  String name;
-  int money_price;
+  String name; 
   String description;
   String create_up;
   String upload_up;
@@ -16,8 +15,7 @@ class Wallet {
     required this.icon,
     required this.name,
     required this.total,
-    required this.id_user,
-    required this.money_price,
+    required this.id_user, 
     required this.description,
     required this.create_up,
     required this.upload_up,
@@ -30,8 +28,7 @@ class Wallet {
       'total': total,
       'name': name,
       'id_user': id_user,
-      'id_wallet': uuid.v4(),
-      'money_price': money_price,
+      'id_wallet': uuid.v4(), 
       'description': description,
       "create_up": create_up,
       "upload_up": upload_up,
@@ -44,8 +41,7 @@ class Wallet {
       'total': total,
       'name': name,
       'id_user': id_user,
-      'id_wallet': id_wallet,
-      'money_price': money_price,
+      'id_wallet': id_wallet, 
       'description': description,
       "create_up": create_up,
       "upload_up": upload_up,

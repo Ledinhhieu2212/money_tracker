@@ -1,13 +1,12 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
-import 'package:money_tracker/constants/images.dart';
+import 'package:money_tracker/constants/config.dart'; 
 import 'package:money_tracker/model/wallet.dart';
 import 'package:money_tracker/services/wallet_service.dart';
 import 'package:money_tracker/view/pages/navigation/navigation.dart';
 import 'package:money_tracker/view/widgets/flash_message.dart';
 import 'package:money_tracker/view/widgets/list_wallet.dart';
-import 'package:toggle_switch/toggle_switch.dart';
-import 'package:money_tracker/view/widgets/config.dart';
+import 'package:toggle_switch/toggle_switch.dart'; 
 import 'package:money_tracker/model/transaction.dart';
 import 'package:money_tracker/view/widgets/text_field.dart';
 import 'package:money_tracker/constants/app_style.dart';
@@ -30,6 +29,7 @@ class _DetailTransactionState extends State<DetailTransaction> {
   late Transaction transaction;
   late Wallet newWallet = widget.wallet;
   List<Wallet> wallets = [];
+  List<Transaction> transactions = [];
   late WalletService walletService;
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _date = TextEditingController();
@@ -39,14 +39,17 @@ class _DetailTransactionState extends State<DetailTransaction> {
     service = TransactionService(await getDatabase());
     walletService = WalletService(await getDatabaseWallet());
     Transaction p = await service.getById(widget.transactionid);
+    List<Transaction> date2 =
+        await service.searchOfUser(userId: widget.wallet.id_user);
     var data = await walletService.searchWallets(widget.wallet.id_user);
     setState(
       () {
         wallets = data;
         transaction = p;
+        transactions = date2;
         newWallet = widget.wallet;
         _date.text = p.dateTime;
-        _price.text = p.money.toString();
+        _price.text = formatMoney(p.money.toDouble());
         _description.text = p.description;
         _currentIndex = p.transaction_type;
       },
@@ -104,7 +107,7 @@ class _DetailTransactionState extends State<DetailTransaction> {
                   "Xóa thành công",
                   context,
                 );
-                GetOffAllPage(
+                getOffAllPage(
                   page: () => const NavigationMenu(),
                 );
               },
@@ -116,42 +119,44 @@ class _DetailTransactionState extends State<DetailTransaction> {
     );
   }
 
-  void updateWallet(
-      {required Wallet oldWallet, required Wallet newWallet}) async {
-    if (oldWallet.id_wallet == newWallet.id_wallet) {
-      int income = 0;
-      int expense = 0;
-      income = await service.totalPriceWalletType(
-          userId: oldWallet.id_user,
-          typePrice: 1,
-          walletID: oldWallet.id_wallet!);
-
-      expense = await service.totalPriceWalletType(
-          userId: oldWallet.id_user,
-          typePrice: 1,
-          walletID: oldWallet.id_wallet!);
-      int total = int.parse(_price.text) + income - expense;
+  void updateWallet({
+    required Wallet oldWallet,
+    required Wallet newWallet,
+  }) {
+    if (oldWallet.id_wallet == newWallet.id_wallet) { 
+      int total = 0;
+      // Nếu đổi loại thanh toán
+      if (transaction.transaction_type != _currentIndex) {
+        // Nếu thanh toán mới là 1
+        if (_currentIndex == 1) {
+          // Cộng nhân 2  tiền cũ
+          total = oldWallet.total +
+              (int.parse(removeCurrencySeparator(_price.text)) * 2);
+        } else {
+          // Trừ nhân 2  tiền cũ
+          total = oldWallet.total -
+              (int.parse(removeCurrencySeparator(_price.text)) * 2);
+        }
+      } else {
+        total = oldWallet.total;
+      }
       walletService.updateTotal(walletID: oldWallet.id_wallet!, price: total);
-    }
-
-  if (oldWallet.id_wallet != newWallet.id_wallet) {
-      int total = _currentIndex == 1
+    }else {
+      int totalAdd = _currentIndex == 1
           ? newWallet.total + transaction.money
           : newWallet.total - transaction.money;
-      walletService.updateTotal(walletID: newWallet.id_wallet!, price: total);
+      walletService.updateTotal(walletID: newWallet.id_wallet!, price: totalAdd);
 
-      int totaldelete = transaction.transaction_type == 1
+      int totalChange = transaction.transaction_type == 1
           ? oldWallet.total - transaction.money
           : oldWallet.total + transaction.money;
       walletService.updateTotal(
-          walletID: oldWallet.id_wallet!, price: totaldelete);
+          walletID: oldWallet.id_wallet!, price: totalChange);
     }
   }
 
   bool isAnyFieldEmpty() {
-    return _price.text.isEmpty ||
-        _date.text.isEmpty ||
-        _description.text.isEmpty;
+    return _price.text.isEmpty || _date.text.isEmpty;
   }
 
   void updateTransaction() {
@@ -160,41 +165,19 @@ class _DetailTransactionState extends State<DetailTransaction> {
       Transaction(
         id: transaction.id,
         id_user: transaction.id_user,
-        dateTime: _date.text,
+        dateTime: transaction.dateTime,
         id_wallet: newWallet.id_wallet!,
-        money: int.parse(_price.text),
+        money: transaction.money,
         description: _description.text,
         transaction_type: _currentIndex,
         create_up: transaction.create_up,
-        upload_up: now.toString(),
+        upload_up: removeTimeDate(now).toString(),
       ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    Future<void> selectDate() async {
-      DateTime? picked = await showDatePicker(
-        context: context,
-        lastDate: DateTime(2100),
-        firstDate: DateTime(2000),
-        initialDate: DateTime.now(),
-      );
-
-      if (picked != null) {
-        setState(
-          () {
-            String date = picked.toString().split(' ')[0];
-            List<String> parts = date.split('-');
-            String year = parts[0];
-            String month = parts[1];
-            String day = parts[2];
-            _date.text = "$day/$month/$year";
-          },
-        );
-      }
-    }
-
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -223,8 +206,10 @@ class _DetailTransactionState extends State<DetailTransaction> {
                   children: [
                     const Text("Số tiền"),
                     textFormFieldCreateMoney(
-                        controller: _price,
-                        color: _currentIndex == 0 ? Colors.red : Colors.green),
+                      controller: _price,
+                      color: _currentIndex == 0 ? Colors.red : Colors.green,
+                      isEnabled: false,
+                    ),
                   ],
                 ),
               ),
@@ -244,7 +229,9 @@ class _DetailTransactionState extends State<DetailTransaction> {
                   'Thu nhập',
                 ],
                 onToggle: (index) {
-                  _currentIndex = index!;
+                  setState(() {
+                    _currentIndex = index!;
+                  });
                 },
               ),
               const SizedBox(
@@ -280,9 +267,6 @@ class _DetailTransactionState extends State<DetailTransaction> {
                           labelText: 'Ngày',
                           prefixIcon: Icon(Icons.calendar_today),
                         ),
-                        onTap: () {
-                          selectDate();
-                        },
                       ),
                     ),
                     MaterialButton(
@@ -295,7 +279,8 @@ class _DetailTransactionState extends State<DetailTransaction> {
                           children: [
                             CircleAvatar(
                               backgroundColor: Colors.redAccent,
-                              child: Image.asset(newWallet.icon,
+                              child: Image.asset(
+                                newWallet.icon,
                               ),
                             ),
                             Padding(
@@ -338,7 +323,7 @@ class _DetailTransactionState extends State<DetailTransaction> {
                         );
                         buildSuccessMessage(
                             "Thành công!", "Sửa thành công", context);
-                        GetOffAllPage(page: () => const NavigationMenu());
+                        getOffAllPage(page: () => const NavigationMenu());
                       }
                     } else {
                       buildWarningMessage(

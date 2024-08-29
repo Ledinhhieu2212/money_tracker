@@ -1,11 +1,11 @@
+import 'package:money_tracker/constants/config.dart';
 import 'package:money_tracker/controller/auth/loginController.dart';
 import 'package:money_tracker/view/pages/auth/register.dart';
 import 'package:money_tracker/controller/controller.dart';
 import 'package:money_tracker/constants/app_style.dart';
 import 'package:money_tracker/view/widgets/text_field.dart';
 import 'package:money_tracker/constants/images.dart';
-import 'package:money_tracker/view/widgets/button.dart';
-import 'package:money_tracker/view/widgets/config.dart';
+import 'package:money_tracker/view/widgets/button.dart'; 
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:get/get.dart';
@@ -74,7 +74,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                               TextButton(
                                 onPressed: () =>
-                                    GetToPage(page: const RegisterScreen()),
+                                    getToPage(page: const RegisterScreen()),
                                 child: Text("link_register_account".tr),
                               ),
                             ],

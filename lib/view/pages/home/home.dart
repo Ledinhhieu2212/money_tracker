@@ -1,9 +1,8 @@
-import 'package:money_tracker/constants/images.dart';
+import 'package:money_tracker/constants/config.dart'; 
 import 'package:money_tracker/controller/homeController.dart';
 import 'package:money_tracker/view/pages/input/detail_transaction.dart';
 import 'package:money_tracker/view/widgets/notification.dart';
-import 'package:money_tracker/constants/app_colors.dart';
-import 'package:money_tracker/view/widgets/config.dart';
+import 'package:money_tracker/constants/app_colors.dart'; 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -29,7 +28,7 @@ class _HomeScreenState extends State<HomeScreen> {
       padding: const EdgeInsets.only(bottom: 10.0),
       child: RichText(
         text: TextSpan(
-          text: _obscureText ? "${h.price.value} " : "***000 ",
+          text: _obscureText ? "${formatMoney(h.price.value.toDouble())} " : "***000 ",
           style: const TextStyle(
               fontWeight: FontWeight.bold, color: Color(primary), fontSize: 30),
           children: const <TextSpan>[
@@ -51,7 +50,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return RichText(
       text: TextSpan(
           text:
-              "${'spending'.tr}: ${_obscureText ? '${h.spendingPrice.value} ' : "***000 "}",
+              "${'spending'.tr}: ${_obscureText ? '${formatMoney(h.spendingPrice.value.toDouble())} ' : "***000 "}",
           style: const TextStyle(color: Colors.red),
           children: const [
             TextSpan(
@@ -69,7 +68,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return RichText(
       text: TextSpan(
         text:
-            "${'income'.tr}: ${_obscureText ? '${h.incomePrice.value} ' : "***000 "}",
+            "${'income'.tr}: ${_obscureText ? '${formatMoney(h.incomePrice.value.toDouble())} ' : "***000 "}",
         style: const TextStyle(color: Colors.green),
         children: const [
           TextSpan(
@@ -149,7 +148,7 @@ class _HomeScreenState extends State<HomeScreen> {
         actions: [
           IconButton(
             onPressed: () {
-              GetToPage(page: () => NotificationPage());
+              getToPage(page: () => NotificationPage());
             },
             icon: const Icon(Icons.notifications),
           )
@@ -208,9 +207,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                       padding:
                                           const EdgeInsets.only(left: 10.0),
                                       child: Text(
-                                        wallet.description,
+                                        wallet.name,
                                         style: const TextStyle(
                                           color: Color(black),
+                                          fontSize: 17,
+                                          fontWeight: FontWeight.bold,
                                         ),
                                       ),
                                     ),
@@ -259,7 +260,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                               transaction.transaction_type);
                                           return MaterialButton(
                                             onPressed: () {
-                                              GetToPage(
+                                              getToPage(
                                                 page: () => DetailTransaction(
                                                   transactionid:
                                                       transaction.id!,
@@ -319,7 +320,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                   ),
                                                   isType
                                                       ? Text(
-                                                          '+${transaction.money}đ',
+                                                          '+${formatMoney(transaction.money.toDouble())}đ',
                                                           style: const TextStyle(
                                                               color:
                                                                   Colors.green,
@@ -329,7 +330,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                       .bold),
                                                         )
                                                       : Text(
-                                                          '-${transaction.money}đ',
+                                                          '-${formatMoney(transaction.money.toDouble())}đ',
                                                           style: const TextStyle(
                                                               color: Colors.red,
                                                               fontSize: 25,

@@ -2,19 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:money_tracker/constants/app_colors.dart';
 import 'package:money_tracker/constants/app_style.dart';
-import 'package:money_tracker/constants/images.dart';
-import 'package:money_tracker/model/transaction.dart';
+import 'package:money_tracker/constants/config.dart';
 import 'package:money_tracker/model/wallet.dart';
 import 'package:money_tracker/services/share_preference.dart';
-import 'package:money_tracker/services/transaction_service.dart';
 import 'package:money_tracker/services/wallet_service.dart';
 import 'package:money_tracker/view/pages/navigation/navigation.dart';
-import 'package:money_tracker/view/widgets/Icon_selection_dialog.dart';
-import 'package:money_tracker/view/widgets/config.dart';
 import 'package:money_tracker/view/widgets/flash_message.dart';
 import 'package:money_tracker/view/widgets/select_wallets.dart';
-import 'package:money_tracker/view/widgets/text_field.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class CreateWallet extends StatefulWidget {
   const CreateWallet({super.key});
@@ -30,7 +24,6 @@ class _CreateWalletState extends State<CreateWallet> {
 
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _wallet = TextEditingController();
-  final TextEditingController _money = TextEditingController();
   connectDatabase() async {
     userID = await UserPreference().getUserID();
     service = WalletService(await getDatabaseWallet());
@@ -66,22 +59,6 @@ class _CreateWalletState extends State<CreateWallet> {
           key: _formKey,
           child: Column(
             children: [
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-                color: Colors.white,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    const Text("Số dư ban đầu"),
-                    textFormFieldCreateMoney(
-                      controller: _money,
-                      color: const Color(primary),
-                      error: "Không nhập tiền giao dịch",
-                    )
-                  ],
-                ),
-              ),
               const SizedBox(
                 height: 10,
               ),
@@ -94,7 +71,7 @@ class _CreateWalletState extends State<CreateWallet> {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 15, vertical: 10),
                       onPressed: () {
-                        GetToPage(
+                        getToPage(
                           page: () => SelectWallets(
                             onPress: (value) {
                               setState(() {
@@ -170,9 +147,6 @@ class _CreateWalletState extends State<CreateWallet> {
                       }
 
                       if (!checkIconWallet(iconWallet)) {
-                        if (_money.text.isEmpty) {
-                          _money.text = '0';
-                        }
                         if (_wallet.text.isEmpty) {
                           _wallet.text = '';
                         }
@@ -180,20 +154,18 @@ class _CreateWalletState extends State<CreateWallet> {
                         service.insert(
                           Wallet(
                             name: iconWallet['name']!,
-                            total: int.parse(_money.text),
                             id_user: userID!,
+                            total: 0,
                             icon: iconWallet["icon"]!,
-                            money_price: int.parse(_money.text),
                             description: _wallet.text,
-                            create_up: now.toString(),
-                            upload_up: now.toString(),
+                            create_up: removeTimeDate(now).toString(),
+                            upload_up: removeTimeDate(now).toString(),
                           ),
                         );
                         buildSuccessMessage(
                             "Thành công!", "Thành công tạo ví.", context);
-                        _money.clear();
                         _wallet.clear();
-                        GetOffAllPage(
+                        getOffAllPage(
                             page: () => const NavigationMenu(
                                   routerNavigationMenu: 1,
                                 ));

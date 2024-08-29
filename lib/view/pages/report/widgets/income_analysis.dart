@@ -1,9 +1,14 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'dart:math' as math;
 import 'package:money_tracker/constants/app_colors.dart';
+import 'package:money_tracker/constants/config.dart';
 import 'package:money_tracker/model/transaction.dart';
+import 'package:money_tracker/model/wallet.dart';
 import 'package:money_tracker/services/share_preference.dart';
 import 'package:money_tracker/services/transaction_service.dart';
+import 'package:money_tracker/services/wallet_service.dart';
 import 'package:money_tracker/view/widgets/charts/line_chart.dart';
 
 class IncomeAnalysis extends StatefulWidget {
@@ -25,11 +30,7 @@ class _IncomeAnalysisState extends State<IncomeAnalysis> {
       body: WeekScreen(),
     );
   }
-
-  
-
 }
-
 
 class WeekScreen extends StatefulWidget {
   const WeekScreen({super.key});
@@ -42,9 +43,10 @@ class _WeekScreenState extends State<WeekScreen> {
   DateTime? _startDate;
   DateTime? _endDate;
   String dattime = '';
-  late Transaction transaction;
   List<Transaction> transactions = [];
+  List<Wallet> wallets = [];
   late TransactionService service;
+  late WalletService wallertService;
   @override
   void initState() {
     super.initState();
@@ -55,10 +57,18 @@ class _WeekScreenState extends State<WeekScreen> {
   void _connectdatabase() async {
     int userId = await UserPreference().getUserID();
     service = TransactionService(await getDatabase());
-    var data = await service.searchOfUser(userId: userId);
+    wallertService = WalletService(await getDatabaseWallet());
+    var data1 = await service.searchOfUser(userId: userId);
+    var data2 = await wallertService.searchWallets(userId);
     setState(() {
-      transactions =
-          data.where((element) => element.transaction_type == 1).toList();
+      transactions = data1
+          .where((element) => element.transaction_type == 1)
+          .where((element) {
+        DateTime date = formatStringToDate(element.dateTime);
+        return date.compareTo(_startDate!) >= 0 &&
+            date.compareTo(_endDate!) <= 0;
+      }).toList();
+      wallets = data2;
     });
   }
 
@@ -67,28 +77,33 @@ class _WeekScreenState extends State<WeekScreen> {
     final startOfWeek = now.subtract(Duration(days: now.weekday - 1));
     final endOfWeek = startOfWeek.add(const Duration(days: 6));
     setState(() {
-      _startDate = startOfWeek;
-      _endDate = endOfWeek;
+      _startDate = removeTimeDate(startOfWeek);
+      _endDate = removeTimeDate(endOfWeek);
     });
   }
 
-  Future<void> _editDateRange() async {
-    final DateTimeRange? picked = await showDateRangePicker(
-      context: context,
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2101),
-      initialDateRange: DateTimeRange(
-        start: _startDate ?? DateTime.now(),
-        end: _endDate ?? DateTime.now(),
-      ),
-    );
+  void _increaseDateRangeByOneWeek({
+    required List<Transaction> tr,
+    required DateTime start,
+    required DateTime end,
+  }) {
+    setState(() {
+      _startDate = start;
+      _endDate = end;
+      _connectdatabase();
+    });
+  }
 
-    if (picked != null) {
-      setState(() {
-        _startDate = picked.start;
-        _endDate = picked.end;
-      });
-    }
+  void _decreaseDateRangeByOneWeek({
+    required List<Transaction> tr,
+    required DateTime start,
+    required DateTime end,
+  }) {
+    setState(() {
+      _startDate = start;
+      _endDate = end;
+      _connectdatabase();
+    });
   }
 
   @override
@@ -99,41 +114,66 @@ class _WeekScreenState extends State<WeekScreen> {
       color: const Color(grey),
       child: Column(
         children: [
-          MaterialButton(
-            onPressed: _editDateRange,
-            child: Container(
-              width: double.infinity,
-              height: 50,
-              alignment: Alignment.centerLeft,
-              margin: const EdgeInsets.symmetric(vertical: 5),
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(
-                  color: Colors.green,
-                  width: 2,
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.2),
-                    spreadRadius: 2,
-                    blurRadius: 5,
-                    offset: const Offset(0, 3), // thay đổi vị trí bóng đổ
-                  ),
-                ],
+          Container(
+            height: 50,
+            width: double.infinity,
+            alignment: Alignment.centerLeft,
+            margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 15),
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(
+                color: CupertinoColors.systemGreen,
+                width: 2,
               ),
-              child: (_startDate != null && _endDate != null)
-                  ? Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                            "Từ ${_startDate!.day}/${_startDate!.month}/${_startDate!.year} "),
-                        Text(
-                            "Đến ${_endDate!.day}/${_endDate!.month}/${_endDate!.year} "),
-                      ],
-                    )
-                  : const Text("Chọn tuần"),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.2),
+                  spreadRadius: 2,
+                  blurRadius: 5,
+                  offset: const Offset(0, 3),
+                ),
+              ],
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Flexible(
+                  flex: 1,
+                  child: MaterialButton(
+                    child: const Icon(Icons.arrow_back_ios_new_rounded),
+                    onPressed: () {
+                      _decreaseDateRangeByOneWeek(
+                        tr: transactions,
+                        start: _startDate!.subtract(const Duration(days: 7)),
+                        end: _endDate!.subtract(const Duration(days: 7)),
+                      );
+                    },
+                  ),
+                ),
+                Flexible(
+                  flex: 8,
+                  child: Text(
+                      "${FormatDateVi(_startDate!)} - ${FormatDateVi(_endDate!)}"),
+                ),
+                Flexible(
+                  flex: 1,
+                  child: Transform.rotate(
+                    angle: 180 * math.pi / 180,
+                    child: MaterialButton(
+                      child: const Icon(Icons.arrow_back_ios_new_rounded),
+                      onPressed: () {
+                        _increaseDateRangeByOneWeek(
+                          tr: transactions,
+                          start: _startDate!.add(const Duration(days: 7)),
+                          end: _endDate!.add(const Duration(days: 7)),
+                        );
+                      },
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
           Container(
@@ -149,39 +189,122 @@ class _WeekScreenState extends State<WeekScreen> {
               start: _startDate!,
               end: _endDate!,
               transactions: transactions,
+              grandienColors: [
+                CupertinoColors.systemGreen,
+                CupertinoColors.systemGreen,
+              ],
+              income_express: CupertinoColors.systemGreen,
             ),
           ),
-          Expanded(
-            child: Container(
-              margin: const EdgeInsets.symmetric(
-                horizontal: 15,
-                vertical: 5,
-              ),
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Column(
+          TransactionExpense(tr: transactions, wl: wallets),
+        ],
+      ),
+    );
+  }
+}
+
+class TransactionExpense extends StatelessWidget {
+  final List<Transaction> tr;
+  final List<Wallet> wl;
+  const TransactionExpense({
+    super.key,
+    required this.tr,
+    required this.wl,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: Container(
+        margin: const EdgeInsets.symmetric(
+          horizontal: 15,
+          vertical: 5,
+        ),
+        width: double.infinity,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: tr.isEmpty
+            ? const Padding(
+                padding: EdgeInsets.only(top: 50.0),
+                child: Text(
+                  "Chưa có giao dịch chi tiêu trong tuần này!",
+                  textAlign: TextAlign.center,
+                ),
+              )
+            : Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(
-                    padding: const EdgeInsets.all(10),
-                    child: const Row(
-                      children: [
-                        Column(
-                          children: [
-                            // Text("Ngày: $dattime"),
-                            Text("Thông tin giao dịch: "),
-                          ],
-                        )
-                      ],
+                  const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                    child: Text(
+                      "Thông tin giao dịch: ",
+                      textAlign: TextAlign.left,
                     ),
-                  )
+                  ),
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: tr.length,
+                      itemBuilder: (context, index) {
+                        var transaction = tr[index];
+                        var wallet = wl
+                            .where(
+                              (element) =>
+                                  element.id_wallet == transaction.id_wallet,
+                            )
+                            .toList()
+                            .first;
+                        return Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 5),
+                          height: 60,
+                          width: double.infinity,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Flexible(
+                                flex: 2,
+                                child: Image.asset(
+                                  wallet.icon,
+                                ),
+                              ),
+                              Flexible(
+                                flex: 8,
+                                child: Container(
+                                    decoration: const BoxDecoration(
+                                        border: Border(
+                                            bottom: BorderSide(
+                                      width: 1,
+                                    ))),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          transaction.dateTime,
+                                          style: const TextStyle(
+                                              color: Colors.black),
+                                        ),
+                                        Text(
+                                          "+${transaction.money}đ",
+                                          style: const TextStyle(
+                                            color: CupertinoColors.systemGreen,
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        )
+                                      ],
+                                    )),
+                              )
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+                  ),
                 ],
               ),
-            ),
-          )
-        ],
       ),
     );
   }
