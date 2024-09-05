@@ -191,7 +191,8 @@ class _DetailTransactionState extends State<DetailTransaction> {
         padding: const EdgeInsets.all(10),
         child: Form(
           key: _formKey,
-          child: Column(
+          child: SingleChildScrollView(
+    child: Column(
             children: [
               Container(
                 padding: const EdgeInsets.all(20.0),
@@ -367,7 +368,7 @@ class _DetailTransactionState extends State<DetailTransaction> {
               ),
             ],
           ),
-        ),
+        ),),
       ),
     );
   }

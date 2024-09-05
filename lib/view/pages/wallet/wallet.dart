@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:money_tracker/constants/app_style.dart';
 import 'package:money_tracker/constants/app_colors.dart';
-import 'package:money_tracker/constants/config.dart'; 
+import 'package:money_tracker/constants/config.dart';
 import 'package:money_tracker/model/wallet.dart';
 import 'package:money_tracker/services/share_preference.dart';
 import 'package:money_tracker/services/wallet_service.dart';
-import 'package:money_tracker/view/pages/wallet/widgets/edit_delete_wallet.dart'; 
+import 'package:money_tracker/view/pages/wallet/widgets/edit_delete_wallet.dart';
 import 'package:money_tracker/view/pages/wallet/widgets/create_wallet.dart';
 
 class WalletScreen extends StatefulWidget {
@@ -25,10 +26,15 @@ class _WalletScreenState extends State<WalletScreen> {
     color: Colors.white,
     fontWeight: FontWeight.bold,
   );
-  _loadingHome() async {
-    int id = await UserPreference().getUserID();
+  loadUser() async {
+    UserPreference userPreference = UserPreference();
+    int user_id = await userPreference.getUserID();
+    await _loadingHome(user_id);
+  }
+
+  _loadingHome(int userId) async {
     service = WalletService(await getDatabaseWallet());
-    List<Wallet> data = await service.searchWallets(id);
+    List<Wallet> data = await service.searchWallets(userId);
     setState(() {
       wallet = data;
       for (final t in wallet) {
@@ -39,7 +45,7 @@ class _WalletScreenState extends State<WalletScreen> {
 
   @override
   void initState() {
-    _loadingHome();
+    loadUser();
     super.initState();
   }
 
@@ -168,18 +174,7 @@ class _WalletScreenState extends State<WalletScreen> {
             ],
           ),
         ),
-        // floatingActionButton: FloatingActionButton(
-        //   backgroundColor: const Color(blue),
-        //   shape:
-        //       RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
-        //   tooltip: 'Increment',
-        //   onPressed: () => GetToPage(page: const CreateWallet()),
-        //   child: const Icon(
-        //     Icons.add,
-        //     color: Color(white),
-        //     size: 30,
-        //   ),
-        // ),
+        
       ),
     );
   }

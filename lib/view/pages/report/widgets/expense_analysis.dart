@@ -1,9 +1,8 @@
- 
 import 'dart:math' as math;
-import 'package:get/get.dart'; 
-import 'package:flutter/material.dart'; 
+import 'package:get/get.dart';
+import 'package:flutter/material.dart';
 import 'package:money_tracker/model/wallet.dart';
-import 'package:money_tracker/constants/config.dart'; 
+import 'package:money_tracker/constants/config.dart';
 import 'package:money_tracker/model/transaction.dart';
 import 'package:money_tracker/constants/app_colors.dart';
 import 'package:money_tracker/services/wallet_service.dart';
@@ -25,7 +24,7 @@ class _ExpenseAnalysisState extends State<ExpenseAnalysis> {
       appBar: AppBar(
         title: Text("expense_analysis".tr),
         centerTitle: true,
-        titleTextStyle: const TextStyle(fontSize: 20),
+        titleTextStyle: const TextStyle(fontSize: 20), 
       ),
       body: WeekScreen(),
     );
@@ -115,7 +114,7 @@ class _WeekScreenState extends State<WeekScreen> {
       child: Column(
         children: [
           Container(
-            height: 50,
+            height: 50, 
             width: double.infinity,
             alignment: Alignment.centerLeft,
             margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 15),
@@ -180,7 +179,7 @@ class _WeekScreenState extends State<WeekScreen> {
             height: 200,
             width: double.infinity,
             margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-            padding: const EdgeInsets.all(10),
+            padding: const EdgeInsets.only(top: 30, left: 10, right: 15, bottom: 10),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(10),
@@ -282,7 +281,7 @@ class TransactionExpense extends StatelessWidget {
                                               color: Colors.black),
                                         ),
                                         Text(
-                                          "-${transaction.money}đ",
+                                          "-${formatMoney(transaction.money.toDouble()) }đ",
                                           style: const TextStyle(
                                             color: Colors.red,
                                             fontSize: 20,

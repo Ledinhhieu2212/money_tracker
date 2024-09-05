@@ -189,7 +189,7 @@ class _WeekScreenState extends State<WeekScreen> {
               start: _startDate!,
               end: _endDate!,
               transactions: transactions,
-              grandienColors: [
+              grandienColors: const [
                 CupertinoColors.systemGreen,
                 CupertinoColors.systemGreen,
               ],

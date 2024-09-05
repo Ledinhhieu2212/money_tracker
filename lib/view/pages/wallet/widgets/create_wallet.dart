@@ -1,14 +1,14 @@
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:money_tracker/constants/app_colors.dart';
-import 'package:money_tracker/constants/app_style.dart';
-import 'package:money_tracker/constants/config.dart';
+import 'package:flutter/material.dart';
 import 'package:money_tracker/model/wallet.dart';
-import 'package:money_tracker/services/share_preference.dart';
+import 'package:money_tracker/constants/config.dart';
+import 'package:money_tracker/constants/app_style.dart';
+import 'package:money_tracker/constants/app_colors.dart';
 import 'package:money_tracker/services/wallet_service.dart';
-import 'package:money_tracker/view/pages/navigation/navigation.dart';
+import 'package:money_tracker/services/share_preference.dart';
 import 'package:money_tracker/view/widgets/flash_message.dart';
 import 'package:money_tracker/view/widgets/select_wallets.dart';
+import 'package:money_tracker/view/pages/navigation/navigation.dart';
 
 class CreateWallet extends StatefulWidget {
   const CreateWallet({super.key});
@@ -52,6 +52,7 @@ class _CreateWalletState extends State<CreateWallet> {
           "Tạo thêm ví",
           style: TextStyle(fontSize: 20),
         ),
+        
       ),
       body: Container(
         color: const Color(grey),
@@ -123,9 +124,7 @@ class _CreateWalletState extends State<CreateWallet> {
                   ],
                 ),
               ),
-              const SizedBox(
-                height: 10,
-              ),
+              const SizedBox(height: 10),
               Container(
                 height: 50,
                 width: getScreenWidth(context),

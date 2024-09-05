@@ -38,7 +38,7 @@ class UserPreference {
     prefs.remove('password');
     prefs.remove('phone');
     prefs.remove('email');
-    prefs.setString('token', null!);
+    prefs.remove('token');
   }
 
   Future<String?> getToken() async {

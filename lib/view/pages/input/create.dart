@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:money_tracker/constants/config.dart';
 import 'package:money_tracker/model/wallet.dart';
 import 'package:money_tracker/services/share_preference.dart';
-import 'package:money_tracker/view/pages/navigation/navigation.dart'; 
-import 'package:toggle_switch/toggle_switch.dart'; 
+import 'package:money_tracker/view/pages/navigation/navigation.dart';
+import 'package:toggle_switch/toggle_switch.dart';
 import 'package:money_tracker/model/transaction.dart';
 import 'package:money_tracker/constants/app_style.dart';
 import 'package:money_tracker/constants/app_colors.dart';
@@ -45,7 +45,7 @@ class _CreateScreenState extends State<CreateScreen> {
       String day = parts[2];
       String year = parts[0];
       String month = parts[1];
-      _date.text = "$day/$month/$year"; 
+      _date.text = "$day/$month/$year";
     });
   }
 
@@ -105,7 +105,7 @@ class _CreateScreenState extends State<CreateScreen> {
         id_wallet: wallet!.id_wallet!,
         money: int.parse(_money.text.replaceAll('.', '')),
         description: _description.text,
-        create_up:  removeTimeDate(now).toString(),
+        create_up: removeTimeDate(now).toString(),
         upload_up: removeTimeDate(now).toString(),
       ),
     );
@@ -134,153 +134,157 @@ class _CreateScreenState extends State<CreateScreen> {
           style: TextStyle(fontSize: 22),
         ),
         centerTitle: true,
+        
       ),
       body: Container(
         color: const Color(grey),
         child: Form(
           key: _formKey,
-          child: Column(
-            children: [
-              Container(
-                margin: const EdgeInsets.symmetric(vertical: 10),
-                padding: const EdgeInsets.all(20.0),
-                color: const Color(white),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    const Text("Số tiền"),
-                    textFormFieldCreateMoney(
-                        controller: _money, color:  isByte(_type) ? Colors.green : Colors.red),
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                Container(
+                  margin: const EdgeInsets.symmetric(vertical: 10),
+                  padding: const EdgeInsets.all(20.0),
+                  color: const Color(white),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      const Text("Số tiền"),
+                      textFormFieldCreateMoney(
+                          controller: _money,
+                          color: isByte(_type) ? Colors.green : Colors.red),
+                    ],
+                  ),
+                ),
+                ToggleSwitch(
+                  fontSize: 20,
+                  minWidth: 200,
+                  minHeight: 50,
+                  totalSwitches: 2,
+                  cornerRadius: 10,
+                  initialLabelIndex: _type,
+                  inactiveFgColor: Colors.white,
+                  inactiveBgColor: Colors.black26,
+                  activeFgColor: const Color(white),
+                  activeBgColor: const [Color(blue), Color(primary)],
+                  labels: const [
+                    'Chi tiêu',
+                    'Thu nhập',
                   ],
-                ),
-              ),
-              ToggleSwitch(
-                fontSize: 20,
-                minWidth: 200,
-                minHeight: 50,
-                totalSwitches: 2,
-                cornerRadius: 10,
-                initialLabelIndex: _type,
-                inactiveFgColor: Colors.white,
-                inactiveBgColor: Colors.black26,
-                activeFgColor: const Color(white),
-                activeBgColor: const [Color(blue), Color(primary)],
-                labels: const [
-                  'Chi tiêu',
-                  'Thu nhập',
-                ],
-                onToggle: (index) { 
-                  setState(() { 
-                    _type = index!;
-                  });
-                },
-              ),
-              Container(
-                color: const Color(white),
-                padding: const EdgeInsets.all(20.0),
-                child: TextField(
-                  controller: _description,
-                  decoration: InputDecoration(
-                    labelText: "description".tr,
-                    prefixIcon: const Icon(Icons.article),
-                  ),
-                ),
-              ),
-              Container(
-                color: const Color(white),
-                padding: const EdgeInsets.all(20.0),
-                child: TextField(
-                  controller: _date,
-                  decoration: InputDecoration(
-                    labelText: 'date'.tr,
-                    prefixIcon: const Icon(Icons.calendar_today),
-                  ),
-                  readOnly: true,
-                  onTap: () {
-                    selectDate();
+                  onToggle: (index) {
+                    setState(() {
+                      _type = index!;
+                    });
                   },
                 ),
-              ),
-              MaterialButton(
-                color: const Color(white),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 25,
-                  vertical: 10,
-                ),
-                onPressed: () {
-                  _showIconSelectionDialog();
-                },
-                child: wallet == null
-                    ? const SizedBox(
-                        height: 40,
-                        width: double.infinity,
-                        child: Text("Chọn loại ví"),
-                      )
-                    : Row(
-                        children: [
-                          CircleAvatar(
-                            child: Image.asset(wallet!.icon),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(left: 18.0),
-                            child: Text(wallet!.name),
-                          )
-                        ],
-                      ),
-              ),
-              Container(
-                height: 50,
-                width: getScreenWidth(context),
-                margin: const EdgeInsets.symmetric(vertical: 20),
-                padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                child: ElevatedButton.icon(
-                  icon: const Icon(Icons.save),
-                  label: Text(
-                    'save'.tr,
-                    style: const TextStyle(
-                      fontSize: 20,
-                      color: Color(white),
+                Container(
+                  color: const Color(white),
+                  padding: const EdgeInsets.all(20.0),
+                  child: TextField(
+                    controller: _description,
+                    decoration: InputDecoration(
+                      labelText: "description".tr,
+                      prefixIcon: const Icon(Icons.article),
                     ),
+                  ),
+                ),
+                Container(
+                  color: const Color(white),
+                  padding: const EdgeInsets.all(20.0),
+                  child: TextField(
+                    controller: _date,
+                    decoration: InputDecoration(
+                      labelText: 'date'.tr,
+                      prefixIcon: const Icon(Icons.calendar_today),
+                    ),
+                    readOnly: true,
+                    onTap: () {
+                      selectDate();
+                    },
+                  ),
+                ),
+                MaterialButton(
+                  color: const Color(white),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 25,
+                    vertical: 10,
                   ),
                   onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                      if (isEmptyTextfield()) {
-                        buildErrorMessage(
-                          "Lỗi",
-                          "Không được để trống mục tạo!",
-                          context,
-                        );
-                      } else {
-                        createTransaction();
-                        updateWalletMoneyTotal();
-                        buildSuccessMessage(
-                          "Thành công!",
-                          "Thành công tạo giao dịch.",
-                          context,
-                        );
-                        _money.clear();
-                        _date.clear();
-                        _description.clear();
-                        getOffAllPage(page: () => const NavigationMenu());
-                      }
-                    } else {
-                      buildWarningMessage(
-                        "Lỗi!",
-                        "Không thể tạo mới giao dịch.",
-                        context,
-                      );
-                    }
+                    _showIconSelectionDialog();
                   },
-                  style: ElevatedButton.styleFrom(
-                    iconColor: const Color(white),
-                    backgroundColor: const Color(blue),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(5),
+                  child: wallet == null
+                      ? const SizedBox(
+                          height: 40,
+                          width: double.infinity,
+                          child: Text("Chọn loại ví"),
+                        )
+                      : Row(
+                          children: [
+                            CircleAvatar(
+                              child: Image.asset(wallet!.icon),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(left: 18.0),
+                              child: Text(wallet!.name),
+                            )
+                          ],
+                        ),
+                ),
+                Container(
+                  height: 50,
+                  width: getScreenWidth(context),
+                  margin: const EdgeInsets.symmetric(vertical: 20),
+                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                  child: ElevatedButton.icon(
+                    icon: const Icon(Icons.save),
+                    label: Text(
+                      'save'.tr,
+                      style: const TextStyle(
+                        fontSize: 20,
+                        color: Color(white),
+                      ),
+                    ),
+                    onPressed: () {
+                      if (_formKey.currentState!.validate()) {
+                        if (isEmptyTextfield()) {
+                          buildErrorMessage(
+                            "Lỗi",
+                            "Không được để trống mục tạo!",
+                            context,
+                          );
+                        } else {
+                          createTransaction();
+                          updateWalletMoneyTotal();
+                          buildSuccessMessage(
+                            "Thành công!",
+                            "Thành công tạo giao dịch.",
+                            context,
+                          );
+                          _money.clear();
+                          _date.clear();
+                          _description.clear();
+                          getOffAllPage(page: () => const NavigationMenu());
+                        }
+                      } else {
+                        buildWarningMessage(
+                          "Lỗi!",
+                          "Không thể tạo mới giao dịch.",
+                          context,
+                        );
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      iconColor: const Color(white),
+                      backgroundColor: const Color(blue),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(5),
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

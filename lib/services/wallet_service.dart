@@ -1,7 +1,12 @@
 import 'dart:async';
+import 'dart:math';
+import 'package:money_tracker/constants/config.dart';
+import 'package:money_tracker/constants/images.dart';
 import 'package:money_tracker/model/wallet.dart';
+import 'package:money_tracker/services/transaction_service.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:uuid/uuid.dart';
 
 Future<Database> getDatabaseWallet() async {
   final database =
@@ -38,6 +43,23 @@ class WalletService {
     );
   }
 
+  fakeWallet({required int sl, required int userid}) {
+    deleteAllwallets(userid); 
+    imageBase images = imageBase();
+    for (var i = 1; i <= sl; i++) {
+      Map<String, String> randomWallet = images.getRandomIconWallet();
+      insert(Wallet(
+          id_wallet: const Uuid().v4(),
+          icon: randomWallet['icon']!,
+          name: randomWallet['name']!,
+          total: 0,
+          id_user: userid,
+          description: generateRandomString(100),
+          create_up: generateRandomDateTime().toString(),
+          upload_up: generateRandomDateTime().toString()));
+    }
+  }
+
   Future<List<Wallet>> getAll() async {
     final List<Map<String, Object?>> wallet = await db.query("wallets");
     return [
@@ -46,7 +68,7 @@ class WalletService {
             'icon': icon as String,
             'total': total as int,
             'id_user': id_user as int,
-            'name': name as String, 
+            'name': name as String,
             'description': description as String,
             "create_up": create_up as String,
             "upload_up": upload_up as String,
@@ -56,7 +78,7 @@ class WalletService {
           icon: icon,
           name: name,
           total: total,
-          id_user: id_user, 
+          id_user: id_user,
           description: description,
           create_up: create_up,
           upload_up: upload_up,
@@ -77,7 +99,7 @@ class WalletService {
             'icon': icon as String,
             'total': total as int,
             'id_user': id_user as int,
-            'name': name as String, 
+            'name': name as String,
             'description': description as String,
             "create_up": create_up as String,
             "upload_up": upload_up as String,
@@ -87,7 +109,7 @@ class WalletService {
           icon: icon,
           name: name,
           total: total,
-          id_user: id_user, 
+          id_user: id_user,
           description: description,
           create_up: create_up,
           upload_up: upload_up,
@@ -98,13 +120,13 @@ class WalletService {
   Future<Wallet> getById(String id) async {
     final List<Map<String, Object?>> wallet =
         await db.query("wallets", where: 'id_wallet=?', whereArgs: [id]);
-    return Wallet( 
+    return Wallet(
       icon: wallet.first['icon'].toString(),
       name: wallet.first['name'].toString(),
       total: int.parse(wallet.first['total'].toString()),
       description: wallet.first['description'].toString(),
       id_user: int.parse(wallet.first['id_user'].toString()),
-      id_wallet: wallet.first['id_wallet'].toString(), 
+      id_wallet: wallet.first['id_wallet'].toString(),
       create_up: wallet.first['create_up'].toString(),
       upload_up: wallet.first['upload_up'].toString(),
     );
@@ -115,6 +137,6 @@ class WalletService {
   }
 
   Future<void> deleteAllwallets(int id) async {
-    await db.delete("wallets");
+    await db.delete("wallets", where: "id_user=?", whereArgs: [id]);
   }
 }

@@ -4,14 +4,7 @@ import 'package:money_tracker/constants/localization.dart';
 import 'package:money_tracker/constants/app_colors.dart';
 import 'package:money_tracker/view/pages/splash/splash.dart';
 
-void main() async {
-  // if (Platform.isWindows || Platform.isLinux) {
-  //   // Initialize FFI
-  //   sqfliteFfiInit();
-  // }
-  // // Change the default factory. On iOS/Android, if not using `sqlite_flutter_lib` you can forget
-  // // this step, it will use the sqlite version available on the system.
-  // databaseFactory = databaseFactoryFfi;
+void main() {
   runApp(const App());
 }
 
@@ -30,6 +23,12 @@ class App extends StatelessWidget {
           color: Color(blue),
           titleTextStyle: TextStyle(color: Colors.white),
           iconTheme: IconThemeData(color: Colors.white),
+        ),
+        brightness: Brightness.light,
+        pageTransitionsTheme: const PageTransitionsTheme(
+          builders: { 
+            TargetPlatform.android: PredictiveBackPageTransitionsBuilder(),
+          },
         ),
       ),
       home: const SplashScreen(),

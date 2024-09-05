@@ -62,18 +62,19 @@ class LineChartScreen extends StatelessWidget {
 
   List<FlSpot> FlSpotData(
     Map<DateTime, int> transactions,
+    double maxY,
   ) {
     List<FlSpot> spots = [];
     transactions.forEach((date, value) {
       double xValue = date.weekday.toDouble() - 1;
-      double yValue = value.toDouble();
+      double yValue = value.toDouble() > maxY ? maxY : value.toDouble();
       spots.add(
         FlSpot(xValue, yValue),
       );
     });
     return spots;
   }
- 
+
   FlLine backgroundGridLine() {
     return const FlLine(
       color: Colors.white10,
@@ -85,11 +86,15 @@ class LineChartScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     const AxisTitles hideAxisTile =
         AxisTitles(sideTitles: SideTitles(showTitles: false));
+
+    const double maxChartValue = 1000000;
     List<String> dateLabels = _generateDateLabels(start, end);
     return AspectRatio(
       aspectRatio: 1.70,
       child: LineChart(
-        LineChartData( 
+        LineChartData(
+          minY: 1000,
+          maxY: maxChartValue,
           gridData: FlGridData(
             show: true,
             drawHorizontalLine: true,
@@ -126,7 +131,6 @@ class LineChartScreen extends StatelessWidget {
                 },
               ),
             ),
-            
           ),
           lineBarsData: [
             LineChartBarData(
@@ -147,6 +151,7 @@ class LineChartScreen extends StatelessWidget {
                   startTime: start,
                   endTime: end,
                 ),
+                maxChartValue,
               ),
             ),
           ],

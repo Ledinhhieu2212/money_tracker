@@ -3,12 +3,11 @@ import 'dart:convert';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:money_tracker/constants/config.dart';
 import 'package:money_tracker/model/user.dart';
 import 'package:money_tracker/services/api.dart';
+import 'package:money_tracker/constants/config.dart';
 import 'package:money_tracker/services/share_preference.dart';
-import 'package:money_tracker/services/user_service.dart';
-import 'package:money_tracker/view/pages/navigation/navigation.dart';  
+import 'package:money_tracker/view/pages/navigation/navigation.dart';
 
 class LoginController extends GetxController {
   TextEditingController phoneController = TextEditingController();
@@ -66,55 +65,59 @@ class LoginController extends GetxController {
     );
   }
 
+  void createUser(var body) async {
+    final json = jsonDecode(body);
+    User user = User(
+      id: json['ma_nguoi_dung'],
+      username: json['ten_nguoi_dung'],
+      phone: json['soDienThoai'],
+      email: json['email'] ?? '',
+      password: json['password'],
+      token: utf8
+          .encode(json['ma_nguoi_dung'].toString() +
+              json['ten_nguoi_dung'] +
+              json['password'])
+          .toString(),
+    );
+    UserPreference userPreference = UserPreference();
+    userPreference.saveUser(user);
+    phoneController.clear();
+    passwordController.clear();
+    getOffPage(page: () => const NavigationMenu());
+  }
+
   void _updateIsLoading(bool currentStatus) {
     isLoading = currentStatus;
     update();
   }
 
+  Future<http.Response> searchApi() async {
+    var url =
+        Uri.parse(ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.loginPhone);
+    http.Response response = await http.post(
+      url,
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, String>{
+        'SoDienThoai': phoneController.text.trim(),
+        'Password': passwordController.text.trim(),
+      }),
+    );
+    return response;
+  }
+
   Future<void> loginWithPhone() async {
     _updateIsLoading(true);
     try {
-      var url = Uri.parse(
-          ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.loginPhone);
-      http.Response response = await http.post(
-        url,
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
-        body: jsonEncode(<String, String>{
-          'SoDienThoai': phoneController.text.trim(),
-          'Password': passwordController.text.trim(),
-        }),
-      );
-      await Future.delayed(Duration(seconds: 3));
-      if (response.statusCode == 200) {
-        final json = jsonDecode(response.body);
-        User user = User(
-          id: json['ma_nguoi_dung'],
-          username: json['ten_nguoi_dung'],
-          phone: json['soDienThoai'],
-          email: json['email'] ?? '',
-          password: json['password'],
-          token: utf8
-              .encode(json['ma_nguoi_dung'].toString() +
-                  json['ten_nguoi_dung'] +
-                  json['password'])
-              .toString(),
-        );
-        UserService userService = UserService(await getDataUser());
-        if (await userService.idExists(user.id) == false) {
-          userService.insert(user);
-          userPreference.saveUser(user);
-        }
-        phoneController.clear();
-        passwordController.clear();
-        getOffPage(page: () => const NavigationMenu());
+      http.Response rs = await searchApi();
+      if (rs.statusCode == 200) {
+        createUser(rs.body);
       } else {
         if (phoneController.text.isEmpty || passwordController.text.isEmpty) {
           throw "Không được để chống trường nhập!";
         } else {
-          throw jsonDecode(response.body)["Message"] ??
-              "Sai thông tin tài khoản";
+          throw jsonDecode(rs.body)["Message"] ?? "Sai thông tin tài khoản";
         }
       }
     } on SocketException catch (error) {
