@@ -44,7 +44,7 @@ class WalletService {
   }
 
   fakeWallet({required int sl, required int userid}) {
-    deleteAllwallets(userid); 
+    deleteAllwallets(userid);
     imageBase images = imageBase();
     for (var i = 1; i <= sl; i++) {
       Map<String, String> randomWallet = images.getRandomIconWallet();
@@ -61,60 +61,36 @@ class WalletService {
   }
 
   Future<List<Wallet>> getAll() async {
-    final List<Map<String, Object?>> wallet = await db.query("wallets");
-    return [
-      for (final {
-            'id_wallet': id_wallet as String,
-            'icon': icon as String,
-            'total': total as int,
-            'id_user': id_user as int,
-            'name': name as String,
-            'description': description as String,
-            "create_up": create_up as String,
-            "upload_up": upload_up as String,
-          } in wallet)
-        Wallet(
-          id_wallet: id_wallet,
-          icon: icon,
-          name: name,
-          total: total,
-          id_user: id_user,
-          description: description,
-          create_up: create_up,
-          upload_up: upload_up,
-        ),
-    ];
+    final List<Map<String, Object?>> wallets = await db.query("wallets");
+    return getWalletData(wallets);
+  }
+
+  List<Wallet> getWalletData(List<Map<String, Object?>> wallets) {
+    List<Wallet> walletList = [];
+    for (final Map<String, Object?> walletData in wallets) {
+      Wallet walletItem = Wallet(
+        id_wallet: walletData['id_wallet'] as String,
+        icon: walletData['icon'] as String,
+        name: walletData['name'] as String,
+        total: walletData['total'] as int,
+        id_user: walletData['id_user'] as int,
+        description: walletData['description'] as String,
+        create_up: walletData['create_up'] as String,
+        upload_up: walletData['upload_up'] as String,
+      );
+      walletList.add(walletItem);
+    }
+    return walletList;
   }
 
   Future<List<Wallet>> searchWallets(int UserId) async {
-    final List<Map<String, Object?>> wallet = await db.query(
+    final List<Map<String, Object?>> wallets = await db.query(
       "wallets",
       where: "id_user=?",
       whereArgs: [UserId],
       orderBy: "create_up DESC",
     );
-    return [
-      for (final {
-            'id_wallet': id_wallet as String,
-            'icon': icon as String,
-            'total': total as int,
-            'id_user': id_user as int,
-            'name': name as String,
-            'description': description as String,
-            "create_up": create_up as String,
-            "upload_up": upload_up as String,
-          } in wallet)
-        Wallet(
-          id_wallet: id_wallet,
-          icon: icon,
-          name: name,
-          total: total,
-          id_user: id_user,
-          description: description,
-          create_up: create_up,
-          upload_up: upload_up,
-        ),
-    ];
+    return getWalletData(wallets);
   }
 
   Future<Wallet> getById(String id) async {

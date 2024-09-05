@@ -50,5 +50,15 @@ class UserPreference {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getInt("userId")!;
   }
- 
+
+  Future<bool> saveTool({required String name, required String value}) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString(name, value);
+    return prefs.commit();
+  }
+
+  Future<String> getTool({required String name}) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString(name)!;
+  }
 }

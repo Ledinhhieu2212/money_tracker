@@ -83,10 +83,10 @@ class _HomeScreenState extends State<HomeScreen> {
           text: _obscureText ? "${formatMoney(price.toDouble())} " : "***000 ",
           style: const TextStyle(
               fontWeight: FontWeight.bold, color: Color(primary), fontSize: 30),
-          children: const <TextSpan>[
+          children: <TextSpan>[
             TextSpan(
-              text: 'đ',
-              style: TextStyle(
+              text: 'icon_currency'.tr,
+              style: const TextStyle(
                   color: Color(primary),
                   fontSize: 30,
                   decoration: TextDecoration.underline,
@@ -104,10 +104,10 @@ class _HomeScreenState extends State<HomeScreen> {
         text:
             "${'spending'.tr}: ${_obscureText ? '${formatMoney(expense.toDouble())} ' : "***000 "}",
         style: const TextStyle(color: Colors.red),
-        children: const [
+        children:  [
           TextSpan(
-            text: 'đ',
-            style: TextStyle(
+            text: 'icon_currency'.tr,
+            style: const TextStyle(
               color: Colors.red,
               decoration: TextDecoration.underline,
             ),
@@ -123,10 +123,10 @@ class _HomeScreenState extends State<HomeScreen> {
         text:
             "${'income'.tr}: ${_obscureText ? '${formatMoney(income.toDouble())} ' : "***000 "}",
         style: const TextStyle(color: Colors.green),
-        children: const [
+        children: [
           TextSpan(
-            text: 'đ',
-            style: TextStyle(
+            text:'icon_currency'.tr,
+            style: const TextStyle(
               color: Colors.green,
               decoration: TextDecoration.underline,
             ),
@@ -213,14 +213,14 @@ class _HomeScreenState extends State<HomeScreen> {
                   itemBuilder: (context, index) {
                     Text text = fillTranssaction[index].transaction_type == 1
                         ? Text(
-                            "+${formatMoney(fillTranssaction[index].money.toDouble())}đ",
+                            "+${formatMoney(fillTranssaction[index].money.toDouble())}${'icon_currency'.tr}",
                             style: const TextStyle(
                                 fontSize: 25,
                                 color: Colors.green,
                                 fontWeight: FontWeight.bold),
                           )
                         : Text(
-                            "-${formatMoney(fillTranssaction[index].money.toDouble())}đ",
+                            "-${formatMoney(fillTranssaction[index].money.toDouble())}${'icon_currency'.tr}",
                             style: const TextStyle(
                                 fontSize: 25,
                                 color: Colors.red,

@@ -1,12 +1,12 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
-import 'package:money_tracker/constants/config.dart'; 
+import 'package:money_tracker/constants/config.dart';
 import 'package:money_tracker/model/wallet.dart';
 import 'package:money_tracker/services/wallet_service.dart';
 import 'package:money_tracker/view/pages/navigation/navigation.dart';
 import 'package:money_tracker/view/widgets/flash_message.dart';
 import 'package:money_tracker/view/widgets/list_wallet.dart';
-import 'package:toggle_switch/toggle_switch.dart'; 
+import 'package:toggle_switch/toggle_switch.dart';
 import 'package:money_tracker/model/transaction.dart';
 import 'package:money_tracker/view/widgets/text_field.dart';
 import 'package:money_tracker/constants/app_style.dart';
@@ -123,7 +123,7 @@ class _DetailTransactionState extends State<DetailTransaction> {
     required Wallet oldWallet,
     required Wallet newWallet,
   }) {
-    if (oldWallet.id_wallet == newWallet.id_wallet) { 
+    if (oldWallet.id_wallet == newWallet.id_wallet) {
       int total = 0;
       // Nếu đổi loại thanh toán
       if (transaction.transaction_type != _currentIndex) {
@@ -141,11 +141,12 @@ class _DetailTransactionState extends State<DetailTransaction> {
         total = oldWallet.total;
       }
       walletService.updateTotal(walletID: oldWallet.id_wallet!, price: total);
-    }else {
+    } else {
       int totalAdd = _currentIndex == 1
           ? newWallet.total + transaction.money
           : newWallet.total - transaction.money;
-      walletService.updateTotal(walletID: newWallet.id_wallet!, price: totalAdd);
+      walletService.updateTotal(
+          walletID: newWallet.id_wallet!, price: totalAdd);
 
       int totalChange = transaction.transaction_type == 1
           ? oldWallet.total - transaction.money
@@ -192,183 +193,184 @@ class _DetailTransactionState extends State<DetailTransaction> {
         child: Form(
           key: _formKey,
           child: SingleChildScrollView(
-    child: Column(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(20.0),
-                margin:
-                    const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  color: const Color(white),
+            child: Column(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(20.0),
+                  margin:
+                      const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: const Color(white),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      const Text("Số tiền"),
+                      textFormFieldCreateMoney(
+                        controller: _price,
+                        color: _currentIndex == 0 ? Colors.red : Colors.green,
+                        isEnabled: false,
+                      ),
+                    ],
+                  ),
                 ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    const Text("Số tiền"),
-                    textFormFieldCreateMoney(
-                      controller: _price,
-                      color: _currentIndex == 0 ? Colors.red : Colors.green,
-                      isEnabled: false,
-                    ),
+                ToggleSwitch(
+                  fontSize: 20,
+                  minWidth: 200,
+                  minHeight: 50,
+                  totalSwitches: 2,
+                  cornerRadius: 10,
+                  inactiveFgColor: Colors.white,
+                  initialLabelIndex: _currentIndex,
+                  inactiveBgColor: Colors.black26,
+                  activeFgColor: const Color(white),
+                  activeBgColor: const [Color(blue), Color(primary)],
+                  labels: [
+                    'spending'.tr,
+                    'income'.tr,
                   ],
+                  onToggle: (index) {
+                    setState(() {
+                      _currentIndex = index!;
+                    });
+                  },
                 ),
-              ),
-              ToggleSwitch(
-                fontSize: 20,
-                minWidth: 200,
-                minHeight: 50,
-                totalSwitches: 2,
-                cornerRadius: 10,
-                inactiveFgColor: Colors.white,
-                initialLabelIndex: _currentIndex,
-                inactiveBgColor: Colors.black26,
-                activeFgColor: const Color(white),
-                activeBgColor: const [Color(blue), Color(primary)],
-                labels: const [
-                  'Chi tiêu',
-                  'Thu nhập',
-                ],
-                onToggle: (index) {
-                  setState(() {
-                    _currentIndex = index!;
-                  });
-                },
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              Container(
-                margin: const EdgeInsets.symmetric(horizontal: 10),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  color: const Color(white),
+                const SizedBox(
+                  height: 10,
                 ),
-                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                child: Column(
-                  children: [
-                    Container(
-                      height: 70,
-                      padding: EdgeInsets.symmetric(horizontal: 10),
-                      child: TextField(
-                        controller: _description,
-                        decoration: InputDecoration(
-                          labelText: "description".tr,
-                          prefixIcon: const Icon(Icons.article),
-                        ),
-                      ),
-                    ),
-                    Container(
-                      height: 70,
-                      padding: EdgeInsets.symmetric(horizontal: 10),
-                      child: TextField(
-                        readOnly: true,
-                        controller: _date,
-                        decoration: const InputDecoration(
-                          labelText: 'Ngày',
-                          prefixIcon: Icon(Icons.calendar_today),
-                        ),
-                      ),
-                    ),
-                    MaterialButton(
-                      onPressed: () {
-                        _showIconSelectionDialog();
-                      },
-                      child: SizedBox(
+                Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 10),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: const Color(white),
+                  ),
+                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  child: Column(
+                    children: [
+                      Container(
                         height: 70,
-                        child: Row(
-                          children: [
-                            CircleAvatar(
-                              backgroundColor: Colors.redAccent,
-                              child: Image.asset(
-                                newWallet.icon,
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(left: 18.0),
-                              child: Text(newWallet.name),
-                            )
-                          ],
+                        padding: EdgeInsets.symmetric(horizontal: 10),
+                        child: TextField(
+                          controller: _description,
+                          decoration: InputDecoration(
+                            labelText: "description".tr,
+                            prefixIcon: const Icon(Icons.article),
+                          ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-              ),
-              Container(
-                height: 50,
-                width: getScreenWidth(context),
-                margin: const EdgeInsets.symmetric(vertical: 10),
-                padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                child: ElevatedButton.icon(
-                  icon: const Icon(Icons.save),
-                  label: const Text(
-                    'Cập nhật',
-                    style: TextStyle(
-                      fontSize: 20,
-                      color: Color(white),
-                    ),
+                      Container(
+                        height: 70,
+                        padding: EdgeInsets.symmetric(horizontal: 10),
+                        child: TextField(
+                          readOnly: true,
+                          controller: _date,
+                          decoration: const InputDecoration(
+                            labelText: 'Ngày',
+                            prefixIcon: Icon(Icons.calendar_today),
+                          ),
+                        ),
+                      ),
+                      MaterialButton(
+                        onPressed: () {
+                          _showIconSelectionDialog();
+                        },
+                        child: SizedBox(
+                          height: 70,
+                          child: Row(
+                            children: [
+                              CircleAvatar(
+                                backgroundColor: Colors.redAccent,
+                                child: Image.asset(
+                                  newWallet.icon,
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(left: 18.0),
+                                child: Text(newWallet.name),
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                  onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                      if (isAnyFieldEmpty()) {
-                        buildErrorMessage(
-                            "Lỗi", "Không được để trống mục tạo!", context);
-                      }
+                ),
+                Container(
+                  height: 50,
+                  width: getScreenWidth(context),
+                  margin: const EdgeInsets.symmetric(vertical: 10),
+                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                  child: ElevatedButton.icon(
+                    icon: const Icon(Icons.save),
+                    label: const Text(
+                      'Cập nhật',
+                      style: TextStyle(
+                        fontSize: 20,
+                        color: Color(white),
+                      ),
+                    ),
+                    onPressed: () {
+                      if (_formKey.currentState!.validate()) {
+                        if (isAnyFieldEmpty()) {
+                          buildErrorMessage(
+                              "Lỗi", "Không được để trống mục tạo!", context);
+                        }
 
-                      if (!isAnyFieldEmpty()) {
-                        updateTransaction();
-                        updateWallet(
-                          newWallet: newWallet,
-                          oldWallet: widget.wallet,
-                        );
-                        buildSuccessMessage(
-                            "Thành công!", "Sửa thành công", context);
-                        getOffAllPage(page: () => const NavigationMenu());
+                        if (!isAnyFieldEmpty()) {
+                          updateTransaction();
+                          updateWallet(
+                            newWallet: newWallet,
+                            oldWallet: widget.wallet,
+                          );
+                          buildSuccessMessage(
+                              "Thành công!", "Sửa thành công", context);
+                          getOffAllPage(page: () => const NavigationMenu());
+                        }
+                      } else {
+                        buildWarningMessage(
+                            "Lỗi!", "Không thể sửa giao dịch.", context);
                       }
-                    } else {
-                      buildWarningMessage(
-                          "Lỗi!", "Không thể sửa giao dịch.", context);
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(
-                    iconColor: const Color(white),
-                    backgroundColor: const Color(blue),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(5),
+                    },
+                    style: ElevatedButton.styleFrom(
+                      iconColor: const Color(white),
+                      backgroundColor: const Color(blue),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(5),
+                      ),
                     ),
                   ),
                 ),
-              ),
-              Container(
-                height: 50,
-                width: getScreenWidth(context),
-                margin: const EdgeInsets.symmetric(vertical: 5),
-                padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                child: ElevatedButton.icon(
-                  icon: const Icon(Icons.delete),
-                  label: const Text(
-                    'Xóa',
-                    style: TextStyle(
-                      color: Color(white),
-                      fontSize: 20,
+                Container(
+                  height: 50,
+                  width: getScreenWidth(context),
+                  margin: const EdgeInsets.symmetric(vertical: 5),
+                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                  child: ElevatedButton.icon(
+                    icon: const Icon(Icons.delete),
+                    label: const Text(
+                      'Xóa',
+                      style: TextStyle(
+                        color: Color(white),
+                        fontSize: 20,
+                      ),
                     ),
-                  ),
-                  onPressed: () {
-                    showConfirm(context, widget.transactionid, widget.wallet);
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red,
-                    iconColor: const Color(white),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(5),
+                    onPressed: () {
+                      showConfirm(context, widget.transactionid, widget.wallet);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.red,
+                      iconColor: const Color(white),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(5),
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),),
+        ),
       ),
     );
   }

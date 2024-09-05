@@ -95,7 +95,7 @@ class _CreateWalletState extends State<CreateWallet> {
                           ),
                         ),
                         child: checkIconWallet(iconWallet)
-                            ? const Text("Chọn loại ví")
+                            ?  Text("select_title_wallets_create_transaction".tr)
                             : Row(
                                 children: [
                                   CircleAvatar(
@@ -115,8 +115,8 @@ class _CreateWalletState extends State<CreateWallet> {
                       padding: const EdgeInsets.symmetric(horizontal: 15),
                       child: TextField(
                         controller: _wallet,
-                        decoration: const InputDecoration(
-                          labelText: "Mô tả",
+                        decoration:  InputDecoration(
+                          labelText: "description".tr,
                           prefixIcon: Icon(Icons.article),
                         ),
                       ),

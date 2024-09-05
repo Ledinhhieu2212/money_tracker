@@ -25,15 +25,19 @@ class Localization extends Translations{
       "financial_analysis": "Financial Analysis",
       "save": "Save",
       "description": "Description",
-      'text_auth_phone': 'Input phone',
-      'text_auth_username': 'Input username',
-      'text_auth_password': 'Input password',
+      'text_auth_phone': 'Enter phone',
+      'text_auth_username': 'Enter username',
+      'text_auth_password': 'Enter password',
       'signin': 'Sign in',
       'signout': 'Sign up', 
       "link_register_account": "Register account",
       "link_login_account": "Login account", 
       'icon_currency': "\$",
       'date' : 'Date',
+      'select_title_wallets_create_transaction': "Select wallet type",
+      "title_navigation_1": "Wallet information",
+      "title_navigation_4": "Create transaction",
+      "lable_wallet_total": "Total",
     },
     'vi_VN': {
       'date' : 'Ngày tạo',
@@ -65,6 +69,10 @@ class Localization extends Translations{
       "link_register_account": "Đăng ký tài khoản",
       "link_login_account": "Đăng nhập tài khoản",
       'icon_currency': "đ",
+      'select_title_wallets_create_transaction': "Chọn loại ví",
+      "title_navigation_4": "Tạo giao dịch",
+      "title_navigation_1": "Thông tin ví",
+      "lable_wallet_total": "Tổng",
     }
   };
 } 

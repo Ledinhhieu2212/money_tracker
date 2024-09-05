@@ -51,6 +51,12 @@ class _FinancialAnalysisState extends State<FinancialAnalysis> {
           transactions: transactions,
           startTime: _startDate!,
           endTime: _endDate!);
+      List.generate(
+        data.length,
+        (index) {
+          print(data[index].toMap());
+        },
+      );
     });
   }
 
@@ -98,8 +104,8 @@ class _FinancialAnalysisState extends State<FinancialAnalysis> {
     DateTime s = removeTimeDate(startTime), e = removeTimeDate(endTime);
     double incomeTotal = 0, expenseTotal = 0;
     double calculatePercentage(double smallerValue, double largerValue) {
-      if (largerValue == 0) {
-        return 0; // Tránh chia cho 0
+      if (largerValue + smallerValue == 0) {
+        return 0;
       }
       return (smallerValue / (largerValue + smallerValue)) * 100;
     }
@@ -222,8 +228,8 @@ class _FinancialAnalysisState extends State<FinancialAnalysis> {
             ),
             const SizedBox(height: 10),
             SizedBox(
-            width: 300, // Đặt chiều rộng mong muốn
-            height: 300,
+              width: 300, // Đặt chiều rộng mong muốn
+              height: 300,
               child: AspectRatio(
                 aspectRatio: 1.3,
                 child: AspectRatio(

@@ -40,20 +40,6 @@ class SettingScreen extends StatelessWidget {
               title: "Ngôn ngữ",
               titleConfig: "Tiếng Việt",
             ),
-            CatgoryBetweenConfigApp(
-              onTap: () => Get.to(SelectDateTime(),
-                  transition: Transition.rightToLeft,
-                  duration: Duration(milliseconds: 500)),
-              title: "Định dạng thời gian",
-              titleConfig: "dd/MM/yyyy",
-            ),
-            CatgoryBetweenConfigApp(
-              onTap: () => Get.to(SelectCurrency(),
-                  transition: Transition.rightToLeft,
-                  duration: Duration(milliseconds: 500)),
-              title: "Thiết lập tiền tệ",
-              titleConfig: "VND",
-            ),
           ],
         ),
       ),
@@ -63,13 +49,12 @@ class SettingScreen extends StatelessWidget {
 
 // ignore: must_be_immutable
 class SelectLanguage extends StatefulWidget {
-   const SelectLanguage({super.key});
+  const SelectLanguage({super.key});
   @override
   State<SelectLanguage> createState() => _SelectLanguageState();
 }
 
 class _SelectLanguageState extends State<SelectLanguage> {
-
   Controller controllerChange = Get.put(Controller());
   @override
   Widget build(BuildContext context) {
@@ -82,8 +67,8 @@ class _SelectLanguageState extends State<SelectLanguage> {
         children: [
           GestureDetector(
             onTap: () {
-                controllerChange.changeLanguage('vi', 'VN');
-                Get.to(const SplashScreen());
+              controllerChange.ifChangeLanguage(locale: 0); //en
+              Get.to(const SplashScreen());
             },
             child: Container(
               decoration: BoxDecoration(
@@ -100,24 +85,18 @@ class _SelectLanguageState extends State<SelectLanguage> {
                         imageBase().vietname,
                         alignment: Alignment.center,
                       )),
-                  const Column(
-                    children: [
                       Text(
-                        "Tiếng Việt",
-                        style: TextStyle(
-                            fontSize: 15, fontWeight: FontWeight.bold),
-                      ),
-                      Text("Tiếng Việt")
-                    ],
-                  )
+                    "Tiếng Việt",
+                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                  ), 
                 ],
               ),
             ),
           ),
           GestureDetector(
             onTap: () {
-                controllerChange.changeLanguage('en', 'US');//en_US 
-                Get.to(const SplashScreen());
+              controllerChange.ifChangeLanguage(locale: 1); //en_US
+              Get.to(const SplashScreen());
             },
             child: Container(
               decoration: BoxDecoration(
@@ -134,16 +113,10 @@ class _SelectLanguageState extends State<SelectLanguage> {
                         imageBase().usa,
                         alignment: Alignment.center,
                       )),
-                  const Column(
-                    children: [
-                      Text(
-                        "English",
-                        style: TextStyle(
-                            fontSize: 15, fontWeight: FontWeight.bold),
-                      ),
-                      Text("Tiếng Anh")
-                    ],
-                  )
+                  Text(
+                    "English",
+                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                  ),
                 ],
               ),
             ),

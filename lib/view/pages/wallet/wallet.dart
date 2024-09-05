@@ -57,14 +57,14 @@ class _WalletScreenState extends State<WalletScreen> {
       child: Center(
         child: RichText(
           text: TextSpan(
-              text: "Tổng tiền: ${formatMoney(price)} ",
+              text: "${'lable_wallet_total'.tr}: ${formatMoney(price)} ",
               style: const TextStyle(
                   fontSize: 17,
                   color: Colors.black,
                   fontWeight: FontWeight.w500),
-              children: const [
+              children:  [
                 TextSpan(
-                  text: "đ",
+                  text: "icon_currency".tr,
                   style: TextStyle(
                     decoration: TextDecoration.underline,
                   ),
@@ -121,7 +121,7 @@ class _WalletScreenState extends State<WalletScreen> {
                                       fontWeight: FontWeight.w600),
                                 ),
                                 Text(
-                                    "${formatMoney(wallet[index].total.toDouble())} đ",
+                                    "${formatMoney(wallet[index].total.toDouble())} ${'icon_currency'.tr}",
                                     style: style_text),
                               ],
                             ),
@@ -143,8 +143,8 @@ class _WalletScreenState extends State<WalletScreen> {
       child: Scaffold(
         appBar: AppBar(
           automaticallyImplyLeading: false,
-          title: const Text(
-            "Thông tin ví",
+          title:  Text(
+            "title_navigation_1".tr,
             style: TextStyle(fontSize: 20),
           ),
           centerTitle: true,

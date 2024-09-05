@@ -129,8 +129,9 @@ class _CreateScreenState extends State<CreateScreen> {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: const Text(
-          "Tạo giao dịch",
+        title:  Text(
+          
+            "title_navigation_4".tr,
           style: TextStyle(fontSize: 22),
         ),
         centerTitle: true,
@@ -168,9 +169,9 @@ class _CreateScreenState extends State<CreateScreen> {
                   inactiveBgColor: Colors.black26,
                   activeFgColor: const Color(white),
                   activeBgColor: const [Color(blue), Color(primary)],
-                  labels: const [
-                    'Chi tiêu',
-                    'Thu nhập',
+                  labels:  [
+                    'spending'.tr,
+                    'income'.tr,
                   ],
                   onToggle: (index) {
                     setState(() {
@@ -214,10 +215,10 @@ class _CreateScreenState extends State<CreateScreen> {
                     _showIconSelectionDialog();
                   },
                   child: wallet == null
-                      ? const SizedBox(
+                      ?  SizedBox(
                           height: 40,
                           width: double.infinity,
-                          child: Text("Chọn loại ví"),
+                          child: Text("select_title_wallets_create_transaction".tr),
                         )
                       : Row(
                           children: [

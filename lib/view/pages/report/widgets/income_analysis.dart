@@ -177,7 +177,7 @@ class _WeekScreenState extends State<WeekScreen> {
             ),
           ),
           Container(
-            height: 200,
+            height: 300,
             width: double.infinity,
             margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
             padding: const EdgeInsets.all(10),
@@ -287,7 +287,7 @@ class TransactionExpense extends StatelessWidget {
                                               color: Colors.black),
                                         ),
                                         Text(
-                                          "+${transaction.money}đ",
+                                          "+${formatMoney(transaction.money.toDouble())}đ",
                                           style: const TextStyle(
                                             color: CupertinoColors.systemGreen,
                                             fontSize: 20,

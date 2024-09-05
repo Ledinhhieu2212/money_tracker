@@ -176,7 +176,7 @@ class _WeekScreenState extends State<WeekScreen> {
             ),
           ),
           Container(
-            height: 200,
+            height: 300,
             width: double.infinity,
             margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
             padding: const EdgeInsets.only(top: 30, left: 10, right: 15, bottom: 10),

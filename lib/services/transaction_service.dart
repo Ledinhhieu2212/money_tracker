@@ -31,33 +31,30 @@ class TransactionService {
         where: "id=?", whereArgs: [p.id]);
   }
 
+  List<model_Transaction.Transaction> getTransactionData(
+      List<Map<String, Object?>> transactions) {
+    List<model_Transaction.Transaction> transactionList = [];
+    for (final Map<String, Object?> transactionData in transactions) {
+      model_Transaction.Transaction transactionItem =
+          model_Transaction.Transaction(
+              id: transactionData['id'] as String,
+              money: transactionData['money'] as int,
+              id_user: transactionData['id_user'] as int,
+              id_wallet: transactionData['id_wallet'] as String,
+              dateTime: transactionData['dateTime'] as String,
+              description: transactionData['description'] as String,
+              transaction_type: transactionData['transaction_type'] as int,
+              create_up: transactionData['create_up'] as String,
+              upload_up: transactionData['upload_up'] as String);
+      transactionList.add(transactionItem);
+    }
+    return transactionList;
+  }
+
   Future<List<model_Transaction.Transaction>> getAll() async {
-    final List<Map<String, Object?>> transaction =
+    final List<Map<String, Object?>> transactions =
         await db.query("transactions", orderBy: 'create_up DESC');
-    return [
-      for (final {
-            'id': id as String,
-            'money': money as int,
-            'id_user': id_user as int,
-            'id_wallet': id_wallet as String,
-            'dateTime': dateTime as String,
-            'description': description as String,
-            'transaction_type': transaction_type as int,
-            "create_up": create_up as String,
-            "upload_up": upload_up as String
-          } in transaction)
-        model_Transaction.Transaction(
-          id: id,
-          money: money,
-          id_user: id_user,
-          dateTime: dateTime,
-          id_wallet: id_wallet,
-          description: description,
-          transaction_type: transaction_type,
-          create_up: create_up,
-          upload_up: upload_up,
-        ),
-    ];
+    return getTransactionData(transactions);
   }
 
   fakeTransaction(
@@ -117,137 +114,29 @@ class TransactionService {
 
   Future<List<model_Transaction.Transaction>> search(
       {required String transactionID}) async {
-    final List<Map<String, Object?>> transaction = await db
+    final List<Map<String, Object?>> transactions = await db
         .query("transactions", where: "id=?", whereArgs: [transactionID]);
-    return [
-      for (final {
-            'id': id as String,
-            'money': money as int,
-            'id_user': id_user as int,
-            'id_wallet': id_wallet as String,
-            'dateTime': dateTime as String,
-            'description': description as String,
-            'transaction_type': transaction_type as int,
-            "create_up": create_up as String,
-            "upload_up": upload_up as String
-          } in transaction)
-        model_Transaction.Transaction(
-          id: id,
-          money: money,
-          id_user: id_user,
-          dateTime: dateTime,
-          id_wallet: id_wallet,
-          description: description,
-          transaction_type: transaction_type,
-          create_up: create_up,
-          upload_up: upload_up,
-        ),
-    ];
+    return getTransactionData(transactions);
   }
 
   Future<List<model_Transaction.Transaction>> searchOfUser(
       {required int userId}) async {
-    final List<Map<String, Object?>> transaction = await db.query(
+    final List<Map<String, Object?>> transactions = await db.query(
         "transactions",
         where: "id_user=?",
         whereArgs: [userId],
         orderBy: 'create_up DESC');
-    return [
-      for (final {
-            'id': id as String,
-            'money': money as int,
-            'id_user': id_user as int,
-            'id_wallet': id_wallet as String,
-            'dateTime': dateTime as String,
-            'description': description as String,
-            'transaction_type': transaction_type as int,
-            "create_up": create_up as String,
-            "upload_up": upload_up as String
-          } in transaction)
-        model_Transaction.Transaction(
-          id: id,
-          money: money,
-          id_user: id_user,
-          dateTime: dateTime,
-          id_wallet: id_wallet,
-          description: description,
-          transaction_type: transaction_type,
-          create_up: create_up,
-          upload_up: upload_up,
-        ),
-    ];
+    return getTransactionData(transactions);
   }
 
   Future<List<model_Transaction.Transaction>> searchOfUserAndWallets(
       {required int userId, required String id_wallet}) async {
-    final List<Map<String, Object?>> transaction = await db.query(
+    final List<Map<String, Object?>> transactions = await db.query(
         "transactions",
         where: "id_user=? AND id_wallet=?",
         whereArgs: [userId, id_wallet],
         orderBy: 'create_up DESC');
-    return [
-      for (final {
-            'id': id as String,
-            'money': money as int,
-            'id_user': id_user as int,
-            'id_wallet': id_wallet as String,
-            'dateTime': dateTime as String,
-            'description': description as String,
-            'transaction_type': transaction_type as int,
-            "create_up": create_up as String,
-            "upload_up": upload_up as String
-          } in transaction)
-        model_Transaction.Transaction(
-          id: id,
-          money: money,
-          id_user: id_user,
-          dateTime: dateTime,
-          id_wallet: id_wallet,
-          description: description,
-          transaction_type: transaction_type,
-          create_up: create_up,
-          upload_up: upload_up,
-        ),
-    ];
-  }
-
-  Future<int> totalPriceType(
-      {required int userId, required int typePrice}) async {
-    final List<Map<String, Object?>> transaction = await db.query(
-        "transactions",
-        where: "id_user=? AND transaction_type=?",
-        whereArgs: [userId, typePrice]);
-    int totalMoney = 0;
-
-    List<model_Transaction.Transaction> transactions = [
-      for (final {
-            'id': id as String,
-            'money': money as int,
-            'id_user': id_user as int,
-            'id_wallet': id_wallet as String,
-            'dateTime': dateTime as String,
-            'description': description as String,
-            'transaction_type': transaction_type as int,
-            "create_up": create_up as String,
-            "upload_up": upload_up as String
-          } in transaction)
-        model_Transaction.Transaction(
-          id: id,
-          money: money,
-          id_user: id_user,
-          dateTime: dateTime,
-          id_wallet: id_wallet,
-          description: description,
-          transaction_type: transaction_type,
-          create_up: create_up,
-          upload_up: upload_up,
-        ),
-    ];
-
-    for (final t in transactions) {
-      totalMoney += t.money;
-    }
-    return totalMoney;
+    return getTransactionData(transactions);
   }
 
   Future<model_Transaction.Transaction> getById(String id) async {
