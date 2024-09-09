@@ -1,5 +1,7 @@
 import 'dart:math';
 
+import 'package:get/get.dart';
+
 class imageBase {
   String Logo = 'assets/image/Animation.json';
   String wallet = "assets/image/iconWallets/wallet.png";
@@ -18,16 +20,18 @@ class imageBase {
   String fail = "assets/image/fail.svg";
   String warning = "assets/image/warning.svg";
   String iconWarning = "assets/image/warningOrange.svg";
+  String cardBank = "assets/image/iconWallets/card-bank.png";
+  String money = "assets/image/iconWallets/money123.png";
+  String car = "assets/image/iconWallets/car21.png"; 
 
   List<Map<String, String>> getIconWallets() {
     return [
-      {'icon': wallet, 'name': "Ví tiết kiệm"},
-      {'icon': food, 'name': "Đồ ăn chay"},
-      {'icon': breakfast, 'name': "Ăn sáng"},
-      {'icon': coffee, 'name': "Cà phê"},
-      {'icon': house, 'name': "Nhà"},
-      {'icon': clothes, 'name': "Quần áo"},
-      {'icon': game, 'name': "Game"},
+      {'icon': wallet, 'name': "select_wallet_1".tr},
+      {'icon': money, 'name': "select_wallet_2".tr},
+      {'icon': cardBank, 'name': "select_wallet_3".tr},
+      {'icon': house, 'name': "select_wallet_4".tr},
+      {'icon': car, 'name': "select_wallet_5".tr},
+      {'icon': game, 'name': "select_wallet_6".tr},
     ];
   }
 

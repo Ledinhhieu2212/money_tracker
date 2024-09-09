@@ -125,24 +125,18 @@ class _DetailTransactionState extends State<DetailTransaction> {
   }) {
     if (oldWallet.id_wallet == newWallet.id_wallet) {
       int total = 0;
-      // Nếu đổi loại thanh toán
-      if (transaction.transaction_type != _currentIndex) {
-        // Nếu thanh toán mới là 1
-        if (_currentIndex == 1) {
-          // Cộng nhân 2  tiền cũ
-          total = oldWallet.total +
-              (int.parse(removeCurrencySeparator(_price.text)) * 2);
-        } else {
-          // Trừ nhân 2  tiền cũ
-          total = oldWallet.total -
-              (int.parse(removeCurrencySeparator(_price.text)) * 2);
-        }
+      if (transaction.transaction_type == 1) {
+        // Cộng nhân 2  tiền cũ
+        total = oldWallet.total +
+            (int.parse(removeCurrencySeparator(_price.text)) * 2);
       } else {
-        total = oldWallet.total;
+        // Trừ nhân 2  tiền cũ
+        total = oldWallet.total -
+            (int.parse(removeCurrencySeparator(_price.text)) * 2);
       }
       walletService.updateTotal(walletID: oldWallet.id_wallet!, price: total);
     } else {
-      int totalAdd = _currentIndex == 1
+      int totalAdd = transaction.transaction_type == 1
           ? newWallet.total + transaction.money
           : newWallet.total - transaction.money;
       walletService.updateTotal(
@@ -180,6 +174,7 @@ class _DetailTransactionState extends State<DetailTransaction> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(grey),
       appBar: AppBar(
         title: const Text(
           "Chi tiết giao dịch",
@@ -188,20 +183,22 @@ class _DetailTransactionState extends State<DetailTransaction> {
         centerTitle: true,
       ),
       body: Container(
-        color: const Color(grey),
         padding: const EdgeInsets.all(10),
         child: Form(
           key: _formKey,
           child: SingleChildScrollView(
             child: Column(
               children: [
+                const SizedBox(
+                  height: 10,
+                ),
                 Container(
                   padding: const EdgeInsets.all(20.0),
                   margin:
                       const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10),
-                    color: const Color(white),
+                    color: const Color(grey),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
@@ -215,59 +212,91 @@ class _DetailTransactionState extends State<DetailTransaction> {
                     ],
                   ),
                 ),
-                ToggleSwitch(
-                  fontSize: 20,
-                  minWidth: 200,
-                  minHeight: 50,
-                  totalSwitches: 2,
-                  cornerRadius: 10,
-                  inactiveFgColor: Colors.white,
-                  initialLabelIndex: _currentIndex,
-                  inactiveBgColor: Colors.black26,
-                  activeFgColor: const Color(white),
-                  activeBgColor: const [Color(blue), Color(primary)],
-                  labels: [
-                    'spending'.tr,
-                    'income'.tr,
-                  ],
-                  onToggle: (index) {
-                    setState(() {
-                      _currentIndex = index!;
-                    });
-                  },
-                ),
-                const SizedBox(
-                  height: 10,
-                ),
+                // ToggleSwitch(
+                //   fontSize: 20,
+                //   minWidth: 200,
+                //   minHeight: 50,
+                //   totalSwitches: 2,
+                //   cornerRadius: 10,
+                //   inactiveFgColor: Colors.white,
+                //   initialLabelIndex: _currentIndex,
+                //   inactiveBgColor: Colors.black26,
+                //   activeFgColor: const Color(white),
+                //   activeBgColor: const [Color(blue), Color(primary)],
+                //   labels: [
+                //     'spending'.tr,
+                //     'income'.tr,
+                //   ],
+                //   onToggle: (index) {
+                //     setState(() {
+                //       _currentIndex = index!;
+                //     });
+                //   },
+                // ),
+
                 Container(
                   margin: const EdgeInsets.symmetric(horizontal: 10),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10),
                     color: const Color(white),
                   ),
-                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 10,
+                  ),
                   child: Column(
                     children: [
-                      Container(
-                        height: 70,
-                        padding: EdgeInsets.symmetric(horizontal: 10),
-                        child: TextField(
-                          controller: _description,
-                          decoration: InputDecoration(
-                            labelText: "description".tr,
-                            prefixIcon: const Icon(Icons.article),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Expanded(
+                            flex: 1,
+                            child: Text("Loại giao dịch:"),
                           ),
-                        ),
+                          Expanded(
+                            flex: 2,
+                            child: Container(
+                              height: 40,
+                              decoration: BoxDecoration(
+                                color: _currentIndex == 0
+                                    ? Colors.red
+                                    : Colors.green,
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              width: double.infinity,
+                              child: Center(
+                                child: Text(
+                                  _currentIndex == 0 ? "Chi tiêu" : "Thu nhập",
+                                  style: const TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                      Container(
+                      SizedBox(
                         height: 70,
-                        padding: EdgeInsets.symmetric(horizontal: 10),
                         child: TextField(
+                          enabled: false,
                           readOnly: true,
                           controller: _date,
                           decoration: const InputDecoration(
                             labelText: 'Ngày',
                             prefixIcon: Icon(Icons.calendar_today),
+                          ),
+                        ),
+                      ),
+                      Container(
+                        height: 70,
+                        child: TextField(
+                          controller: _description,
+                          decoration: InputDecoration(
+                            labelText: "description".tr,
+                            prefixIcon: const Icon(Icons.article),
                           ),
                         ),
                       ),
@@ -314,7 +343,10 @@ class _DetailTransactionState extends State<DetailTransaction> {
                       if (_formKey.currentState!.validate()) {
                         if (isAnyFieldEmpty()) {
                           buildErrorMessage(
-                              "Lỗi", "Không được để trống mục tạo!", context);
+                            "Lỗi",
+                            "Không được để trống mục tạo!",
+                            context,
+                          );
                         }
 
                         if (!isAnyFieldEmpty()) {

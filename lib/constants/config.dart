@@ -4,13 +4,9 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
-String FormatDateVi(DateTime date) {
-  DateTime currentTime =
-      DateTime(date.year, date.month, date.day, date.hour, date.minute);
-  String formattedTime =
-      '${currentTime.day}/${currentTime.month}/${currentTime.year}';
-
-  return formattedTime;
+String FormatDateVi(DateTime date) { 
+  final DateFormat formatter = DateFormat('dd/MM/yyyy');
+  return formatter.format(date); 
 }
 
 DateTime formatStringToDate(String date) {

@@ -1,5 +1,4 @@
 import 'package:money_tracker/constants/config.dart';
-import 'package:money_tracker/constants/font_size.dart';
 import 'package:money_tracker/model/transaction.dart' as tr;
 import 'package:money_tracker/model/user.dart';
 import 'package:money_tracker/model/wallet.dart';
@@ -7,6 +6,7 @@ import 'package:money_tracker/services/share_preference.dart';
 import 'package:money_tracker/services/transaction_service.dart';
 import 'package:money_tracker/services/wallet_service.dart';
 import 'package:money_tracker/view/pages/input/detail_transaction.dart';
+import 'package:money_tracker/view/pages/wallet/widgets/select_wallet.dart';
 import 'package:money_tracker/view/widgets/notification.dart';
 import 'package:money_tracker/constants/app_colors.dart';
 import 'package:flutter/material.dart';
@@ -24,54 +24,95 @@ class _HomeScreenState extends State<HomeScreen> {
   late WalletService walletService;
   List<tr.Transaction> transactions = [];
   List<Wallet> wallets = [];
+  List<Wallet> changeWallets = [];
   User? user;
   int price = 0;
   int expense = 0;
   int income = 0;
   late List<bool> _expandedState;
-  loadUser() async {
-    UserPreference userPreference = UserPreference();
-    int userId = await userPreference.getUserID();
-    User u = await userPreference.getUser();
-    await connectTransactions(userId);
-    await connectWallets(userId);
-    setState(() {
-      user = u;
-    });
+  Future<void> loadUser() async {
+    try {
+      UserPreference userPreference = UserPreference();
+      int userId = await userPreference.getUserID();
+      User u = await userPreference.getUser();
+      await loadWallets(userId);
+      setState(() {
+        user = u;
+      });
+    } catch (e) {
+      print("Lỗi khi tải ví: $e");
+    }
   }
 
-  connectTransactions(int userid) async {
-    transactionService = TransactionService(await getDatabase());
-    var data = await transactionService.searchOfUser(userId: userid);
+  Future<int> calculateTotalTransactions(List<Wallet> wl, int userId) async {
+    int totalTransactions = 0;
 
-    setState(() {
-      transactions = data;
-      for (final i in data) {
-        if (i.transaction_type == 1) {
-          income += i.money;
-        } else {
-          expense += i.money;
+    return totalTransactions;
+  }
+
+  Future<int> calculateTypeTransactions(
+      List<Wallet> wl, int userId, int type) async {
+    int totalTransactions = 0;
+
+    for (var wallet in wl) {
+      // Lấy danh sách transaction của từng wallet
+      var transactions = await transactionService.searchOfUserAndWallets(
+        userId: userId,
+        id_wallet: wallet.id_wallet!,
+      );
+
+      // Tính tổng tiền của các transaction trong ví đó
+      for (var transaction in transactions) {
+        if (transaction.transaction_type == type) {
+          totalTransactions += transaction.money;
         }
       }
-      price = income - expense;
+    }
+    return totalTransactions;
+  }
+
+  connectTransactions(int userid, List<Wallet> wl) async {
+    transactionService = TransactionService(await getDatabase());
+    var data = await transactionService.searchOfUser(userId: userid);
+    int a = 0, b = 0, c = 0;
+    for (var wallet in wl) {
+      var trs = data
+          .where((element) => element.id_wallet == wallet.id_wallet)
+          .toList();
+
+      for (var transaction in trs) {
+        a += transaction.money;
+        if (transaction.transaction_type == 1) b += transaction.money;
+        if (transaction.transaction_type == 0) c += transaction.money;
+      }
+    }
+    setState(() {
+      transactions = data;
+      price = a;
+      income = b;
+      expense = c;
     });
   }
 
-  connectWallets(int userid) async {
+  // Hàm tải tất cả các ví đã chọn mặc định
+  loadWallets(int userid) async {
     walletService = WalletService(await getDatabaseWallet());
-    var data = await walletService.searchWallets(userid);
-    setState(() {
-      wallets = data;
-      _expandedState = List<bool>.filled(data.length, false);
-    });
+    List<Wallet> allWallets = await walletService.searchWallets(userid);
+    await updateSelectedWallets(allWallets, userid);
   }
 
   bool _obscureText = false;
   @override
   void initState() {
     super.initState();
+    loadUser();
+  }
+
+  updateSelectedWallets(List<Wallet> wl, int userid) async {
+    await connectTransactions(userid, wl);
     setState(() {
-      loadUser();
+      wallets = wl;
+      _expandedState = List<bool>.filled(wl.length, false);
     });
   }
 
@@ -104,7 +145,7 @@ class _HomeScreenState extends State<HomeScreen> {
         text:
             "${'spending'.tr}: ${_obscureText ? '${formatMoney(expense.toDouble())} ' : "***000 "}",
         style: const TextStyle(color: Colors.red),
-        children:  [
+        children: [
           TextSpan(
             text: 'icon_currency'.tr,
             style: const TextStyle(
@@ -125,7 +166,7 @@ class _HomeScreenState extends State<HomeScreen> {
         style: const TextStyle(color: Colors.green),
         children: [
           TextSpan(
-            text:'icon_currency'.tr,
+            text: 'icon_currency'.tr,
             style: const TextStyle(
               color: Colors.green,
               decoration: TextDecoration.underline,
@@ -158,25 +199,34 @@ class _HomeScreenState extends State<HomeScreen> {
   }) {
     return Container(
       margin: const EdgeInsets.all(10),
-      padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
         color: const Color(white),
         borderRadius: BorderRadius.circular(12.0),
       ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              buildTextTotalPrice(),
-              buitlTextSpending(),
-              buitlTextComein(),
-            ],
-          ),
-          buildVisibilityButton(),
-        ],
+      child: MaterialButton(
+        onPressed: () {
+          getToPage(
+            page: () => SelectWallet(
+              setChecked: (wl, user) => updateSelectedWallets(wl, user),
+            ),
+          );
+        },
+        padding: const EdgeInsets.all(10),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                buildTextTotalPrice(),
+                buitlTextSpending(),
+                buitlTextComein(),
+              ],
+            ),
+            buildVisibilityButton(),
+          ],
+        ),
       ),
     );
   }
@@ -257,7 +307,10 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                             Flexible(
                               flex: 1,
-                              child: text,
+                              child: Align(
+                                alignment: Alignment.centerRight,
+                                child: text,
+                              ),
                             )
                           ],
                         ),
@@ -282,14 +335,7 @@ class _HomeScreenState extends State<HomeScreen> {
             appBar: AppBar(
               automaticallyImplyLeading: false,
               title: usernameTitleAppbar(),
-              actions: [
-                IconButton(
-                  onPressed: () {
-                    getToPage(page: () => const NotificationPage());
-                  },
-                  icon: const Icon(Icons.notifications),
-                )
-              ],
+            
               bottom: PreferredSize(
                 preferredSize: const Size.fromHeight(110.0),
                 child: _buildContainterPrice(context: context),
@@ -333,14 +379,28 @@ class _HomeScreenState extends State<HomeScreen> {
                                         mainAxisAlignment:
                                             MainAxisAlignment.spaceBetween,
                                         children: [
-                                          Flexible(
+                                          Expanded(
                                             flex: 1,
                                             child: Image.asset(
                                               wallets[index].icon,
-                                              width: 40,
+                                              width: 30,
                                             ),
                                           ),
-                                          Flexible(
+                                          Expanded(
+                                            flex: 7,
+                                            child: Padding(
+                                              padding: const EdgeInsets.only(
+                                                  left: 15.0),
+                                              child: Text(
+                                                wallets[index].name,
+                                                style: TextStyle(
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          Expanded(
                                             flex: 1,
                                             child: Icon(
                                               isExpanded

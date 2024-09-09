@@ -32,43 +32,45 @@ class SelectWallets extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            
             Expanded(
+                flex: 10,
                 child: ListView.builder(
-              itemCount: imageBase().getIconWallets().length,
-              itemBuilder: (context, index) {
-                var data = imageBase().getIconWallets()[index];
-                return MaterialButton(
-                  onPressed: () {
-                    // Truyền trực tiếp các giá trị icon và name qua Map
-                    onPress({
-                      'icon': data['icon'],
-                      'name': data['name'],
-                    });
-                    Get.back();
-                  },
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Color(grey),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    height: 60,
-                    margin: EdgeInsets.symmetric(vertical: 5),
-                    padding: EdgeInsets.all(15),
-                    width: double.infinity,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Flexible(
-                          flex: 1,
-                          child: Image.asset(data['icon']!),
+                  itemCount: imageBase().getIconWallets().length,
+                  itemBuilder: (context, index) {
+                    var data = imageBase().getIconWallets()[index];
+                    return MaterialButton(
+                      onPressed: () {
+                        // Truyền trực tiếp các giá trị icon và name qua Map
+                        onPress({
+                          'icon': data['icon'],
+                          'name': data['name'],
+                        });
+                        Get.back();
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Color(grey),
+                          borderRadius: BorderRadius.circular(10),
                         ),
-                        Flexible(child: Text(data['name']!))
-                      ],
-                    ),
-                  ),
-                );
-              },
-            )),
+                        height: 60,
+                        margin: EdgeInsets.symmetric(vertical: 5),
+                        padding: EdgeInsets.all(15),
+                        width: double.infinity,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Flexible(
+                              flex: 1,
+                              child: Image.asset(data['icon']!),
+                            ),
+                            Flexible(child: Text(data['name']!))
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                )),
           ],
         ),
       ),

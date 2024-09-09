@@ -48,15 +48,16 @@ class _FinancialAnalysisState extends State<FinancialAnalysis> {
       }).toList();
       wallets = data2;
       data = getDataPie(
-          transactions: transactions,
-          startTime: _startDate!,
-          endTime: _endDate!);
-      List.generate(
-        data.length,
-        (index) {
-          print(data[index].toMap());
-        },
+        transactions: transactions,
+        startTime: _startDate!,
+        endTime: _endDate!,
       );
+      // List.generate(
+      //   data.length,
+      //   (index) {
+      //     print(data[index].toMap());
+      //   },
+      // );
     });
   }
 

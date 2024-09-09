@@ -1,9 +1,7 @@
-import 'dart:async';
-import 'dart:math';
+import 'dart:async'; 
 import 'package:money_tracker/constants/config.dart';
 import 'package:money_tracker/constants/images.dart';
 import 'package:money_tracker/model/wallet.dart';
-import 'package:money_tracker/services/transaction_service.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:uuid/uuid.dart';
@@ -83,11 +81,11 @@ class WalletService {
     return walletList;
   }
 
-  Future<List<Wallet>> searchWallets(int UserId) async {
+  Future<List<Wallet>> searchWallets(int userId) async {
     final List<Map<String, Object?>> wallets = await db.query(
       "wallets",
       where: "id_user=?",
-      whereArgs: [UserId],
+      whereArgs: [userId],
       orderBy: "create_up DESC",
     );
     return getWalletData(wallets);

@@ -58,7 +58,6 @@ flutter:
   assets:
     - assets/image/
     - assets/image/iconWallets/
-
   fonts:
     - family: Poppins
       fonts:

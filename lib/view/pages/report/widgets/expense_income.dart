@@ -74,7 +74,7 @@ class _WeekScreenState extends State<WeekScreen> {
       items = getTotalNewTransaction(
           transactions: transactions,
           startTime: _startDate!,
-          endTime: _endDate!); 
+          endTime: _endDate!);
     });
   }
 
@@ -111,36 +111,30 @@ class _WeekScreenState extends State<WeekScreen> {
       _connectdatabase();
     });
   }
-  
+
   List<DataModel> getTotalNewTransaction(
       {required List<Transaction> transactions,
       required DateTime startTime,
       required DateTime endTime}) {
     List<DataModel> items = [];
-    bool _isSameDate(String txDateTime, DateTime date) {
+    bool isSameDate(String txDateTime, DateTime date) {
       DateTime t = formatStringToDate(txDateTime);
       return t.year == date.year && t.month == date.month && t.day == date.day;
     }
 
     DateTime s = removeTimeDate(startTime), e = removeTimeDate(endTime);
-    double incomeTotal = 0, expenseTotal = 0;
-
+    
     for (DateTime date = s;
         date.isBefore(e) || date.isAtSameMomentAs(e);
         date = date.add(
       const Duration(days: 1),
     ),) {
-      incomeTotal = transactions
-          .where((tx) =>
-              tx.transaction_type == 1 && _isSameDate(tx.dateTime, date))
-          .fold(0, (sum, tx) => sum + tx.money);
-
-      expenseTotal = transactions
-          .where((tx) => tx.transaction_type == 0)
-          .where((tx) => _isSameDate(tx.dateTime, date))
-          .fold(0, (sum, tx) => sum + tx.money);
-      if (incomeTotal == null) incomeTotal = 0;
-      if (expenseTotal == null) incomeTotal = 0;
+      double incomeTotal = 0.0, expenseTotal = 0.0;
+      var tr = transactions.where((tx) => isSameDate(tx.dateTime, date));
+      for (var t in tr) {
+        if (t.transaction_type == 1) incomeTotal += t.money;
+        if (t.transaction_type == 0) expenseTotal += t.money;
+      }
       items.add(
         DataModel(
           key: date.day,
@@ -197,10 +191,8 @@ class _WeekScreenState extends State<WeekScreen> {
           BarChartRodData(
             toY: data.income == 0
                 ? 0.1
-                : ((data.income > maxChartValue)
-                    ? maxChartValue
-                    : data.income),
-            color: Colors.blue, // Cột màu xanh cho income
+                : ((data.income > maxChartValue) ? maxChartValue : data.income),
+            color: Colors.green,  
             width: 15,
           ),
           BarChartRodData(
@@ -209,7 +201,7 @@ class _WeekScreenState extends State<WeekScreen> {
                 : ((data.expense > maxChartValue)
                     ? maxChartValue
                     : data.expense),
-            color: Colors.red, // Cột màu đỏ cho expense
+            color: Colors.red,  
             width: 15,
           ),
         ],

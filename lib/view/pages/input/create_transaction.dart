@@ -40,12 +40,7 @@ class _CreateScreenState extends State<CreateScreen> {
     var dataWallet = await walletService.searchWallets(userID!);
     setState(() {
       wallets = dataWallet;
-      String date = DateTime.now().toString().split(' ')[0];
-      List<String> parts = date.split('-');
-      String day = parts[2];
-      String year = parts[0];
-      String month = parts[1];
-      _date.text = "$day/$month/$year";
+      _date.text = FormatDateVi(DateTime.now());
     });
   }
 
@@ -85,12 +80,7 @@ class _CreateScreenState extends State<CreateScreen> {
     );
     if (picked != null) {
       setState(() {
-        String date = picked.toString().split(' ')[0];
-        List<String> parts = date.split('-');
-        String year = parts[0];
-        String month = parts[1];
-        String day = parts[2];
-        _date.text = "$day/$month/$year";
+        _date.text = FormatDateVi(DateTime.now());
       });
     }
   }
@@ -129,13 +119,11 @@ class _CreateScreenState extends State<CreateScreen> {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title:  Text(
-          
-            "title_navigation_4".tr,
+        title: Text(
+          "title_navigation_4".tr,
           style: TextStyle(fontSize: 22),
         ),
         centerTitle: true,
-        
       ),
       body: Container(
         color: const Color(grey),
@@ -169,7 +157,7 @@ class _CreateScreenState extends State<CreateScreen> {
                   inactiveBgColor: Colors.black26,
                   activeFgColor: const Color(white),
                   activeBgColor: const [Color(blue), Color(primary)],
-                  labels:  [
+                  labels: [
                     'spending'.tr,
                     'income'.tr,
                   ],
@@ -215,10 +203,11 @@ class _CreateScreenState extends State<CreateScreen> {
                     _showIconSelectionDialog();
                   },
                   child: wallet == null
-                      ?  SizedBox(
+                      ? SizedBox(
                           height: 40,
                           width: double.infinity,
-                          child: Text("select_title_wallets_create_transaction".tr),
+                          child: Text(
+                              "select_title_wallets_create_transaction".tr),
                         )
                       : Row(
                           children: [
@@ -255,24 +244,27 @@ class _CreateScreenState extends State<CreateScreen> {
                             context,
                           );
                         } else {
-                          createTransaction();
-                          updateWalletMoneyTotal();
-                          buildSuccessMessage(
-                            "Thành công!",
-                            "Thành công tạo giao dịch.",
-                            context,
-                          );
-                          _money.clear();
-                          _date.clear();
-                          _description.clear();
-                          getOffAllPage(page: () => const NavigationMenu());
+                          if (int.parse(removeCurrencySeparator(_money.text)) >=
+                              5000000) {
+                            buildWarningMessage(
+                              "Thông báo",
+                              "Giá trị giao dịch không vượt quá 5 triệu VNĐ giao dịch!",
+                              context,
+                            );
+                          } else {
+                            createTransaction();
+                            updateWalletMoneyTotal();
+                            buildSuccessMessage(
+                              "Thành công!",
+                              "Thành công tạo giao dịch.",
+                              context,
+                            );
+                            _money.clear();
+                            _date.text = FormatDateVi(DateTime.now());
+                            _description.clear();
+                            getOffAllPage(page: () => const NavigationMenu(routerNavigationMenu: 0,));
+                          }
                         }
-                      } else {
-                        buildWarningMessage(
-                          "Lỗi!",
-                          "Không thể tạo mới giao dịch.",
-                          context,
-                        );
                       }
                     },
                     style: ElevatedButton.styleFrom(
