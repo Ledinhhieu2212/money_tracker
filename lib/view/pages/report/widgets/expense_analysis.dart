@@ -189,7 +189,7 @@ class _WeekScreenState extends State<WeekScreen> {
                           child: Row(
                             children: [
                               Flexible(
-                                child:  Image.asset(imageBase().getIconWallets()[]),
+                                child:  Image.asset(imageBase().getIconWallets()[0]),
                               ),
                             ],
                           ),
