@@ -258,16 +258,47 @@ class TransactionExpense extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Flexible(
-                                child:  Image.asset(imageBase().getIconWallets()[]),
+                                flex: 2,
+                                child: Image.asset(
+                                  wallet.icon,
+                                ),
                               ),
+                              Flexible(
+                                flex: 8,
+                                child: Container(
+                                    decoration: const BoxDecoration(
+                                        border: Border(
+                                            bottom: BorderSide(
+                                      width: 1,
+                                    ))),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          transaction.dateTime,
+                                          style: const TextStyle(
+                                              color: Colors.black),
+                                        ),
+                                        Text(
+                                          "-${formatMoney(transaction.money.toDouble()) }đ",
+                                          style: const TextStyle(
+                                            color: Colors.red,
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        )
+                                      ],
+                                    )),
+                              )
                             ],
                           ),
-                        ),
-                      ],
+                        );
+                      },
                     ),
-            ),
-          )
-        ],
+                  ),
+                ],
+              ),
       ),
     );
   }
