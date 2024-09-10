@@ -156,6 +156,7 @@ class _CreateWalletState extends State<CreateWallet> {
                             id_user: userID!,
                             total: 0,
                             icon: iconWallet["icon"]!,
+                            status: 1,
                             description: _wallet.text,
                             create_up: removeTimeDate(now).toString(),
                             upload_up: removeTimeDate(now).toString(),

@@ -3,7 +3,7 @@ import 'package:money_tracker/constants/config.dart';
 import 'package:money_tracker/controller/auth/registerController.dart';
 import 'package:money_tracker/constants/images.dart';
 import 'package:money_tracker/view/pages/auth/login.dart';
-import 'package:money_tracker/view/widgets/button.dart';
+import 'package:money_tracker/view/widgets/button/button.dart';
 import 'package:money_tracker/view/widgets/text_field.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';

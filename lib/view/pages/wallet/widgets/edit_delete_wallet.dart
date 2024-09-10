@@ -192,6 +192,7 @@ class _EditDeleteWalletState extends State<EditDeleteWallet> {
                           description: _wallet.text,
                           id_user: wallet!.id_user,
                           total: wallet!.total, 
+                          status: 1,
                           create_up: wallet!.create_up,
                           upload_up: now.toString(),
                         ),

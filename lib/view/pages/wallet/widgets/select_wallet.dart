@@ -9,10 +9,8 @@ import 'package:money_tracker/view/pages/navigation/navigation.dart';
 import 'package:get/get.dart';
 
 class SelectWallet extends StatefulWidget {
-  final Function(List<Wallet>, int) setChecked;
   const SelectWallet({
     super.key,
-    required this.setChecked,
   });
 
   @override
@@ -20,7 +18,6 @@ class SelectWallet extends StatefulWidget {
 }
 
 class _SelectWalletState extends State<SelectWallet> {
-  List<bool> isCheckedList = [];
   int? userId;
   List<Wallet> wallets = [];
   late WalletService walletService;
@@ -35,7 +32,6 @@ class _SelectWalletState extends State<SelectWallet> {
     var data = await walletService.searchWallets(userid);
     setState(() {
       wallets = data;
-      isCheckedList = List<bool>.filled(wallets.length, false);
     });
   }
 
@@ -45,25 +41,30 @@ class _SelectWalletState extends State<SelectWallet> {
     loadUser();
   }
 
-// Hàm cập nhật trạng thái checkbox
-  void _onCheckboxChanged(bool? value, int index) {
-    setState(() {
-      isCheckedList[index] = value ?? false;
-    });
+  //Hàm để lấy danh sách các item không được chọn (status == 0)
+  List<Wallet> getItemsWallet(int status) {
+    List<Wallet> unselectedItems = [];
+    for (int i = 0; i < wallets.length; i++) {
+      if (wallets[i].status == status) {
+        unselectedItems.add(wallets[i]);
+      }
+    }
+    return unselectedItems;
   }
 
-// Hàm này sẽ trả về danh sách các ví đã chọn
-  List<Wallet> getSelectedWallets() {
-    return [
-      for (int i = 0; i < wallets.length; i++)
-        if (isCheckedList[i]) wallets[i]
-    ];
-  }
+  // Lấy hàm callback từ trang A
+  final Function? callback = Get.arguments;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
+        leading: IconButton(
+            onPressed: () {
+              getToPage(page: () => const NavigationMenu());
+            },
+            icon: const Icon(Icons.arrow_back)),
         title: Text("title_select_wallet".tr),
         centerTitle: true,
         titleTextStyle: TextStyle(fontSize: 16),
@@ -89,8 +90,12 @@ class _SelectWalletState extends State<SelectWallet> {
                   Expanded(flex: 8, child: Text(wallets[index].name)),
                 ],
               ),
-              value: isCheckedList[index],
-              onChanged: (value) => _onCheckboxChanged(value, index),
+              value: wallets[index].status == 1,
+              onChanged: (bool? value) {
+                setState(() {
+                  wallets[index].status = value! ? 1 : 0;
+                });
+              },
             ),
           );
         },
@@ -98,10 +103,12 @@ class _SelectWalletState extends State<SelectWallet> {
       floatingActionButton: FloatingActionButton(
         backgroundColor: const Color(blue),
         onPressed: () {
-          List<Wallet> selectedWallets = getSelectedWallets();
+          for (var wl in wallets) {
+            walletService.updateStatus(
+                walletID: wl.id_wallet!, status: wl.status);
+          }
 
-          widget.setChecked(selectedWallets, userId!);
-          Navigator.of(context).pop();
+          getToPage(page: () => const NavigationMenu());
         },
         child: const Icon(
           Icons.check,

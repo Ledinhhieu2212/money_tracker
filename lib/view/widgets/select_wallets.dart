@@ -16,23 +16,12 @@ class SelectWallets extends StatelessWidget {
           "Chọn loại ví",
           style: TextStyle(fontSize: 20),
         ),
-        // actions: [
-        //   TextButton(
-        //     child: const Icon(
-        //       Icons.add_circle_outlined,
-        //       color: Color(white),
-        //       size: 30,
-        //     ),
-        //     onPressed: () {},
-        //   ),
-        // ],
       ),
       body: Container(
         padding: const EdgeInsets.all(10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            
             Expanded(
                 flex: 10,
                 child: ListView.builder(
@@ -41,7 +30,6 @@ class SelectWallets extends StatelessWidget {
                     var data = imageBase().getIconWallets()[index];
                     return MaterialButton(
                       onPressed: () {
-                        // Truyền trực tiếp các giá trị icon và name qua Map
                         onPress({
                           'icon': data['icon'],
                           'name': data['name'],

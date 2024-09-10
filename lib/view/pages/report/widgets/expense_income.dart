@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:fl_chart/fl_chart.dart';
 import 'package:fl_chart/fl_chart.dart' as fl;
+import 'package:money_tracker/view/pages/wallet/widgets/select_wallet.dart';
 import 'package:money_tracker/view/widgets/charts/bar_chart.dart' as custom;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -13,6 +14,7 @@ import 'package:money_tracker/model/wallet.dart';
 import 'package:money_tracker/services/share_preference.dart';
 import 'package:money_tracker/services/transaction_service.dart';
 import 'package:money_tracker/services/wallet_service.dart';
+import 'package:money_tracker/view/widgets/list_wallet.dart';
 
 class ExpenseIncome extends StatefulWidget {
   const ExpenseIncome({super.key});
@@ -60,17 +62,37 @@ class _WeekScreenState extends State<WeekScreen> {
 
   void _connectdatabase() async {
     int userId = await UserPreference().getUserID();
-    service = TransactionService(await getDatabase());
+    await _connectWallet(userId);
+  }
+
+  _connectWallet(int userId) async {
     wallertService = WalletService(await getDatabaseWallet());
-    var data1 = await service.searchOfUser(userId: userId);
-    var data2 = await wallertService.searchWallets(userId);
+    var data = await wallertService.searchWallets(userId);
+    var d = data.where((element) => element.status == 1).toList();
+    await _connectTransaction(userId, d);
     setState(() {
-      transactions = data1.where((element) {
-        DateTime date = formatStringToDate(element.dateTime);
-        return date.compareTo(_startDate!) >= 0 &&
-            date.compareTo(_endDate!) <= 0;
-      }).toList();
-      wallets = data2;
+      wallets = d;
+    });
+  }
+
+  _connectTransaction(int userId, List<Wallet> wl) async {
+    service = TransactionService(await getDatabase());
+    var data = await service.searchOfUser(userId: userId);
+    var trs = data.where((element) {
+      DateTime date = formatStringToDate(element.dateTime);
+      return date.compareTo(_startDate!) >= 0 && date.compareTo(_endDate!) <= 0;
+    }).toList();
+    List<Transaction> transactionss = [];
+    for (var tr in trs) {
+      for (var w in wl) {
+        if (tr.id_wallet == w.id_wallet) {
+          transactionss.add(tr);
+        }
+      }
+    }
+
+    setState(() {
+      transactions = transactionss;
       items = getTotalNewTransaction(
           transactions: transactions,
           startTime: _startDate!,
@@ -123,7 +145,7 @@ class _WeekScreenState extends State<WeekScreen> {
     }
 
     DateTime s = removeTimeDate(startTime), e = removeTimeDate(endTime);
-    
+
     for (DateTime date = s;
         date.isBefore(e) || date.isAtSameMomentAs(e);
         date = date.add(
@@ -192,7 +214,7 @@ class _WeekScreenState extends State<WeekScreen> {
             toY: data.income == 0
                 ? 0.1
                 : ((data.income > maxChartValue) ? maxChartValue : data.income),
-            color: Colors.green,  
+            color: Colors.green,
             width: 15,
           ),
           BarChartRodData(
@@ -201,7 +223,7 @@ class _WeekScreenState extends State<WeekScreen> {
                 : ((data.expense > maxChartValue)
                     ? maxChartValue
                     : data.expense),
-            color: Colors.red,  
+            color: Colors.red,
             width: 15,
           ),
         ],
@@ -393,11 +415,23 @@ class TransactionExpense extends StatelessWidget {
             : Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                    child: Text(
-                      "Thông tin giao dịch: ",
-                      textAlign: TextAlign.left,
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          "Thông tin giao dịch: ",
+                          textAlign: TextAlign.left,
+                          style: TextStyle(fontSize: 16),
+                        ),
+                        IconButton(
+                          onPressed: () {
+                            getToPageToBack(page: ()=>const SelectWallet());
+                          },
+                          icon: Icon(Icons.settings),
+                        ),
+                      ],
                     ),
                   ),
                   Expanded(

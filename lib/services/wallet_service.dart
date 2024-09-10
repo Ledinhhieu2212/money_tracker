@@ -11,7 +11,7 @@ Future<Database> getDatabaseWallet() async {
       openDatabase(join(await getDatabasesPath(), 'wallet_database.db'),
           onCreate: (db, version) {
     return db.execute(
-        'create table IF NOT EXISTS wallets(id_wallet TEXT PRIMARY KEY, id_user INTEGER, icon TEXT, name TEXT, total INTEGER, description TEXT, create_up TEXT, upload_up TEXT)');
+        'create table IF NOT EXISTS wallets(id_wallet TEXT PRIMARY KEY, id_user INTEGER, icon TEXT, name TEXT, total INTEGER, description TEXT ,status INTEGER , create_up TEXT, upload_up TEXT)');
   }, version: 1);
   return database;
 }
@@ -41,6 +41,18 @@ class WalletService {
     );
   }
 
+  Future<void> updateStatus({
+    required String walletID,
+    required int status,
+  }) async {
+    await db.update(
+      "wallets",
+      {"status": status},
+      where: "id_wallet = ?",
+      whereArgs: [walletID],
+    );
+  }
+
   fakeWallet({required int sl, required int userid}) {
     deleteAllwallets(userid);
     imageBase images = imageBase();
@@ -53,6 +65,7 @@ class WalletService {
           total: 0,
           id_user: userid,
           description: generateRandomString(100),
+          status: 1,
           create_up: generateRandomDateTime().toString(),
           upload_up: generateRandomDateTime().toString()));
     }
@@ -73,6 +86,7 @@ class WalletService {
         total: walletData['total'] as int,
         id_user: walletData['id_user'] as int,
         description: walletData['description'] as String,
+        status:  walletData['status'] as int,
         create_up: walletData['create_up'] as String,
         upload_up: walletData['upload_up'] as String,
       );
@@ -101,6 +115,7 @@ class WalletService {
       description: wallet.first['description'].toString(),
       id_user: int.parse(wallet.first['id_user'].toString()),
       id_wallet: wallet.first['id_wallet'].toString(),
+      status: int.parse(wallet.first['status'].toString()),
       create_up: wallet.first['create_up'].toString(),
       upload_up: wallet.first['upload_up'].toString(),
     );

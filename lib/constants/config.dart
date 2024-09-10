@@ -4,9 +4,9 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
-String FormatDateVi(DateTime date) { 
+String FormatDateVi(DateTime date) {
   final DateFormat formatter = DateFormat('dd/MM/yyyy');
-  return formatter.format(date); 
+  return formatter.format(date);
 }
 
 DateTime formatStringToDate(String date) {
@@ -47,13 +47,14 @@ DateTime generateRandomDateTime() {
   DateTime startDate = DateTime(now.year, 1, 1);
   DateTime endDate = DateTime(now.year, now.month, now.day);
   int totalDays = endDate.difference(startDate).inDays;
-  
+
   // Tạo số ngày ngẫu nhiên trong khoảng từ 0 đến totalDays
-  int randomDays = Random().nextInt(totalDays + 1);  // +1 để bao gồm cả ngày cuối
-  
+  int randomDays =
+      Random().nextInt(totalDays + 1); // +1 để bao gồm cả ngày cuối
+
   // Thêm số ngày ngẫu nhiên vào startDate
   DateTime randomDate = startDate.add(Duration(days: randomDays));
-  
+
   // Trả về kết quả chỉ có phần ngày, giờ mặc định là 00:00:00
   return DateTime(randomDate.year, randomDate.month, randomDate.day);
 }
@@ -99,4 +100,12 @@ void getOffAllPage({dynamic page}) {
   Get.offAll(page,
       transition: Transition.rightToLeft,
       duration: const Duration(milliseconds: 500));
+}
+
+void getToPageToBack({dynamic page}) {
+  Get.to(page,
+      transition: Transition.rightToLeft,
+      duration: const Duration(milliseconds: 500), arguments: () {
+    Get.to(page);
+  });
 }

@@ -26,12 +26,12 @@ class imageBase {
 
   List<Map<String, String>> getIconWallets() {
     return [
-      {'icon': wallet, 'name': "select_wallet_1".tr},
-      {'icon': money, 'name': "select_wallet_2".tr},
-      {'icon': cardBank, 'name': "select_wallet_3".tr},
-      {'icon': house, 'name': "select_wallet_4".tr},
-      {'icon': car, 'name': "select_wallet_5".tr},
-      {'icon': game, 'name': "select_wallet_6".tr},
+      {'icon': wallet, 'name': "Ví điện tử"},
+      {'icon': money, 'name': "Ví tiền mặt"},
+      {'icon': cardBank, 'name':"Thẻ tín dụng"},
+      {'icon': house, 'name': "Nhà"},
+      {'icon': car, 'name': "Ô tô"},
+      {'icon': game, 'name':"Giải trí"}, 
     ];
   }
 

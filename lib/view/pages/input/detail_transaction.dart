@@ -44,7 +44,7 @@ class _DetailTransactionState extends State<DetailTransaction> {
     var data = await walletService.searchWallets(widget.wallet.id_user);
     setState(
       () {
-        wallets = data;
+        wallets = data.where((element) => element.status == 1).toList();
         transaction = p;
         transactions = date2;
         newWallet = widget.wallet;

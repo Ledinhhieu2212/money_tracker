@@ -31,7 +31,7 @@ Widget textFormFieldAuth(
 Widget textFormFieldCreateMoney(
     {required TextEditingController controller,
     Color color = const Color(black),
-    bool isEnabled = true }) {
+    bool isEnabled = true}) {
   return Stack(
     children: [
       Padding(

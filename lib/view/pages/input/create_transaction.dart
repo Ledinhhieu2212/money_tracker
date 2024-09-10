@@ -39,7 +39,7 @@ class _CreateScreenState extends State<CreateScreen> {
     walletService = WalletService(await getDatabaseWallet());
     var dataWallet = await walletService.searchWallets(userID!);
     setState(() {
-      wallets = dataWallet;
+      wallets = dataWallet.where((element) => element.status ==1).toList();
       _date.text = FormatDateVi(DateTime.now());
     });
   }
@@ -80,7 +80,7 @@ class _CreateScreenState extends State<CreateScreen> {
     );
     if (picked != null) {
       setState(() {
-        _date.text = FormatDateVi(DateTime.now());
+        _date.text = FormatDateVi(picked);
       });
     }
   }
@@ -90,7 +90,7 @@ class _CreateScreenState extends State<CreateScreen> {
     service.insert(
       Transaction(
         id_user: userID!,
-        dateTime: _date.text,
+        dateTime:  _date.text,
         transaction_type: _type,
         id_wallet: wallet!.id_wallet!,
         money: int.parse(_money.text.replaceAll('.', '')),

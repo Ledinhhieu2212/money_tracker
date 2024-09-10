@@ -81,11 +81,11 @@ class _HomeScreenState extends State<HomeScreen> {
           .toList();
 
       for (var transaction in trs) {
-        a += transaction.money;
         if (transaction.transaction_type == 1) b += transaction.money;
         if (transaction.transaction_type == 0) c += transaction.money;
       }
     }
+    a = b - c;
     setState(() {
       transactions = data;
       price = a;
@@ -98,7 +98,12 @@ class _HomeScreenState extends State<HomeScreen> {
   loadWallets(int userid) async {
     walletService = WalletService(await getDatabaseWallet());
     List<Wallet> allWallets = await walletService.searchWallets(userid);
-    await updateSelectedWallets(allWallets, userid);
+    var data = allWallets.where((element) => element.status == 1).toList();
+    await connectTransactions(userid, data);
+    setState(() {
+      wallets = data;
+      _expandedState = List<bool>.filled(data.length, false);
+    });
   }
 
   bool _obscureText = false;
@@ -109,10 +114,8 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   updateSelectedWallets(List<Wallet> wl, int userid) async {
-    await connectTransactions(userid, wl);
     setState(() {
       wallets = wl;
-      _expandedState = List<bool>.filled(wl.length, false);
     });
   }
 
@@ -205,10 +208,8 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       child: MaterialButton(
         onPressed: () {
-          getToPage(
-            page: () => SelectWallet(
-              setChecked: (wl, user) => updateSelectedWallets(wl, user),
-            ),
+          getToPageToBack(
+            page: () => const SelectWallet(),
           );
         },
         padding: const EdgeInsets.all(10),
@@ -335,7 +336,6 @@ class _HomeScreenState extends State<HomeScreen> {
             appBar: AppBar(
               automaticallyImplyLeading: false,
               title: usernameTitleAppbar(),
-            
               bottom: PreferredSize(
                 preferredSize: const Size.fromHeight(110.0),
                 child: _buildContainterPrice(context: context),
