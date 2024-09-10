@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:money_tracker/constants/app_colors.dart';
+import 'package:money_tracker/model/user.dart';
 import 'package:money_tracker/view/pages/home/home.dart';
-import 'package:money_tracker/view/pages/input/create.dart';
+import 'package:money_tracker/view/pages/input/create_transaction.dart';
 import 'package:money_tracker/view/pages/report/report.dart';
 import 'package:money_tracker/view/pages/tool/tools.dart';
 import 'package:money_tracker/view/pages/wallet/wallet.dart';
 
 class NavigationMenu extends StatefulWidget {
   final int routerNavigationMenu;
-  final int idUser;
   const NavigationMenu({
     super.key,
     this.routerNavigationMenu = 0,
-    this.idUser = 0,
   });
 
   @override
@@ -26,27 +26,34 @@ class _NavigationMenuState extends State<NavigationMenu> {
   final ortherNavKey = GlobalKey<NavigatorState>();
   int selectedTab = 0;
   final PageStorageBucket bucket = PageStorageBucket();
-  Widget currentScreen = const HomeScreen();
+  int currentScreen = 0;
+  late final List<Widget> items = [
+    HomeScreen(),
+    WalletScreen(),
+    ReportScreen(),
+    ToolPage(),
+    CreateScreen(),
+  ];
+
   @override
   void initState() {
     super.initState();
     selectedTab = widget.routerNavigationMenu;
-    currentScreen = items[selectedTab];
   }
 
-  static const items = [
-    HomeScreen(),
-    WalletScreen(),
-    ReportScreen(),
-    ToolPage()
-  ];
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return  AnnotatedRegion<SystemUiOverlayStyle>(
+      value: SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent, // Thiết lập thanh trạng thái trong suốt
+        statusBarIconBrightness: Brightness.dark, // Đặt màu của icon trên thanh trạng thái
+      ),
+      child:  Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: const Color(grey),
       body: PageStorage(
         bucket: bucket,
-        child: currentScreen,
+        child: items[selectedTab],
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: Container(
@@ -59,15 +66,14 @@ class _NavigationMenuState extends State<NavigationMenu> {
         child: FloatingActionButton(
           onPressed: () {
             setState(() {
-              currentScreen = const CreateScreen();
-              selectedTab = 5;
+              selectedTab = 4;
             });
           },
           backgroundColor: const Color(blue),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(100),
           ),
-          child: selectedTab == 5
+          child: selectedTab == 4
               ? const Icon(Icons.close, color: Colors.white)
               : const Icon(Icons.add, color: Colors.white),
         ),
@@ -88,7 +94,6 @@ class _NavigationMenuState extends State<NavigationMenu> {
                   ),
                   onPressed: () {
                     setState(() {
-                      currentScreen = const HomeScreen();
                       selectedTab = 0;
                     });
                   },
@@ -103,7 +108,6 @@ class _NavigationMenuState extends State<NavigationMenu> {
                       borderRadius: BorderRadius.circular(10)),
                   onPressed: () {
                     setState(() {
-                      currentScreen = const WalletScreen();
                       selectedTab = 1;
                     });
                   },
@@ -123,7 +127,6 @@ class _NavigationMenuState extends State<NavigationMenu> {
                       borderRadius: BorderRadius.circular(10)),
                   onPressed: () {
                     setState(() {
-                      currentScreen = const ReportScreen();
                       selectedTab = 2;
                     });
                   },
@@ -138,7 +141,6 @@ class _NavigationMenuState extends State<NavigationMenu> {
                       borderRadius: BorderRadius.circular(10)),
                   onPressed: () {
                     setState(() {
-                      currentScreen = const ToolPage();
                       selectedTab = 3;
                     });
                   },
@@ -152,6 +154,6 @@ class _NavigationMenuState extends State<NavigationMenu> {
           ],
         ),
       ),
-    );
+    ),);
   }
 }

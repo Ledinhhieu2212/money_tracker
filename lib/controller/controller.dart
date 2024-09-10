@@ -1,22 +1,25 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
+import 'package:money_tracker/services/share_preference.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Controller extends GetxController {
-  void changeLanguage(var param1, var param2) {
-    var locale = Locale(param1, param2);
+  void changeLanguage(String langCode, String countryCode) {
+    var locale = Locale(langCode, countryCode);
     Get.updateLocale(locale);
   }
 
-  void ifChangeLanguage({locale = 1}) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setInt('locale', locale);
-    int sum = prefs.getInt('locale') ?? 0;
-    if (sum == 1) {
+  void ifChangeLanguage({int locale = 0}) async {
+    UserPreference prefs = UserPreference();
+    await prefs.saveTool(name: "locale", value: locale.toString());
+    String? sum = await prefs.getTool(name: 'locale');
+    if (sum == '0') {
       changeLanguage('vi', 'VN');
-    }
-    if (sum == 2) {
+    } else if (sum == '1') {
       changeLanguage('en', 'US');
+    } else {
+      // Ngôn ngữ mặc định nếu không có giá trị hợp lệ
+      changeLanguage('vi', 'VN');
     }
   }
 }

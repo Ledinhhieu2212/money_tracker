@@ -43,7 +43,7 @@ class DialogAuth extends StatelessWidget {
               top: 0.0,
               right: 0.0,
               child: IconButton(
-                icon: Icon(Icons.close),
+                icon: const Icon(Icons.close),
                 onPressed: () {
                   Get.back(); // Đóng dialog khi nhấn nút "X"
                 },

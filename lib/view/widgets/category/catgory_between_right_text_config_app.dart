@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:money_tracker/constants/app_colors.dart';
 
-// ignore: must_be_immutable
 class CatgoryBetweenConfigApp extends StatelessWidget {
   VoidCallback? onTap;
   String? title;

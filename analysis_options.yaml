@@ -10,6 +10,7 @@
 analyzer:
   errors:
     invalid_use_of_protected_member: ignore
+    library_prefixes: ignore
 include: package:flutter_lints/flutter.yaml
 
 linter:

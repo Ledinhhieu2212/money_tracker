@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:money_tracker/constants/app_style.dart';
 import 'package:money_tracker/constants/app_colors.dart';
-import 'package:money_tracker/constants/images.dart'; 
+import 'package:money_tracker/constants/config.dart';
 import 'package:money_tracker/model/wallet.dart';
 import 'package:money_tracker/services/share_preference.dart';
 import 'package:money_tracker/services/wallet_service.dart';
 import 'package:money_tracker/view/pages/wallet/widgets/edit_delete_wallet.dart';
-import 'package:money_tracker/view/widgets/config.dart';
 import 'package:money_tracker/view/pages/wallet/widgets/create_wallet.dart';
 
 class WalletScreen extends StatefulWidget {
@@ -26,21 +26,26 @@ class _WalletScreenState extends State<WalletScreen> {
     color: Colors.white,
     fontWeight: FontWeight.bold,
   );
-  _loadingHome() async {
-    int id = await UserPreference().getUserID();
+  loadUser() async {
+    UserPreference userPreference = UserPreference();
+    int user_id = await userPreference.getUserID();
+    await _loadingHome(user_id);
+  }
+
+  _loadingHome(int userId) async {
     service = WalletService(await getDatabaseWallet());
-    List<Wallet> data = await service.searchWallets(id);
+    List<Wallet> data = await service.searchWallets(userId);
     setState(() {
       wallet = data;
       for (final t in wallet) {
-        price += double.parse(t.money_price.toString());
+        price += double.parse(t.total.toString());
       }
     });
   }
 
   @override
   void initState() {
-    _loadingHome();
+    loadUser();
     super.initState();
   }
 
@@ -52,14 +57,14 @@ class _WalletScreenState extends State<WalletScreen> {
       child: Center(
         child: RichText(
           text: TextSpan(
-              text: "Tổng tiền: $price ",
+              text: "${'lable_wallet_total'.tr}: ${formatMoney(price)} ",
               style: const TextStyle(
                   fontSize: 17,
                   color: Colors.black,
                   fontWeight: FontWeight.w500),
-              children: const [
+              children:  [
                 TextSpan(
-                  text: "đ",
+                  text: "icon_currency".tr,
                   style: TextStyle(
                     decoration: TextDecoration.underline,
                   ),
@@ -77,11 +82,16 @@ class _WalletScreenState extends State<WalletScreen> {
             child: ListView.builder(
               itemCount: wallet.length,
               itemBuilder: (context, index) {
+                TextStyle style_text = TextStyle(
+                  color: wallet[index].total >= 0 ? Colors.green : Colors.red,
+                  fontSize: 25,
+                  fontWeight: FontWeight.bold,
+                );
                 return GestureDetector(
                   onTap: () => {
-                    GetToPage(
+                    getToPage(
                       page: () => EditDeleteWallet(
-                        idWallet: wallet[index]!.id_wallet!,
+                        idWallet: wallet[index].id_wallet!,
                       ),
                     ),
                   },
@@ -95,31 +105,27 @@ class _WalletScreenState extends State<WalletScreen> {
                           CircleAvatar(
                             backgroundColor: Colors.transparent,
                             child: Image.asset(
-                              imageBase().getIconWallets()[wallet[index].icon],
+                              wallet[index].icon,
                               width: 50,
                             ),
                           ),
-                          Row(
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.only(left: 20.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                       wallet[index].description,
-                                      style: const TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w600),
-                                    ),
-                                    Text(
-                                        "Trước: ${wallet[index].money_price} đ"),
-                                    Text("Sau: ${wallet[index].total} đ"),
-                                  ],
+                          Padding(
+                            padding: const EdgeInsets.only(left: 20.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  wallet[index].name,
+                                  style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600),
                                 ),
-                              ),
-                            ],
-                          )
+                                Text(
+                                    "${formatMoney(wallet[index].total.toDouble())} ${'icon_currency'.tr}",
+                                    style: style_text),
+                              ],
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -137,8 +143,8 @@ class _WalletScreenState extends State<WalletScreen> {
       child: Scaffold(
         appBar: AppBar(
           automaticallyImplyLeading: false,
-          title: const Text(
-            "Thông tin ví",
+          title:  Text(
+            "title_navigation_1".tr,
             style: TextStyle(fontSize: 20),
           ),
           centerTitle: true,
@@ -150,7 +156,7 @@ class _WalletScreenState extends State<WalletScreen> {
                 size: 30,
               ),
               onPressed: () {
-                GetToPage(page: () => const CreateWallet());
+                getToPage(page: () => const CreateWallet());
               },
             ),
           ],
@@ -168,18 +174,7 @@ class _WalletScreenState extends State<WalletScreen> {
             ],
           ),
         ),
-        // floatingActionButton: FloatingActionButton(
-        //   backgroundColor: const Color(blue),
-        //   shape:
-        //       RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
-        //   tooltip: 'Increment',
-        //   onPressed: () => GetToPage(page: const CreateWallet()),
-        //   child: const Icon(
-        //     Icons.add,
-        //     color: Color(white),
-        //     size: 30,
-        //   ),
-        // ),
+        
       ),
     );
   }

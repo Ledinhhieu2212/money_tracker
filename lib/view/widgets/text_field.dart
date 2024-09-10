@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:money_tracker/constants/app_colors.dart';
+import 'package:money_tracker/constants/config.dart';
 
 Widget textFormFieldAuth(
     {required String label,
@@ -30,20 +31,19 @@ Widget textFormFieldAuth(
 Widget textFormFieldCreateMoney(
     {required TextEditingController controller,
     Color color = const Color(black),
-    String error = ''}) {
+    bool isEnabled = true}) {
   return Stack(
     children: [
       Padding(
         padding: const EdgeInsets.only(right: 20),
         child: TextFormField(
+          enabled: isEnabled,
           controller: controller,
           textAlign: TextAlign.end,
           obscureText: false,
           style: TextStyle(color: color, fontSize: 30),
-          keyboardType: TextInputType.number,
-          inputFormatters: [
-            FilteringTextInputFormatter.digitsOnly,
-          ],
+          // keyboardType: TextInputType.number,
+          inputFormatters: [MoneyInputFormatter()],
           decoration: InputDecoration(
             hintText: "0",
             enabledBorder: const UnderlineInputBorder(

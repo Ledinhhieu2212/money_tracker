@@ -2,12 +2,12 @@ import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:money_tracker/constants/app_style.dart';
 import 'package:money_tracker/constants/app_colors.dart';
+import 'package:money_tracker/constants/config.dart';
 import 'package:money_tracker/view/pages/report/widgets/expense_analysis.dart';
 import 'package:money_tracker/view/pages/report/widgets/expense_income.dart';
 import 'package:money_tracker/view/pages/report/widgets/financial_analysis.dart';
 import 'package:money_tracker/view/pages/report/widgets/income_analysis.dart';
-import 'package:money_tracker/view/widgets/box/box_text_icon.dart';
-import 'package:money_tracker/view/widgets/config.dart';
+import 'package:money_tracker/view/widgets/box/box_text_icon.dart'; 
 
 class ReportScreen extends StatelessWidget {
   const ReportScreen({super.key});
@@ -33,7 +33,7 @@ class ReportScreen extends StatelessWidget {
           children: <Widget>[
             BoxTextIcon(
               onPress: () {
-                GetToPage(page: () => ExpenseAnalysis());
+                getToPage(page: () => ExpenseAnalysis());
               },
               icon: const Icon(
                 Icons.monetization_on,
@@ -44,7 +44,7 @@ class ReportScreen extends StatelessWidget {
             ),
             BoxTextIcon(
               onPress: () {
-                GetToPage(page: () => IncomeAnalysis());
+                getToPage(page: () => IncomeAnalysis());
               },
               icon: const Icon(
                 Icons.monetization_on,
@@ -55,7 +55,7 @@ class ReportScreen extends StatelessWidget {
             ),
             BoxTextIcon(
               onPress: () {
-                GetToPage(page: () => ExpenseIncome());
+                getToPage(page: () => ExpenseIncome());
               },
               icon: const Icon(
                 Icons.ssid_chart,
@@ -66,7 +66,7 @@ class ReportScreen extends StatelessWidget {
             ),
             BoxTextIcon(
               onPress: () {
-                GetToPage(page: () => FinancialAnalysis());
+                getToPage(page: () => FinancialAnalysis());
               },
               icon: const Icon(
                 Icons.pie_chart,

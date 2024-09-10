@@ -1,14 +1,17 @@
-import 'dart:async';
+import 'dart:async'; 
+import 'package:money_tracker/constants/config.dart';
+import 'package:money_tracker/constants/images.dart';
 import 'package:money_tracker/model/wallet.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:uuid/uuid.dart';
 
 Future<Database> getDatabaseWallet() async {
   final database =
       openDatabase(join(await getDatabasesPath(), 'wallet_database.db'),
           onCreate: (db, version) {
     return db.execute(
-        'create table IF NOT EXISTS wallets(id_wallet TEXT PRIMARY KEY, id_user INTEGER, icon INTEGER, money_price INTEGER, total INTEGER, description TEXT, create_up TEXT, upload_up TEXT)');
+        'create table IF NOT EXISTS wallets(id_wallet TEXT PRIMARY KEY, id_user INTEGER, icon TEXT, name TEXT, total INTEGER, description TEXT ,status INTEGER , create_up TEXT, upload_up TEXT)');
   }, version: 1);
   return database;
 }
@@ -38,73 +41,81 @@ class WalletService {
     );
   }
 
-  Future<List<Wallet>> getAll() async {
-    final List<Map<String, Object?>> wallet = await db.query("wallets");
-    return [
-      for (final {
-            'id_wallet': id_wallet as String,
-            'icon': icon as int,
-            'total': total as int,
-            'id_user': id_user as int,
-            'money_price': money_price as int,
-            'description': description as String,
-            "create_up": create_up as String,
-            "upload_up": upload_up as String,
-          } in wallet)
-        Wallet(
-          id_wallet: id_wallet,
-          icon: icon,
-          total: total,
-          id_user: id_user,
-          money_price: money_price,
-          description: description,
-          create_up: create_up,
-          upload_up: upload_up,
-        ),
-    ];
+  Future<void> updateStatus({
+    required String walletID,
+    required int status,
+  }) async {
+    await db.update(
+      "wallets",
+      {"status": status},
+      where: "id_wallet = ?",
+      whereArgs: [walletID],
+    );
   }
 
-  Future<List<Wallet>> searchWallets(int UserId) async {
-    final List<Map<String, Object?>> wallet = await db.query(
+  fakeWallet({required int sl, required int userid}) {
+    deleteAllwallets(userid);
+    imageBase images = imageBase();
+    for (var i = 1; i <= sl; i++) {
+      Map<String, String> randomWallet = images.getRandomIconWallet();
+      insert(Wallet(
+          id_wallet: const Uuid().v4(),
+          icon: randomWallet['icon']!,
+          name: randomWallet['name']!,
+          total: 0,
+          id_user: userid,
+          description: generateRandomString(100),
+          status: 1,
+          create_up: generateRandomDateTime().toString(),
+          upload_up: generateRandomDateTime().toString()));
+    }
+  }
+
+  Future<List<Wallet>> getAll() async {
+    final List<Map<String, Object?>> wallets = await db.query("wallets");
+    return getWalletData(wallets);
+  }
+
+  List<Wallet> getWalletData(List<Map<String, Object?>> wallets) {
+    List<Wallet> walletList = [];
+    for (final Map<String, Object?> walletData in wallets) {
+      Wallet walletItem = Wallet(
+        id_wallet: walletData['id_wallet'] as String,
+        icon: walletData['icon'] as String,
+        name: walletData['name'] as String,
+        total: walletData['total'] as int,
+        id_user: walletData['id_user'] as int,
+        description: walletData['description'] as String,
+        status:  walletData['status'] as int,
+        create_up: walletData['create_up'] as String,
+        upload_up: walletData['upload_up'] as String,
+      );
+      walletList.add(walletItem);
+    }
+    return walletList;
+  }
+
+  Future<List<Wallet>> searchWallets(int userId) async {
+    final List<Map<String, Object?>> wallets = await db.query(
       "wallets",
       where: "id_user=?",
-      whereArgs: [UserId],
+      whereArgs: [userId],
       orderBy: "create_up DESC",
     );
-    return [
-      for (final {
-            'id_wallet': id_wallet as String,
-            'icon': icon as int,
-            'total': total as int,
-            'id_user': id_user as int,
-            'money_price': money_price as int,
-            'description': description as String,
-            "create_up": create_up as String,
-            "upload_up": upload_up as String,
-          } in wallet)
-        Wallet(
-          id_wallet: id_wallet,
-          icon: icon,
-          total: total,
-          id_user: id_user,
-          money_price: money_price,
-          description: description,
-          create_up: create_up,
-          upload_up: upload_up,
-        ),
-    ];
+    return getWalletData(wallets);
   }
 
   Future<Wallet> getById(String id) async {
     final List<Map<String, Object?>> wallet =
         await db.query("wallets", where: 'id_wallet=?', whereArgs: [id]);
     return Wallet(
-      icon: int.parse(wallet.first['icon'].toString()),
+      icon: wallet.first['icon'].toString(),
+      name: wallet.first['name'].toString(),
       total: int.parse(wallet.first['total'].toString()),
       description: wallet.first['description'].toString(),
       id_user: int.parse(wallet.first['id_user'].toString()),
       id_wallet: wallet.first['id_wallet'].toString(),
-      money_price: int.parse(wallet.first['money_price'].toString()),
+      status: int.parse(wallet.first['status'].toString()),
       create_up: wallet.first['create_up'].toString(),
       upload_up: wallet.first['upload_up'].toString(),
     );
@@ -115,6 +126,6 @@ class WalletService {
   }
 
   Future<void> deleteAllwallets(int id) async {
-    await db.delete("wallets");
+    await db.delete("wallets", where: "id_user=?", whereArgs: [id]);
   }
 }

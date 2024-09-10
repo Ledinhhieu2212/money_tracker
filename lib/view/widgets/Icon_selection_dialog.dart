@@ -5,22 +5,22 @@ class IconSelectionDialog extends StatelessWidget {
   final ValueChanged<int> onIconSelected;
 
   const IconSelectionDialog(
-      {required this.icons, required this.onIconSelected});
+      {super.key, required this.icons, required this.onIconSelected});
 
   @override
   Widget build(BuildContext context) {
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
       child: Container(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text('Chọn một biểu tượng', style: TextStyle(fontSize: 18.0)),
-            SizedBox(height: 16.0),
+            const Text('Chọn một biểu tượng', style: TextStyle(fontSize: 18.0)),
+            const SizedBox(height: 16.0),
             GridView.builder(
               shrinkWrap: true,
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 3,
                 childAspectRatio: 1.0,
               ),
