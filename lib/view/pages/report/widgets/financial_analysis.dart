@@ -101,8 +101,6 @@ class _FinancialAnalysisState extends State<FinancialAnalysis> {
       required DateTime startTime,
       required DateTime endTime}) {
     List<PieData> items = [];
-
-    DateTime s = removeTimeDate(startTime), e = removeTimeDate(endTime);
     double incomeTotal = 0, expenseTotal = 0;
     double calculatePercentage(double smallerValue, double largerValue) {
       if (largerValue + smallerValue == 0) {

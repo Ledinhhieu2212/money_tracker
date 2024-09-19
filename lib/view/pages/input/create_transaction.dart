@@ -39,15 +39,20 @@ class _CreateScreenState extends State<CreateScreen> {
     walletService = WalletService(await getDatabaseWallet());
     var dataWallet = await walletService.searchWallets(userID!);
     setState(() {
-      wallets = dataWallet.where((element) => element.status ==1).toList();
+      wallets = dataWallet.where((element) => element.status == 1).toList();
       _date.text = FormatDateVi(DateTime.now());
     });
   }
 
   @override
+  void dispose() { 
+    super.dispose();
+  }
+
+  @override
   void initState() {
     super.initState();
-    connectDatabase();
+    connectDatabase(); 
   }
 
   int selectedIcon = 0;
@@ -71,10 +76,9 @@ class _CreateScreenState extends State<CreateScreen> {
   bool isByte(int byte) => byte != 0;
 
   Future<void> selectDate() async {
-    DateTime now = DateTime.now();
     DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: now,
+      initialDate: DateTime.now(),
       lastDate: DateTime(2100),
       firstDate: DateTime(2000),
     );
@@ -90,7 +94,7 @@ class _CreateScreenState extends State<CreateScreen> {
     service.insert(
       Transaction(
         id_user: userID!,
-        dateTime:  _date.text,
+        dateTime: _date.text,
         transaction_type: _type,
         id_wallet: wallet!.id_wallet!,
         money: int.parse(_money.text.replaceAll('.', '')),
@@ -216,8 +220,20 @@ class _CreateScreenState extends State<CreateScreen> {
                             ),
                             Padding(
                               padding: const EdgeInsets.only(left: 18.0),
-                              child: Text(wallet!.name),
-                            )
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    wallet!.name,
+                                    style: const TextStyle(
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  Text(
+                                      "${formatMoney(wallet!.total.toDouble())}đ"),
+                                ],
+                              ),
+                            ),
                           ],
                         ),
                 ),
@@ -244,26 +260,17 @@ class _CreateScreenState extends State<CreateScreen> {
                             context,
                           );
                         } else {
-                          if (int.parse(removeCurrencySeparator(_money.text)) >=
-                              5000000) {
-                            buildWarningMessage(
-                              "Thông báo",
-                              "Giá trị giao dịch không vượt quá 5 triệu VNĐ giao dịch!",
-                              context,
-                            );
-                          } else {
-                            createTransaction();
-                            updateWalletMoneyTotal();
-                            buildSuccessMessage(
-                              "Thành công!",
-                              "Thành công tạo giao dịch.",
-                              context,
-                            );
-                            _money.clear();
-                            _date.text = FormatDateVi(DateTime.now());
-                            _description.clear();
-                            getOffAllPage(page: () => const NavigationMenu(routerNavigationMenu: 0,));
-                          }
+                          createTransaction();
+                          updateWalletMoneyTotal();
+                          buildSuccessMessage(
+                            "Thành công!",
+                            "Thành công tạo giao dịch.",
+                            context,
+                          );
+                          _money.clear();
+                          _date.text = FormatDateVi(DateTime.now());
+                          _description.clear();
+                          Get.offAll(() => NavigationMenu(routerNavigationMenu: 4,));
                         }
                       }
                     },

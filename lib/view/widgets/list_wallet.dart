@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:money_tracker/constants/config.dart';
 import 'package:money_tracker/constants/images.dart';
 import 'package:money_tracker/model/wallet.dart';
 import 'package:money_tracker/services/wallet_service.dart';
@@ -36,15 +37,26 @@ class ListWallet extends StatelessWidget {
                   child: Row(
                     children: [
                       CircleAvatar(
-                        child: Image.asset(wallets[index].icon,
+                        child: Image.asset(
+                          wallets[index].icon,
                           width: 26,
                         ),
                       ),
                       Padding(
                         padding: const EdgeInsets.only(left: 15.0),
-                        child: Text(
-                          wallets[index].name,
-                          style: const TextStyle(fontSize: 16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              wallets[index].name,
+                              style: const TextStyle(
+                                  fontSize: 15, fontWeight: FontWeight.bold),
+                            ),
+                            Text(
+                              "${formatMoney(wallets[index].total.toDouble())}đ",
+                              style: const TextStyle(fontSize: 12),
+                            ),
+                          ],
                         ),
                       ),
                     ],

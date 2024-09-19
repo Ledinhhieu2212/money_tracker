@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'dart:convert';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
@@ -14,8 +13,22 @@ class LoginController extends GetxController {
   TextEditingController passwordController = TextEditingController();
   UserPreference userPreference = UserPreference();
   bool isLoading = false;
+  var phoneError = ''.obs;
+  var passwordError = ''.obs;
+  var titleError = ''.obs;
 
   String data = '';
+  bool isValidPhoneNumber(String phone) {
+    // Kiểm tra số điện thoại có 10 chữ số và bắt đầu bằng '0'
+    return RegExp(r'^(0[3|5|7|8|9])+([0-9]{8})$').hasMatch(phone);
+  }
+
+  bool isValidPassword(String password) {
+    // Kiểm tra mật khẩu chứa ít nhất 1 chữ cái viết hoa, 1 chữ cái viết thường, 1 số, 1 ký tự đặc biệt và có độ dài tối thiểu 8 ký tự
+    return RegExp(
+            r'^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#\$%\^&\*])[A-Za-z\d!@#\$%\^&\*]{8,}$')
+        .hasMatch(password);
+  }
 
   void getDialogMesssageError({required String error}) {
     Get.dialog(
@@ -108,24 +121,33 @@ class LoginController extends GetxController {
   }
 
   Future<void> loginWithPhone() async {
+    if (!isValidPhoneNumber(phoneController.text)) {
+      phoneError.value = "Vui lòng nhập số điện thoại hợp lệ!";
+      phoneController.clear();
+      return;
+    }
+
+    if (passwordController.text.isEmpty) {
+      passwordError.value = "Không để trống trường mật khẩu!";
+      return;
+    }
+
     _updateIsLoading(true);
     try {
       http.Response rs = await searchApi();
       if (rs.statusCode == 200) {
         createUser(rs.body);
       } else {
-        if (phoneController.text.isEmpty || passwordController.text.isEmpty) {
-          throw "Không được để chống trường nhập!";
+        if (rs.statusCode == 401) {
+          // Sai thông tin đăng nhập
+          titleError.value = "Số điện thoại hoặc mật khẩu không chính xác";
+          phoneError.value = '';
+          passwordError.value = '';
         } else {
-          throw jsonDecode(rs.body)["Message"] ?? "Sai thông tin tài khoản";
+          // Lỗi khác
+          phoneError.value = "Đã xảy ra lỗi. Vui lòng thử lại";
         }
       }
-    } on SocketException catch (error) {
-      getDialogMesssageError(error: '$error');
-    } on HttpException catch (error) {
-      getDialogMesssageError(error: '$error');
-    } on FormatException catch (error) {
-      getDialogMesssageError(error: '$error');
     } catch (error) {
       getDialogMesssageError(error: error.toString());
     } finally {

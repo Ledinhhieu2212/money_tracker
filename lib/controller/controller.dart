@@ -1,7 +1,6 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:money_tracker/services/share_preference.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class Controller extends GetxController {
   void changeLanguage(String langCode, String countryCode) {

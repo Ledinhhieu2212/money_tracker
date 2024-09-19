@@ -1,12 +1,9 @@
 import 'package:money_tracker/constants/config.dart';
 import 'package:money_tracker/model/transaction.dart';
 import 'package:money_tracker/services/transaction_service.dart';
-import 'package:money_tracker/view/widgets/Icon_selection_dialog.dart';
 import 'package:flutter/material.dart';
-import 'package:money_tracker/model/wallet.dart'; 
-import 'package:money_tracker/constants/images.dart';
+import 'package:money_tracker/model/wallet.dart';
 import 'package:money_tracker/view/widgets/select_wallets.dart';
-import 'package:money_tracker/view/widgets/text_field.dart';
 import 'package:money_tracker/constants/app_style.dart';
 import 'package:money_tracker/constants/app_colors.dart';
 import 'package:money_tracker/view/widgets/flash_message.dart';
@@ -25,16 +22,16 @@ class _EditDeleteWalletState extends State<EditDeleteWallet> {
   late WalletService service;
   Wallet? wallet;
   String selectedIcon = "";
-  late TransactionService transactionService; 
+  late TransactionService transactionService;
   List<Transaction> transactions = [];
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _wallet = TextEditingController(); 
+  final TextEditingController _wallet = TextEditingController();
   connectDatabase() async {
     service = WalletService(await getDatabaseWallet());
     transactionService = TransactionService(await getDatabase());
     Wallet p = await service.getById(widget.idWallet);
     setState(() {
-      wallet = p; 
+      wallet = p;
       _wallet.text = p.description;
       selectedIcon = p.icon;
     });
@@ -97,21 +94,6 @@ class _EditDeleteWalletState extends State<EditDeleteWallet> {
           key: _formKey,
           child: Column(
             children: [
-              // Container(
-              //   padding:
-              //       const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-              //   color: Colors.white,
-              //   child: Column(
-              //     crossAxisAlignment: CrossAxisAlignment.end,
-              //     children: [
-              //       const Text("Số dư ban đầu"),
-              //       textFormFieldCreateMoney(
-              //         controller: _money,
-              //         color: const Color(primary),
-              //       )
-              //     ],
-              //   ),
-              // ),
               const SizedBox(
                 height: 10,
               ),
@@ -119,18 +101,7 @@ class _EditDeleteWalletState extends State<EditDeleteWallet> {
                 padding: const EdgeInsets.symmetric(vertical: 10),
                 color: Colors.white,
                 child: Column(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 15),
-                      child: TextField(
-                        controller: _wallet,
-                        decoration: const InputDecoration(
-                          labelText: "Tên ví",
-                          prefixIcon: Icon(Icons.article),
-                          // prefixIcon:
-                        ),
-                      ),
-                    ),
+                  children: [ 
                     const SizedBox(
                       height: 10,
                     ),
@@ -164,6 +135,17 @@ class _EditDeleteWalletState extends State<EditDeleteWallet> {
                               ],
                             ),
                     ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 15),
+                      child: TextField(
+                        controller: _wallet,
+                        decoration: const InputDecoration(
+                          labelText: "Tên ví",
+                          prefixIcon: Icon(Icons.article),
+                          // prefixIcon:
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -191,7 +173,7 @@ class _EditDeleteWalletState extends State<EditDeleteWallet> {
                           icon: wallet!.icon,
                           description: _wallet.text,
                           id_user: wallet!.id_user,
-                          total: wallet!.total, 
+                          total: wallet!.total,
                           status: 1,
                           create_up: wallet!.create_up,
                           upload_up: now.toString(),

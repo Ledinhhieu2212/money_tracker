@@ -1,3 +1,4 @@
+ 
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:money_tracker/model/wallet.dart';
@@ -8,7 +9,7 @@ import 'package:money_tracker/services/wallet_service.dart';
 import 'package:money_tracker/services/share_preference.dart';
 import 'package:money_tracker/view/widgets/flash_message.dart';
 import 'package:money_tracker/view/widgets/select_wallets.dart';
-import 'package:money_tracker/view/pages/navigation/navigation.dart';
+import 'package:money_tracker/view/pages/navigation/navigation.dart'; 
 
 class CreateWallet extends StatefulWidget {
   const CreateWallet({super.key});
@@ -24,6 +25,7 @@ class _CreateWalletState extends State<CreateWallet> {
 
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _wallet = TextEditingController();
+  final TextEditingController _money = TextEditingController();
   connectDatabase() async {
     userID = await UserPreference().getUserID();
     service = WalletService(await getDatabaseWallet());
@@ -43,6 +45,8 @@ class _CreateWalletState extends State<CreateWallet> {
     return (hasNullKey || hasNullValue) ? true : false;
   }
 
+  Color color = true ? Colors.red : Colors.green;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -52,7 +56,6 @@ class _CreateWalletState extends State<CreateWallet> {
           "Tạo thêm ví",
           style: TextStyle(fontSize: 20),
         ),
-        
       ),
       body: Container(
         color: const Color(grey),
@@ -95,7 +98,7 @@ class _CreateWalletState extends State<CreateWallet> {
                           ),
                         ),
                         child: checkIconWallet(iconWallet)
-                            ?  Text("select_title_wallets_create_transaction".tr)
+                            ? Text("select_title_wallets_create_transaction".tr)
                             : Row(
                                 children: [
                                   CircleAvatar(
@@ -115,9 +118,9 @@ class _CreateWalletState extends State<CreateWallet> {
                       padding: const EdgeInsets.symmetric(horizontal: 15),
                       child: TextField(
                         controller: _wallet,
-                        decoration:  InputDecoration(
+                        decoration: InputDecoration(
                           labelText: "description".tr,
-                          prefixIcon: Icon(Icons.article),
+                          prefixIcon: const Icon(Icons.article),
                         ),
                       ),
                     ),

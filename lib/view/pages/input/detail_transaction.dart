@@ -6,7 +6,6 @@ import 'package:money_tracker/services/wallet_service.dart';
 import 'package:money_tracker/view/pages/navigation/navigation.dart';
 import 'package:money_tracker/view/widgets/flash_message.dart';
 import 'package:money_tracker/view/widgets/list_wallet.dart';
-import 'package:toggle_switch/toggle_switch.dart';
 import 'package:money_tracker/model/transaction.dart';
 import 'package:money_tracker/view/widgets/text_field.dart';
 import 'package:money_tracker/constants/app_style.dart';
@@ -212,28 +211,6 @@ class _DetailTransactionState extends State<DetailTransaction> {
                     ],
                   ),
                 ),
-                // ToggleSwitch(
-                //   fontSize: 20,
-                //   minWidth: 200,
-                //   minHeight: 50,
-                //   totalSwitches: 2,
-                //   cornerRadius: 10,
-                //   inactiveFgColor: Colors.white,
-                //   initialLabelIndex: _currentIndex,
-                //   inactiveBgColor: Colors.black26,
-                //   activeFgColor: const Color(white),
-                //   activeBgColor: const [Color(blue), Color(primary)],
-                //   labels: [
-                //     'spending'.tr,
-                //     'income'.tr,
-                //   ],
-                //   onToggle: (index) {
-                //     setState(() {
-                //       _currentIndex = index!;
-                //     });
-                //   },
-                // ),
-
                 Container(
                   margin: const EdgeInsets.symmetric(horizontal: 10),
                   decoration: BoxDecoration(
@@ -309,14 +286,27 @@ class _DetailTransactionState extends State<DetailTransaction> {
                           child: Row(
                             children: [
                               CircleAvatar(
-                                backgroundColor: Colors.redAccent,
+                                backgroundColor: Colors.transparent,
                                 child: Image.asset(
                                   newWallet.icon,
                                 ),
                               ),
                               Padding(
                                 padding: const EdgeInsets.only(left: 18.0),
-                                child: Text(newWallet.name),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      newWallet.name,
+                                      style: const TextStyle(
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    Text(
+                                        "${formatMoney(newWallet.total.toDouble())}đ"),
+                                  ],
+                                ),
                               )
                             ],
                           ),

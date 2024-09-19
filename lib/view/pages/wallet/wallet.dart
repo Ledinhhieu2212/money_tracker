@@ -36,7 +36,7 @@ class _WalletScreenState extends State<WalletScreen> {
     service = WalletService(await getDatabaseWallet());
     List<Wallet> data = await service.searchWallets(userId);
     setState(() {
-      wallet = data;
+      wallet = data ;
       for (final t in wallet) {
         price += double.parse(t.total.toString());
       }

@@ -1,10 +1,7 @@
-import 'dart:ffi';
 import 'dart:math';
 
 import 'package:fl_chart/fl_chart.dart';
-import 'package:fl_chart/fl_chart.dart' as fl;
 import 'package:money_tracker/view/pages/wallet/widgets/select_wallet.dart';
-import 'package:money_tracker/view/widgets/charts/bar_chart.dart' as custom;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:money_tracker/constants/app_colors.dart';
@@ -14,7 +11,6 @@ import 'package:money_tracker/model/wallet.dart';
 import 'package:money_tracker/services/share_preference.dart';
 import 'package:money_tracker/services/transaction_service.dart';
 import 'package:money_tracker/services/wallet_service.dart';
-import 'package:money_tracker/view/widgets/list_wallet.dart';
 
 class ExpenseIncome extends StatefulWidget {
   const ExpenseIncome({super.key});
@@ -211,18 +207,12 @@ class _WeekScreenState extends State<WeekScreen> {
         x: index,
         barRods: [
           BarChartRodData(
-            toY: data.income == 0
-                ? 0.1
-                : ((data.income > maxChartValue) ? maxChartValue : data.income),
+            toY: data.income,
             color: Colors.green,
             width: 15,
           ),
           BarChartRodData(
-            toY: data.expense == 0
-                ? 0.1
-                : ((data.expense > maxChartValue)
-                    ? maxChartValue
-                    : data.expense),
+            toY: data.expense,
             color: Colors.red,
             width: 15,
           ),
@@ -239,11 +229,50 @@ class _WeekScreenState extends State<WeekScreen> {
     );
   }
 
+  double findMaxTotalMoneyByDate(List<Transaction> transactions) {
+    // Maps to store total money per day for income and expense
+    Map<String, double> totalIncomePerDay = {};
+    Map<String, double> totalExpensePerDay = {};
+
+    for (var transaction in transactions) {
+      String transactionDate =
+          transaction.dateTime;
+      double money = transaction.money.toDouble();
+
+      // Update total income per day
+      if (transaction.transaction_type == 1) {
+        totalIncomePerDay[transactionDate] =
+            (totalIncomePerDay[transactionDate] ?? 0) + money;
+      }
+      // Update total expense per day
+      else if (transaction.transaction_type == 0) {
+        totalExpensePerDay[transactionDate] =
+            (totalExpensePerDay[transactionDate] ?? 0) + money;
+      }
+    }
+
+    // Find the maximum total income and expense
+    double maxIncomeTotalMoney = totalIncomePerDay.values.isNotEmpty
+        ? totalIncomePerDay.values.reduce((a, b) => a > b ? a : b)
+        : 0;
+
+    double maxExpenseTotalMoney = totalExpensePerDay.values.isNotEmpty
+        ? totalExpensePerDay.values.reduce((a, b) => a > b ? a : b)
+        : 0;
+
+    // Return the maximum value between income and expense
+    return maxIncomeTotalMoney > maxExpenseTotalMoney
+        ? maxIncomeTotalMoney
+        : maxExpenseTotalMoney;
+  }
+
   AxisTitles hideAxisTile =
       const AxisTitles(sideTitles: SideTitles(showTitles: false));
   @override
   Widget build(BuildContext context) {
-    const double maxChartValue = 1000000;
+    double maxChartValue = findMaxTotalMoneyByDate(transactions) <= 1000000
+        ? 1000000
+        : findMaxTotalMoneyByDate(transactions) + 500000;
     return Container(
       width: double.infinity,
       height: double.infinity,
@@ -362,7 +391,7 @@ class _WeekScreenState extends State<WeekScreen> {
                               final index = value.toInt();
                               return Text(
                                 items[index].datetime?.day.toString() ?? '',
-                                style: TextStyle(color: Colors.black),
+                                style: const TextStyle(color: Colors.black),
                               );
                             },
                           ),
@@ -420,14 +449,14 @@ class TransactionExpense extends StatelessWidget {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
+                        const Text(
                           "Thông tin giao dịch: ",
                           textAlign: TextAlign.left,
                           style: TextStyle(fontSize: 16),
                         ),
                         IconButton(
                           onPressed: () {
-                            getToPageToBack(page: ()=>const SelectWallet());
+                            getToPageToBack(page: () => const SelectWallet());
                           },
                           icon: Icon(Icons.settings),
                         ),

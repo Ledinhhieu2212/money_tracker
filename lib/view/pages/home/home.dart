@@ -7,7 +7,6 @@ import 'package:money_tracker/services/transaction_service.dart';
 import 'package:money_tracker/services/wallet_service.dart';
 import 'package:money_tracker/view/pages/input/detail_transaction.dart';
 import 'package:money_tracker/view/pages/wallet/widgets/select_wallet.dart';
-import 'package:money_tracker/view/widgets/notification.dart';
 import 'package:money_tracker/constants/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -234,7 +233,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget usernameTitleAppbar() {
     return Text(
-      '${'hello'.tr} ${user!.username ?? ''}!',
+      '${'hello'.tr} ${user!.username}!',
       style: const TextStyle(
         fontSize: 18,
         fontWeight: FontWeight.bold,
@@ -391,12 +390,21 @@ class _HomeScreenState extends State<HomeScreen> {
                                             child: Padding(
                                               padding: const EdgeInsets.only(
                                                   left: 15.0),
-                                              child: Text(
-                                                wallets[index].name,
-                                                style: TextStyle(
-                                                  fontSize: 16,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                    wallets[index].name,
+                                                    style: const TextStyle(
+                                                      fontSize: 16,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                  ),
+                                                  Text(
+                                                      "${formatMoney(wallets[index].total.toDouble())}đ"),
+                                                ],
                                               ),
                                             ),
                                           ),

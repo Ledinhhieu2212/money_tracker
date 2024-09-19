@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:money_tracker/constants/localization.dart';
 import 'package:money_tracker/constants/app_colors.dart';
 import 'package:money_tracker/controller/controller.dart';
-import 'package:money_tracker/services/share_preference.dart';
 import 'package:money_tracker/view/pages/splash/splash.dart';
 
 void main() async {

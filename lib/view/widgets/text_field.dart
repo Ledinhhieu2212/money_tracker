@@ -8,7 +8,7 @@ Widget textFormFieldAuth(
     {required String label,
     required TextEditingController controller,
     bool obscureTextBool = false}) {
-  return TextField(
+  return TextFormField(
     controller: controller,
     obscureText: obscureTextBool,
     decoration: InputDecoration(
@@ -16,7 +16,7 @@ Widget textFormFieldAuth(
       labelText: label,
       labelStyle: const TextStyle(
         fontWeight: FontWeight.w500,
-        color: Colors.grey,
+        // color: Colors.grey,
       ),
       focusedBorder: const OutlineInputBorder(
         borderSide: BorderSide(
@@ -36,22 +36,16 @@ Widget textFormFieldCreateMoney(
     children: [
       Padding(
         padding: const EdgeInsets.only(right: 20),
-        child: TextFormField(
+        child: TextField(
           enabled: isEnabled,
+          keyboardType: TextInputType.number,
+          inputFormatters: [MoneyInputFormatter()],
           controller: controller,
           textAlign: TextAlign.end,
-          obscureText: false,
+          // obscureText: false,
           style: TextStyle(color: color, fontSize: 30),
-          // keyboardType: TextInputType.number,
-          inputFormatters: [MoneyInputFormatter()],
           decoration: InputDecoration(
             hintText: "0",
-            enabledBorder: const UnderlineInputBorder(
-              borderSide: BorderSide(color: Colors.grey, width: 0.4),
-            ),
-            focusedBorder: const UnderlineInputBorder(
-              borderSide: BorderSide(color: Colors.grey, width: 0.8),
-            ),
             hintStyle: TextStyle(
                 color: color, fontSize: 30, fontWeight: FontWeight.bold),
           ),

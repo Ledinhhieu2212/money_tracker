@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:money_tracker/constants/app_colors.dart';
 import 'package:money_tracker/constants/config.dart';
-import 'package:money_tracker/model/user.dart';
 import 'package:money_tracker/model/wallet.dart';
 import 'package:money_tracker/services/share_preference.dart';
 import 'package:money_tracker/services/wallet_service.dart';

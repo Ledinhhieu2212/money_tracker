@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:money_tracker/constants/app_colors.dart';
-import 'package:money_tracker/model/user.dart';
 import 'package:money_tracker/view/pages/home/home.dart';
 import 'package:money_tracker/view/pages/input/create_transaction.dart';
 import 'package:money_tracker/view/pages/report/report.dart';
